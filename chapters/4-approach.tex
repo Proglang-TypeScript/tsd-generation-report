@@ -28,7 +28,7 @@ Describe each major technical problem and how it was solved.
 
 This Thesis introduces a \textit{TypeScript Declaration Files Generation Method}, which generates a valid TypeScript Declaration File for a specific NPM package, as explained in Fig. \ref{fig:tsd_generation_method_block_diagram}.
 
-\input{figures/approach/typescriptDeclarationFilesGenerationMethodBlockDiagram}
+\input{figures/approach/typescript-declaration-files-generation-method/typescriptDeclarationFilesGenerationMethodBlockDiagram.tex}
 
 Following the goal of easing and automating the generation of TypeScript Declaration Files for existings JS Libraries, the method receives the name of the JS Library published to the NPM Registry as an input argument and returns the corresponding TypeScript declaration file.
 
@@ -36,12 +36,16 @@ The method consists of a continuous refinement process. It generates a TypeScrip
 
 The file generated after each iteration is a valid and fully functional declaration file, suitable for usage in development environments. It contains no errors, matches the structure of the corresponding JS Library and could be uploaded to the DefinitelyTyped Repository. It is therefore intended to be integrated within the build process of the JS Library.
 
+The feedback loop is not included in the implementation. Exploring new execution paths by creating new test cases will refine the declaration files, i.e. new types will be assigned to different variables, new interfaces will be detected, existing interfaces will be defined more accurately by detecting new properties, etc. From an incremental point of view, actually generating the declaration files from run-time information has to be developed first. A declaration file must exist first so that it can be refined refined afterwards. 
+
+
+
 \todo{Decir que para la tesis se decidio no inlcuir el feedback loop. Solo se hizo la parte de runtime, etc.}
 
-\subsection{Overview}
+\subsection{Implementation}
 As explained before, the DefinitelyTyped Repository is the official repository for finding declaration files for npm packages. Therefore, the \textit{TypeScript Declaration Files Generation Method} is intended to be used on existing, published npm packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
 
-The method uses an instrumentation framework to gather data flow information and type information at runtime. A second independent block uses the gathered information to generate a TypeScript Declaration File. The signatures obtained from the generated declaration file are used to generate pre and post conditions on a Symbolic Execution Engine in order to build different test cases that explore new execution paths. The code from the test cases is then added to the existing code base. The declaration file is generated again using an expanded code base.
+The method uses Jalangi as instrumentation framework to gather data flow information and type information at runtime. A second independent block uses the gathered information to generate a TypeScript Declaration File. The signatures obtained from the generated declaration file are used to generate pre and post conditions on a Symbolic Execution Engine in order to build different test cases that explore new execution paths. The code from the test cases is then added to the existing code base. The declaration file is generated again using an expanded code base.
 
 A feedback loop refines iteratively the outcome by combining run-time information gathering and symbolic analysis: It performs Run-Time Analysis to generate a declaration file using run-time information and a Symbolic Execution Engine to refine and expand the code base being used to gather run-time information.
 
@@ -49,7 +53,6 @@ Running the TypeScript Declaration File Generation Tool with the same run-time i
 
 Finally, the generated declaration files are fully functional and valid files. They can be used in a TypeScript project without further modifications
 
-\subsection{Implementation}
 \todo{Decir que es un framework. Decir que es tipo una pipeline donde todo se conecta con lo otro. Explicar que por mas que reciba un string como input}
 
 \section{Initial code base}
@@ -86,6 +89,7 @@ Finally, the generated declaration files are fully functional and valid files. T
 \todo{TypeScript \& Docker. Mostrar cómo se invoca, etc.}
 
 \section{Evaluation}
+\input{figures/approach/evaluation/evaluationDiagram.tex}
 \subsection{Parsing}
 \subsubsection{TypeScript Compiler API}
 \subsection{Comparison}
