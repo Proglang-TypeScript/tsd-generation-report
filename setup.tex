@@ -69,6 +69,8 @@
     % usually you don't need this, just for demonstration of a longer caption
     \usepackage{lipsum}
 
+    \usepackage{minted}
+    %     \renewcommand\listingscaption{Example}
 %------------------------------------------------------------------------------
 %       (re)new commands / settings
 %------------------------------------------------------------------------------
@@ -140,3 +142,33 @@
     % set distance between items in a list, for more details see the
     % enumitem package: https://www.ctan.org/pkg/enumitem
     \setlist{itemsep=.5em}
+
+    \definecolor{code_background}{rgb}{0.96,0.96,0.96}
+
+    \newmintedfile[jscode]{javascript}{
+        xleftmargin=20pt,
+        fontsize=\footnotesize,
+        tabsize=3,
+        linenos,
+        bgcolor=code_background,
+        breaklines
+    }
+
+    \newmintedfile[tscode]{typescript}{
+        xleftmargin=20pt,
+        fontsize=\footnotesize,
+        tabsize=3,
+        linenos,
+        bgcolor=code_background,
+        breaklines
+    }
+
+    \newmintedfile[jsoncode]{json}{
+        xleftmargin=20pt,
+        fontsize=\footnotesize,
+        tabsize=3,
+        linenos,
+        bgcolor=code_background,
+        breaklines,
+        label=foobar
+    }

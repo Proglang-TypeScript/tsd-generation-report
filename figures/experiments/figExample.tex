@@ -1,7 +1,17 @@
-\begin{figure}[t]
+% \newsavebox{\mintedbox}
+
+\begin{figure}[h]
 \begin{centering}
-    \subfloat[Some cool graphic]
-    {\includegraphics[scale=0.2]{figures/experiments/img.JPG}}
+    \subfloat[Some cool graphic]{
+        {\includegraphics[scale=0.4]{figures/experiments/img.JPG}}
+    }
+
+    % \begin{lrbox}{\mintedbox}
+    %     \begin{minipage}{\textwidth}
+    %         \jscode{code/blacklisted-modules/A.js}
+    %     \end{minipage}
+    % \end{lrbox}
+    % \subfloat[some code]{\usebox{\mintedbox}}
 
     \subfloat[Some cool related graphic]
     {\includegraphics[scale=0.4]{figures/experiments/microcontroller.png}}
