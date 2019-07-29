@@ -1,0 +1,67 @@
+\definecolor{myellow}{RGB}{228,212,0}
+\definecolor{mgreen}{RGB}{5,104,57}
+
+\newcommand\funnel[3]{%
+\pgfmathsetmacro\mwid{(0.3+\val*0.06)}
+\pgfmathsetmacro\mradius{(\val*0.01 + 1)}
+\pgfmathsetmacro\mheight{(\val*0.003 + 0.4)}
+\pgfmathsetmacro\marc{\mwid-.4}
+    \begin{scope}[%
+        shift={(0,#1)}, 
+        line width=.05pt, 
+        %x=5mm, 
+        %scale=1.\xi,
+        yshift=\xi*4
+        ]
+    \draw[black,bottom color=#2, top color=#2] (-\mwid,0) -- (-\mwid+.4,-\mheight) arc (190:350:\marc cm and \mradius mm) -- (\mwid,0);
+    \draw[black,fill=#3] (0,0) ellipse (\mwid cm and \mradius mm);
+    \path (-\mwid,0) -- (-\mwid+.4,-\mheight) coordinate[midway] (a\xi);
+    \end{scope}
+}
+
+\begin{figure}[h]
+	\hspace*{-0.28\textwidth}
+	\centering
+	\begin{tikzpicture}
+		\foreach \val
+				[%
+				count=\xi starting from 0, 
+				evaluate=\xi as \shadecolor using int(25*\xi),
+				evaluate=\xi as \coord using int(\xi-12)
+				]
+			in {
+				4.05,
+				9.37,
+				24.02,
+				37.49,
+				71.19,
+				82.50,
+				100.00
+			}{
+				\funnel{\coord}{mgreen!\shadecolor !myellow}{mgreen!\shadecolor !myellow}
+			}   
+
+		\node[left=0.02\textwidth of a0] {Generated Declaration Files};
+		\node[right=0.07\textwidth of a0] {\textbf{244}};
+
+		\node[left=0.02\textwidth of a1] {Run-time Information};
+		\node[right=0.12\textwidth of a1] {\textbf{565}};
+
+		\node[left=0.02\textwidth of a2] {Working Examples};
+		\node[right=0.26\textwidth of a2] {\textbf{1448}};
+
+		\node[left=0.02\textwidth of a3] {Code Examples};
+		\node[right=0.38\textwidth of a3] {\textbf{2260}};
+
+		\node[left=0.02\textwidth of a4] {README file};
+		\node[right=0.70\textwidth of a4] {\textbf{4292}};
+
+		\node[left=0.02\textwidth of a5] {Github Repository};
+		\node[right=0.80\textwidth of a5] {\textbf{4974}};
+
+		\node[align=right,left=0.02\textwidth of a6, text width=0.25\textwidth] {Definitely Typed Modules};
+		\node[right=0.97\textwidth of a6] {\textbf{6029}};
+
+	\end{tikzpicture}
+	\caption[Number of analyzed modules for each stage of the experiment]{\textbf{Number of analyzed modules for each stage of the experiment} - A TypeScript Declaration File was generated for only 244 modules, out of 6029 modules in the DefinitelyTyped Repository. It was possible to gather valid run-time information for only 25\% of the modules for which a Code Example was extracted.}
+\end{figure}
