@@ -13,6 +13,7 @@
 *.gdraw
 *.gz
 out
+bib/__*_temp.tex
 _minted-thesis_main
 .vscode
 

@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.4\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/simple-example.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.58\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-simple-example.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[Simple run-time information gathering example]{\textbf{Simple run-time information gathering example} - Example code showing \textit{inputValue} and \textit{getField} interactions. Several additional fields and entries of the final output JSON file were ommited for simplicity.}
+	\label{fig:run-time-information-gathering-simple-example}
+\end{figure}

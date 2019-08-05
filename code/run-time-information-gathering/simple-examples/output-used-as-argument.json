@@ -1,0 +1,44 @@
+{
+	"functionId_1": {
+		"functionName": "foo",
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "getField",
+						"traceId": "trace__1",
+						"field": "x",
+						"returnTypeOf": "number"
+					},
+					{
+						"code": "usedAsArgument",
+						"traceId": "trace__1",
+						"enclosingFunctionId": "functionId_1",
+						"targetFunctionId": "functionId_3",
+						"traceIdInTargetFunction": "trace__2",
+						"argumentIndexInTargetFunction": "0"
+					}
+				]
+			}
+		}
+	},
+	"functionId_3": {
+		"functionName": "bar",
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "getField",
+						"traceId": "trace__2",
+						"field": "y",
+						"returnTypeOf": "number"
+					}
+				]
+			}
+		}
+	}
+}

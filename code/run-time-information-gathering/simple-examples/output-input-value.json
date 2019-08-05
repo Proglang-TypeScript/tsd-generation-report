@@ -1,0 +1,35 @@
+{
+	"functionId_1": {
+		"functionName": "foo",
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "inputValue",
+						"traceId": "trace__1",
+						"typeof": "string"
+					}
+				]
+			},
+			"1": {
+				"argumentIndex": 1,
+				"argumentName": "b",
+				"interactions": [
+					{
+						"code": "inputValue",
+						"traceId": "trace__1",
+						"typeof": "string"
+					}
+				]
+			}
+		},
+		"returnTypeOfs": [
+			{
+				"typeOf": "string",
+				"traceId": "trace__1"
+			}
+		]
+	}
+}

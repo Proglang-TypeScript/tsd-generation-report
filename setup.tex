@@ -70,6 +70,7 @@
     \usepackage{lipsum}
 
     \usepackage{minted}
+    \usepackage{multicol}
 
     \usepackage{pgfplots}
 %------------------------------------------------------------------------------
@@ -165,11 +166,27 @@
     }
 
     \newmintedfile[jsoncode]{json}{
-        xleftmargin=20pt,
         fontsize=\footnotesize,
-        tabsize=3,
-        linenos,
+        tabsize=2,
         bgcolor=code_background,
         breaklines,
         label=foobar
     }
+
+    \newminted[bashinline]{bash}{
+        fontsize=\footnotesize,
+        tabsize=3,
+        bgcolor=code_background,
+        breaklines,
+        label=foobar
+    }
+
+    \newminted[textinline]{text}{
+        fontsize=\footnotesize,
+        tabsize=3,
+        bgcolor=code_background,
+        breaklines,
+        label=foobar
+    }
+
+    \newsavebox{\mintedbox}

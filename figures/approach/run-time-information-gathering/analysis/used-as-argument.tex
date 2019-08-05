@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.3\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/used-as-argument.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.68\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-used-as-argument.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[\textit{usedAsArgument} interaction example]{\textbf{\textit{usedAsArgument} interaction example} - Reporting when an argument is used as an argument of another function provides more accurate information. Several additional fields and entries of the final output JSON file were ommited for simplicity.}
+	\label{fig:run-time-information-gathering-used-as-argument}
+\end{figure}

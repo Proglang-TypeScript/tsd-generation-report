@@ -1,0 +1,31 @@
+{
+	"functionId_1": {
+		"functionName": "foo",
+		"isConstructor": false,
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "methodCall",
+						"traceId": "trace__1",
+						"methodName": "doSomething",
+						"functionId": "functionId_3",
+						"returnTypeOf": "number",
+						"traceIdInTargetFunction": "trace__2"
+					}
+				]
+			}
+		},
+		"returnTypeOfs": [
+			{
+				"typeOf": "number",
+				"traceId": "trace__1"
+			}
+		]
+	},
+	"functionId_3": {
+		"..." : "..."	
+	}
+}

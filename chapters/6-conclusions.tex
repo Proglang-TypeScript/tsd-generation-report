@@ -4,12 +4,17 @@ Brief wrapup of the achievements of this thesis.
 
 Directions for future work (if applicable).
 
+\draft{Una de las conclusiones mas importantes es que la type inference al final no es tan importante. Lo dificil es generar el declaration file como corresponde, detectar las interfaces, etc. El tipo de las variables puede, en principio, inferirse de los ejemplos de los developers. Es una aproximación bastante acertada y se atacan los otros problemas.}
 
+\draft{Decir que todos los bloques pueden mejorarse independientemente: Extraer mejor los readme files, mejorar la instrumentation usando Babel para quedarse siempre en ES5... mejorar la generation de declaration files, etc.}
 
 \section{Future Work}
 
 \subsection{Type Inference}
 \todo{Deberia ser hecho en otro modulo que no sea el runtime information. El runtime information deberia exponer unicamente los datos que le hacen falta al otro para inferir los tipos.}
+\subsubsection{Return values}
+\todo{El return value se podria incluir en el analysis de Jalangi, detectando las interactions que tiene etc etc. Esto no es tan facil porque no se puede simplemente inspeccionar el return value, sino que hay que saber para qué se usa. Los ejemplos podrían ser útiles}.
+
 \subsubsection{Variable Names}
 \todo{Se puede extraer info del nombre de las variables y del nombre de los metodos, etc. La developer's intention.}
 

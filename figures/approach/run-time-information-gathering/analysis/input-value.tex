@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.4\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/input-value.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.58\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-input-value.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[\textit{inputValue} interaction example]{\textbf{\textit{inputValue} interaction example} - The type of the arguments of function \textit{foo()} is recorded. Several additional fields and entries of the final output JSON file were ommited for simplicity.}
+	\label{fig:run-time-information-gathering-input-value}
+\end{figure}
