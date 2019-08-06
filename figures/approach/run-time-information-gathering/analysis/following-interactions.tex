@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.4\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/following-interactions.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.58\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-following-interactions.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[\textit{followingInteractions} interaction example]{\textbf{\textit{followingInteractions} interaction example} - Observations on return values of \mintinline{bash}{getField} and \mintinline{bash}{methodCall} interactions get associated to the leading interaction. Several additional fields and entries of the final output JSON file were ommited for simplicity.}
+	\label{fig:run-time-information-gathering-following-interactions}
+\end{figure}

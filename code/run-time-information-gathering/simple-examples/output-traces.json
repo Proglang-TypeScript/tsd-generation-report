@@ -1,0 +1,45 @@
+{
+	"functionId_1": {
+		"functionName": "foo",
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "inputValue",
+						"traceId": "trace__1",
+						"typeof": "object"
+					},
+					{
+						"code": "getField",
+						"traceId": "trace__1",
+						"field": "otherField",
+						"returnTypeOf": "number"
+					},
+					{
+						"code": "inputValue",
+						"traceId": "trace__3",
+						"typeof": "object"
+					},
+					{
+						"code": "getField",
+						"traceId": "trace__3",
+						"field": "someField",
+						"returnTypeOf": "number"
+					}
+				]
+			}
+		},
+		"returnTypeOfs": [
+			{
+				"typeOf": "number",
+				"traceId": "trace__1"
+			},
+			{
+				"typeOf": "number",
+				"traceId": "trace__3"
+			}
+		]
+	}
+}

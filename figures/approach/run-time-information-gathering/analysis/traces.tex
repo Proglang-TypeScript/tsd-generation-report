@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.46\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/traces.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.52\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-traces.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[\textit{traces} example]{\textbf{\textit{traces} example} - Interactions on different invocations of a function are stored with different \mintinline{bash}{traces}. Several additional fields and entries of the final output JSON file were ommited for simplicity.}
+	\label{fig:run-time-information-gathering-traces}
+\end{figure}
