@@ -141,7 +141,7 @@ The dynamic analysis framework used for gathering this kind of information is Ja
   \item Unary operations, like \mintinline{bash}{!} or \mintinline{bash}{typeof}.
 \end{enumerate}
 
-The implementation stores these observations as entities called \textit{interactions}. As explained later in \secref{run-time-analysis}, they are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation.
+The implementation stores these observations as entities called \textit{interactions}. As explained later in \secref{sec:run-time-analysis}, they are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation.
 
 The main goal of the run-time analysis is to gather information useful for determining a function's signature. Therefore, observations need to get associated with a function's argument. The implementation wraps variables around Proxy Objects to store tracking data, hereby enabling to associate the observation with a specific argument. The effect is reverted using Jalangi's callbacks to modify the behaviour of the affected operators, such as \mintinline{bash}{===} or \mintinline{bash}{typeof}.
 
@@ -153,23 +153,65 @@ The tool is written in JavaScript and runs in Node.js within a Docker container.
 
 \input{figures/approach/run-time-information-gathering/simple-example.tex}
 
-\subsection{Analysis} \label{run-time-analysis}
-\todo{inputValue}
+\subsection{Analysis} \label{sec:run-time-analysis}
+The provided analysis module implements the following Jalangi callbacks, which were explained in detail in \secref{sec:jalangi}:
+\begin{itemize}
+  \item binaryPre()
+  \item declare()
+  \item getFieldPre()
+  \item putFieldPre()
+  \item functionEnter()
+  \item functionExit()
+  \item invokeFun()
+  \item invokeFunPre()
+  \item unaryPre()
+  \item write()
+\end{itemize}
+
+They enable observation of all JS operations considered relevant. Every invoked function is given an unique identifier and information for each argument of every function gets stored. The entities \mintinline{bash}{FunctionContainer}, \mintinline{bash}{ArgumentContainer} and \mintinline{bash}{Interaction} are introduced to support the representation of the gathered run-time information. 
+
+Run-time information is stored in a map that contains objects of type \mintinline{bash}{FunctionContainer}.
+This entity contains static information about the function as well as implementation specific data needed for generating the right type of declaration file, as explained in \secref{sec:declaration-files-background}. Each field of the entity is explained in \coderef{code:function-container}.
+
+\begin{code}
+  \jscode{code/run-time-information-gathering/analysis/function-container.js}
+  \caption[FunctionContainer object]{\textbf{\mintinline{bash}{FunctionContainer} object} - \mintinline{bash}{FunctionContainer} is the main entity in the map where the run-time information gets gathered. It contains implementation specific information for the declaration files generation. Entities of type \mintinline{bash}{ArgumentContainer} get appended to the \mintinline{bash}{args} property.}
+  \label{code:function-container}
+\end{code}
+
+Moreover, as explained in \coderef{code:argument-container}, the \mintinline{bash}{ArgumentContainer} object works as a container for all interactions recorded for that argument. Additionally, it contains simple information about the argument itself, like the index or the name given in the function declaration.
+
+\begin{code}
+  \jscode{code/run-time-information-gathering/analysis/argument-container.js}
+  \caption[ArgumentContainer object]{\textbf{\mintinline{bash}{ArgumentContainer} object} - The \mintinline{bash}{ArgumentContainer} object works mainly as a container for all relevant observations regarding that argument.}
+  \label{code:argument-container}
+\end{code}
+
+Finally, observations on the arguments of a function are stored as objects of type \mintinline{bash}{Interaction}. They have to be always associated to an \mintinline{bash}{ArgumentContainer} object or to another \mintinline{bash}{Interaction}. They are explained in detail in \secref{sec:run-time-interactions}.
+
+\subsection{Interactions} \label{sec:run-time-interactions}
+
+\draft{enables the developer to create custom analysis modules by implementing the callbacks to virtually every JavaScript. Jalangi provides a way of writing a custom analysis by implementing}
+
+\subsubsection{\textit{inputValue} interaction}
 \input{figures/approach/run-time-information-gathering/analysis/input-value.tex}
+
+\subsubsection{\textit{getField} interaction}
 \input{figures/approach/run-time-information-gathering/analysis/get-field.tex}
+
+\subsubsection{\textit{methodCall} interaction}
 \input{figures/approach/run-time-information-gathering/analysis/method-call.tex}
+
+\subsubsection{\textit{usedAsArgument} interaction}
 \input{figures/approach/run-time-information-gathering/analysis/used-as-argument.tex}
+
+\subsubsection{\textit{operator} interaction}
+
+\subsubsection{\textit{followingInteractions}}
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
+
+\subsubsection{Traces}
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
-
-\todo{getField}
-\todo{putField}
-\todo{methodCall}
-\todo{usedAsArgument}
-\todo{operatorInteraction}
-
-\todo{followingInteractions}
-\todo{traces}
 
 \subsection{Wrapper Objects}
 \todo{Proxy Objects}
@@ -179,6 +221,7 @@ The tool is written in JavaScript and runs in Node.js within a Docker container.
 
 \subsection{Output Format}
 \todo{Explicar que es un JSON con todas las interactions. Explicar estructura de cómo se forma el JSON}
+
 
 \subsection{Blacklisted Modules}
 \input{figures/approach/blacklisted-modules/blacklistedModules.tex}
