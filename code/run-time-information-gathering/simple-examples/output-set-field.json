@@ -1,0 +1,21 @@
+{
+	"functionId_1": {
+		"functionId": "functionId_1",
+		"functionName": "foo",
+		"isConstructor": false,
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "setField",
+						"traceId": "trace__1",
+						"field": "otherField",
+						"typeof": "number"
+					}
+				]
+			}
+		}
+	}
+}

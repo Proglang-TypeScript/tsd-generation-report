@@ -1,0 +1,18 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.4\textwidth}
+			\jscode{code/run-time-information-gathering/simple-examples/set-field.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Instrumented JS code]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.58\textwidth}
+			\jsoncode{code/run-time-information-gathering/simple-examples/output-set-field.json}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Run-time information output]{\usebox{\mintedbox}}
+	\caption[\textit{setField} interaction example]{\textbf{\textit{setField} interaction example} - When a property of an argument gets written, the name of the written property and the type are recorded. Several additional fields and entries of the final output JSON file were also ommited for simplicity.}
+	\label{fig:run-time-information-gathering-set-field}
+\end{figure}

@@ -159,7 +159,7 @@ The provided analysis module implements the following Jalangi callbacks, which w
   \item binaryPre()
   \item declare()
   \item getFieldPre()
-  \item putFieldPre()
+  \item setFieldPre()
   \item functionEnter()
   \item functionExit()
   \item invokeFun()
@@ -225,12 +225,28 @@ This interaction gets triggered with the invocation of an object's method. As ex
 
 \input{figures/approach/run-time-information-gathering/analysis/method-call.tex}
 
-\todo{ADD PUT FIELD INTERACTION}
+\subsubsection{\textit{setField} interaction}
+The trigger for this interaction is writing an object's property, either by accessing the field as \mintinline{bash}{obj.field = 1} or \mintinline{bash}{obj['field'] = 1}. It can be seen in \figref{fig:run-time-information-gathering-set-field} that the interaction contains the name of the property to be written and the type of the value to be stored.
+
+\input{figures/approach/run-time-information-gathering/analysis/set-field.tex}
+
 
 \subsubsection{\textit{usedAsArgument} interaction}
+The run-time information is stored in a map with one \mintinline{bash}{FunctionContainer} entry per function. As seen in \figref{fig:run-time-information-gathering-used-as-argument}, an argument of function \mintinline{bash}{foo()} is used as parameter to invoke a second function \mintinline{bash}{bar()}. Interactions triggered within function \mintinline{bash}{bar()} are going to be stored within the \mintinline{bash}{FunctionContainer} corresponding to function \mintinline{bash}{bar()}, i.e. not the one associated to function \mintinline{bash}{foo()}.
+
+However, for the example provided in \figref{fig:run-time-information-gathering-used-as-argument} it is relevant to also associate interactions triggered within function \mintinline{bash}{bar()} to the function \mintinline{bash}{foo()}, since they can  be useful for describing the argument of \mintinline{bash}{foo()} more accurately.
+
+Therefore, \mintinline{bash}{usedAsArgument} interaction is introduced. It gets triggered when an argument is used in the invocation of a consecutive function. It serves the purpose of connecting related interactions. As shown in \figref{fig:run-time-information-gathering-used-as-argument}, it mainly contains information for identifying the target \mintinline{bash}{FunctionContainer}.
+
 \input{figures/approach/run-time-information-gathering/analysis/used-as-argument.tex}
 
 \subsubsection{\textit{operator} interaction}
+Identifying if an argument is used with a specific operator is very important for infering the type of that variable. Relational operators like \mintinline{bash}{<, >, <=, >=} are mainly used with type \mintinline{bash}{number}. On the other side, operator \mintinline{bash}{+} is mainly used with \mintinline{bash}{number} or \mintinline{bash}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
+
+The \mintinline{bash}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. The supported operators are the ones that trigger Jalangi's \mintinline{bash}{binaryPre()} callback. Conditionals are merged into one operator name \mintinline{bash}{conditional}, since Jalangi's \mintinline{bash}{conditional()} callback does not offer a way of identifying the operator for this cases. Both callbacks are explained in section \secref{sec:jalangi}.
+
+\figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{bash}{+}.
+
 \input{figures/approach/run-time-information-gathering/analysis/operator.tex}
 
 \subsubsection{\textit{followingInteractions}}
