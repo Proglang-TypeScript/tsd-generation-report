@@ -190,22 +190,48 @@ Moreover, as explained in \coderef{code:argument-container}, the \mintinline{bas
 Finally, observations on the arguments of a function are stored as objects of type \mintinline{bash}{Interaction}. They have to be always associated to an \mintinline{bash}{ArgumentContainer} object or to another \mintinline{bash}{Interaction}. They are explained in detail in \secref{sec:run-time-interactions}.
 
 \subsection{Interactions} \label{sec:run-time-interactions}
+Jalangi enables the developer to create custom analysis modules by implementing the callbacks that are relevant for the application. However, the callbacks belong to an abstraction layer that is not aware of the actual implementation. 
 
-\draft{enables the developer to create custom analysis modules by implementing the callbacks to virtually every JavaScript. Jalangi provides a way of writing a custom analysis by implementing}
+Observations of the arguments are stored as \mintinline{bash}{Interactions}. They represent the relevant observation data that needs to be extracted for the purpose of best describing a function in order to generate a TypeScript declaration file.
+
+The object \mintinline{bash}{Interaction} is associated to an \mintinline{bash}{ArgumentContainer}. If the \mintinline{bash}{ArgumentContainer} does not exist when the Jalangi callback is triggerd, the \mintinline{bash}{Interaction} is not saved. The main goal of gathering run-time information is to describe a function and its arguments. Thus, callbacks triggered on variables that are not arguments of functions are ignored, as shown in \coderef{code:ignored-observations}. The mechanism to map an observation with an \textit{ArgumentContainer} is described in detail in \secref{sec:run-time-wrapper-objects}
+
+\begin{code}
+  \jscode{code/run-time-information-gathering/analysis/ignored-observations.js}
+  \caption[Ignored observations]{\textbf{Ignored observations} - Variable \mintinline{bash}{b} gets declared within the scope of function \mintinline{bash}{foo}. Therefore, no observation on it gets stored.}
+  \label{code:ignored-observations}
+\end{code}
 
 \subsubsection{\textit{inputValue} interaction}
+It is the most simple interaction. As shown in \figref{fig:run-time-information-gathering-input-value}, it gets triggered when a function is invoked and it stores the input value of a specific argument. If a function gets invoked several times, different interactions get stored, each one of them with a different \mintinline{bash}{traceId}.
+
 \input{figures/approach/run-time-information-gathering/analysis/input-value.tex}
 
 \subsubsection{\textit{getField} interaction}
+This interaction gets triggered whenever a property of an object gets accessed, either if the get field operation is \mintinline{bash}{obj.field} or \mintinline{bash}{obj['field']}. As shown in \figref{fig:run-time-information-gathering-get-field}, the name of the accessed field and the type of the actual property get stored.
+
+It should be noted that the field \mintinline{bash}{returnTypeOf} represents the type of the accessed property at the time when the interaction gets triggered. The accessed property may somehow get modified afterwards, which will not modify the existing interaction. If the property gets accessed again, a new interaction with a new \mintinline{bash}{returnTypeOf} value will be added, as shown in \coderef{code:get-field-changing-at-runtime}.
+
+\begin{code}
+  \jscode{code/run-time-information-gathering/analysis/get-field-changing-at-runtime.js}
+  \caption[Modified accessed property]{\textbf{Modified accessed property} - Variable \mintinline{bash}{b} gets declared within the scope of function \mintinline{bash}{foo}. Therefore, no observation on it gets stored.}
+  \label{code:get-field-changing-at-runtime}
+\end{code}
+
 \input{figures/approach/run-time-information-gathering/analysis/get-field.tex}
 
 \subsubsection{\textit{methodCall} interaction}
+This interaction gets triggered with the invocation of an object's method. As explained in \figref{fig:run-time-information-gathering-method-call}, information about the method itself is stored as another \mintinline{bash}{FunctionContainer} in the overall map. The reference to the \mintinline{bash}{FunctionContainer} is achieved through the properties \mintinline{bash}{functionId} and \mintinline{bash}{traceIdInTargetFunction}.
+
 \input{figures/approach/run-time-information-gathering/analysis/method-call.tex}
+
+\todo{ADD PUT FIELD INTERACTION}
 
 \subsubsection{\textit{usedAsArgument} interaction}
 \input{figures/approach/run-time-information-gathering/analysis/used-as-argument.tex}
 
 \subsubsection{\textit{operator} interaction}
+\input{figures/approach/run-time-information-gathering/analysis/operator.tex}
 
 \subsubsection{\textit{followingInteractions}}
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
@@ -213,7 +239,7 @@ Finally, observations on the arguments of a function are stored as objects of ty
 \subsubsection{Traces}
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
 
-\subsection{Wrapper Objects}
+\subsection{Wrapper Objects} \label{sec:run-time-wrapper-objects}
 \todo{Proxy Objects}
 \todo{Primitives}
 \todo{Null}

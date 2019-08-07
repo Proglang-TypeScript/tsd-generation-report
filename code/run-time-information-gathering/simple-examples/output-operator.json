@@ -1,0 +1,34 @@
+{
+	"functionId_1": {
+		"functionName": "foo",
+		"args": {
+			"0": {
+				"argumentIndex": 0,
+				"argumentName": "a",
+				"interactions": [
+					{
+						"code": "operator",
+						"traceId": "trace__1",
+						"leftType": "number",
+						"rightType": "number",
+						"operator": "+",
+						"operandForInteraction": "left"
+					}
+				]
+			},
+			"1": {
+				"argumentIndex": 1,
+				"argumentName": "b",
+				"interactions": [
+					{
+						"code": "operator",
+						"traceId": "trace__1",
+						"leftType": "number",
+						"rightType": "number",
+						"operator": "+",
+						"operandForInteraction": "right"
+					}
+				]
+			}
+		}
+}
