@@ -243,17 +243,30 @@ Therefore, \mintinline{bash}{usedAsArgument} interaction is introduced. It gets 
 \subsubsection{\textit{operator} interaction}
 Identifying if an argument is used with a specific operator is very important for infering the type of that variable. Relational operators like \mintinline{bash}{<, >, <=, >=} are mainly used with type \mintinline{bash}{number}. On the other side, operator \mintinline{bash}{+} is mainly used with \mintinline{bash}{number} or \mintinline{bash}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
 
-The \mintinline{bash}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. The supported operators are the ones that trigger Jalangi's \mintinline{bash}{binaryPre()} callback. Conditionals are merged into one operator name \mintinline{bash}{conditional}, since Jalangi's \mintinline{bash}{conditional()} callback does not offer a way of identifying the operator for this cases. Both callbacks are explained in section \secref{sec:jalangi}.
+The \mintinline{bash}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. \figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{bash}{+}.
 
-\figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{bash}{+}.
+The supported operators are the ones that trigger Jalangi's \mintinline{bash}{binaryPre()} callback. Conditionals are merged into one operator name \mintinline{bash}{conditional}, since Jalangi's \mintinline{bash}{conditional()} callback does not offer a way of identifying the operator for this cases. Both callbacks are explained in section \secref{sec:jalangi}. Right hand operand is left as \mintinline{bash}{undefined} for that case.
 
 \input{figures/approach/run-time-information-gathering/analysis/operator.tex}
 
 \subsubsection{\textit{followingInteractions}}
+If a property of an argument is accessed the Jalangi callback \mintinline{bash}{getField()} gets triggered and a \mintinline{bash}{getField} interaction gets associated to the corresponding \mintinline{bash}{ArgumentContainer}. In order to describe the interface of the argument more accurately, it is also relevant to recursively record if properties of the return values are accessed, as explained in \figref{fig:run-time-information-gathering-following-interactions}.
+
+This was implemented by not only mapping the observation with an \mintinline{bash}{ArgumentContainer} but also with a \mintinline{bash}{getField} or \mintinline{bash}{methodCall} interaction. Both \mintinline{bash}{ArgumentContainer} and \mintinline{bash}{Interaction} implement the \mintinline[breaklines]{javascript}{addInteraction} method, as shown in \coderef{code:add-interaction-example}
+
+\begin{code}
+  \jscode{code/run-time-information-gathering/analysis/add-interaction-example.js}
+  \caption[addInteraction method]{\textbf{addInteraction method} - Example showing how interactions can be associated to \mintinline{bash}{ArgumentContainer} or another \mintinline{bash}{Interaction}.}
+  \label{code:add-interaction-example}
+\end{code}
+
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
 
 \subsubsection{Traces}
+Different executions of a function are identified through different \mintinline{bash}{traceIds}. Each interaction and return value of a \mintinline{bash}{FunctionContainer} stores the corresponding \mintinline{bash}{traceId}. The \mintinline{bash}{traceId} field enables identifying correlations between input types and return values, as explained in \secref{sec:typescript-overloading}. An example is provided in \figref{fig:run-time-information-gathering-traces}.
+
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
+
 
 \subsection{Wrapper Objects} \label{sec:run-time-wrapper-objects}
 \todo{Proxy Objects}
@@ -277,6 +290,7 @@ The \mintinline{bash}{operator} interaction stores the operator being used and t
 \todo{Traceids y que las signatures de las funciones no se unen, sino que se acumulan segun traceId. Obviamente las iguales no se escriben de vuelta.}
 \todo{El nombre de las interfaces se crea con el nombre de la variable}
 \todo{El tipo se extrae del valor en runtime.}
+\subsection{Overloading} \label{sec:typescript-overloading}
 \subsection{Implementation}
 \todo{TypeScript \& Docker. Mostrar cómo se invoca, etc.}
 
