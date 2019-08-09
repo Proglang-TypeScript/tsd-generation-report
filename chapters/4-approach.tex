@@ -256,7 +256,7 @@ This was implemented by not only mapping the observation with an \mintinline{bas
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/add-interaction-example.js}
-  \caption[addInteraction method]{\textbf{addInteraction method} - Example showing how interactions can be associated to \mintinline{bash}{ArgumentContainer} or another \mintinline{bash}{Interaction}.}
+  \caption[addInteraction method]{\textbf{addInteraction method} - Example showing how interactions can be associated with \mintinline{bash}{ArgumentContainer} or with another \mintinline{bash}{Interaction}.}
   \label{code:add-interaction-example}
 \end{code}
 
@@ -269,10 +269,21 @@ Different executions of a function are identified through different \mintinline{
 
 
 \subsection{Wrapper Objects} \label{sec:run-time-wrapper-objects}
-\todo{Proxy Objects}
-\todo{Primitives}
-\todo{Null}
-\todo{Undefined}
+An \mintinline{bash}{Interaction} needs to be associated to an \mintinline{bash}{ArgumentContainer} or to another \mintinline{bash}{Interaction}. This means that when Jalangi triggers a callback, it must be determined if that callback is relevant or not, i.e. if that callback refers to an argument of an invoked function. However, this can not be determined by only using the information provided in the different callbacks.
+
+However, Jalangi exposes the actual value affected by the callback. For example, for the \mintinline{bash}{getField()} callback triggered by operation \mintinline{javascript}{myObj.prop}, Jalangi does provide the object \mintinline{javascript}{myObj} in the callback.
+
+The solution consists in wrapping every input argument around a Wrapper Object when the function gets invoked. The Wrapper Object will store the reference to the corresponding \mintinline{bash}{ArgumentContainer} or \mintinline{bash}{Interaction}. Jalangi callbacks will then get triggered on the Wrapper Object instead. A mapping with the corresponding \mintinline{bash}{ArgumentContainer} or \mintinline{bash}{Interaction} is then straightforward, since the reference can be directly retrieved from the Wrapper Object.
+
+Jalangi enables to modify the behaviour of the original code. Using \mintinline{bash}{invokFunPre} and \mintinline{javascript}{declare} callbacks, a function invocation is detected and the arguments of the function are modified in run-time.
+
+Every function invocation generates new Wrapper Objects, which means that a Wrapper Object represents the input argument for a specific invocation. \mintinline{bash}{TraceIds} are also stored within these objects.
+
+The solution extends a similar concept already implemented by Jalangi: \mintinline{bash}{ShadowObjects}. It is a unique object associated to another object which can store meta-information. However, a \mintinline{bash}{ShadowObject} can not be created for primitives values, which is a major drawback. It is indeed relevant to capture, for example, if a \mintinline{bash}{number} is being used with a particular operator or if the property \mintinline{bash}{length} of a \mintinline{bash}{string} is being accessed.
+
+The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{bash}{number} or \mintinline{bash}{string} are converted to their native wapper objects, i.e. \mintinline{bash}{Number} and \mintinline{bash}{String}. Finally, \mintinline{bash}{null} and \mintinline{bash}{undefined} are converted to empty objects with modified \mintinline{bash}{valueOf()} and \mintinline{bash}{toString()} methods.
+
+The behaviour of the original code is being explicitely modified. Therefore, original values are used instead for affected operators like \mintinline{bash}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{bash}{null} and \mintinline{bash}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{bash}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
 
 \subsection{Output Format}
 \todo{Explicar que es un JSON con todas las interactions. Explicar estructura de cómo se forma el JSON}
