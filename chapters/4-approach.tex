@@ -285,23 +285,35 @@ The implemented solution wraps objects around JavaScript Proxies. Primitive valu
 
 The behaviour of the original code is being explicitely modified. Therefore, original values are used instead for affected operators like \mintinline{bash}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{bash}{null} and \mintinline{bash}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{bash}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
 
-\subsection{Output Format}
-\todo{Explicar que es un JSON con todas las interactions. Explicar estructura de cómo se forma el JSON}
+\subsection{Output}
+Information is stored in a map containing \mintinline{bash}{FunctionContainer} entries. When the executions stops, Jalangi's callback \mintinline{bash}{endExecution()} is called and the information is saved as a JSON to a file.
 
 
 \subsection{Blacklisted Modules}
-\input{figures/approach/blacklisted-modules/blacklistedModules.tex}
-\todo{Incluir grafico con los blacklisted modules}
+When instrumenting a JS Library, Jalangi will try to instrument all required modules by resolving and finding the modules. Unfortunately, Jalangi's native behaviour is to stop the complete analysis if there is an error in the instrumentation of any of the required modules or in the script itself.
 
-\subsection{Implementation}
-\todo{NodeJS \& Docker. Mostrar cómo se invoca, etc.}
+The workaround introduced by the implementation modifies Jalangi's behaviour for failing instrumentation. For a given required module, it first tries to instrument it. If the instrumentation if unsuccesful, it simply skips the instrumentation and returns the original uninstrumented module.
+
+As expected, no Jalangi callbacks will be triggered for that module's code. However, this workaround enables to at least still get run-time information of other required modules by not breaking the complete analysis. As explained in \figref{fig:blacklisted-modules}, instead of stopping the analysis, failing modules are skipped but modules required by them do get instrumented anyway. Modifying Jalangi's instrumentation algorithm is out of the scope of this work.
+
+The application can be invoked by passing an optional argument with the path to a a JSON file containing the list of modules that should not be instrumented.
+
+\input{figures/approach/blacklisted-modules/blacklistedModules.tex}
 
 \section{TypeScript Declaration File Generation}
+The actual generation of the declaration file is the next step in the pipeline after gathering the run-time information, as shown in \figref{fig:tsd_generation_method_block_diagram}. It uses the JSON output file containing the run-time information and generates a TypeScript declaration file.
+
+\input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file.tex}
+
+\input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file-with-interfaces.tex}
+
+TypeScript provides templates 
 \todo{Tres tipos de modulos en TypeScript}
 \todo{Traceids y que las signatures de las funciones no se unen, sino que se acumulan segun traceId. Obviamente las iguales no se escriben de vuelta.}
 \todo{El nombre de las interfaces se crea con el nombre de la variable}
 \todo{El tipo se extrae del valor en runtime.}
 \subsection{Overloading} \label{sec:typescript-overloading}
+\subsection{Type inference}
 \subsection{Implementation}
 \todo{TypeScript \& Docker. Mostrar cómo se invoca, etc.}
 
