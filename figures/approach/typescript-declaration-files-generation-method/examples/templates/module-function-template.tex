@@ -1,0 +1,26 @@
+\begin{figure}[h]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.9\textwidth}
+			\jscode{code/typescript-declaration-file-generation/templates/module-function/index.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[index.js - Entry point to be executed with \mintinline{bash}{node index.js}]{\usebox{\mintedbox}}
+	
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.9\textwidth}
+			\jscode{code/typescript-declaration-file-generation/templates/module-function/snake-to-camel.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[snake-to-camel.js - Module for which the TS Declaration File is going to be generated]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/typescript-declaration-file-generation/templates/module-function/index.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[snake-to-camel/index.d.ts]{\usebox{\mintedbox}}
+
+	\caption[module-function.d.ts template example]{\textbf{module-function.d.ts template example} - Declaration file for the \mintinline{bash}{snake-to-camel} module is generated using the \mintinline{bash}{module-function.d.ts} template.}
+	\label{fig:ts-declaration-file-module-function-template}
+\end{figure}

@@ -21,7 +21,7 @@ Declaration files are critical for TypeScript projects. TypeScript's popularity 
 
 \section{TypeScript Declaration Files Generation Method}
 
-We introduce a \textit{TypeScript Declaration Files Generation Method}, which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}.
+We introduce a \textit{TypeScript Declaration Files Generation Method}, \mintinline{text}{dts-generate}, which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}.
 
 \input{figures/approach/typescript-declaration-files-generation-method/typescriptDeclarationFilesGenerationMethodBlockDiagram.tex}
 
@@ -46,11 +46,26 @@ A second independent block uses the run-time information to generate a TypeScrip
 
 The signatures obtained from the generated declaration file are used to generate pre and post conditions on a Symbolic Execution Engine in order to build different test cases that explore new execution paths. The code from the test cases is then added to the existing code base and the declaration file is generated again using an expanded code base.
 
-Running the TypeScript Declaration File Generation Tool with the same run-time information as input will always produce the same result. If new execution paths are covered by the test cases, new run-time information will be gathered and the declaration file will change accordingly. In order to obtain a sound analysis, the feedback loop would be iterated until the generated declaration files in consecutive iterations do not differ. However, by trading soundness for scalability, the overall procedure can be stopped either using a loop bound, a time bound or an heuristics mechanism.  
+Running the TypeScript Declaration File Generation Tool with the same run-time information as input will always produce the same result. If new execution paths are covered by the test cases, new run-time information will be gathered and the declaration file will change accordingly. In order to obtain a sound analysis, the feedback loop would be iterated until the generated declaration files in consecutive iterations do not differ. However, by trading soundness for scalability, the overall procedure can be stopped either using a loop bound, a time bound or an heuristics mechanism. 
+
+The command line interface was inspired in the \mintinline{text}{dts-gen} \citep{dts-gen} package, a declaration files generator developed by Microsoft which is meant to be used as a starting point for writing declaration files. It can be seen in \coderef{code:dts-generate-example} that invoking the package is very simple and the only required argument is the name of the module published to the npm registry.
+
+\begin{code}
+  \begin{bashinline}
+$ ./dts-generate abs
+$ cat output/abs/index.d.ts 
+export = Abs;
+
+declare function Abs(input: string): string;
+
+    \end{bashinline}
+  \caption[Declaration file generation example]{\textbf{dts-generate usage} - Example of how to generate a declaration file for module \mintinline{text}{abs}.}
+  \label{code:dts-generate-example}
+\end{code}
 
 \todo{Agregar una imagen mostrando que es un unico script que hace todo. Mostrar imagenes de docker mostrando en qué está escrito cada cosa.}
 
-\section{Initial code base}
+\section{Initial code base} \label{sec:initial-code-base}
 To extract run-time information of a JavaScript Library, it is necessary, by definition, to actually execute the code. It is not enough to instrument the source files of the library. The analysis modules provided by Jalangi to gather information are only triggered if the instrumented code gets executed.
 
 We decided to extract the code examples from the Readme files of the repository associated to the NPM Package. Readme files are usually used by developers for briefly describing what the code does, what problem it solves, how to install the application, how to build the code, etc. It is very common that developers provide code examples in the readme files to show how the code works and how to use it. This is specially true for NPM Packages, which are in general created to solve a specific problem of JavaScript development.
@@ -63,9 +78,9 @@ Obtaining code examples for a specific NPM Package is achieved in three steps:
 \end{enumerate}
 
 \subsection{Repository}
-The \mintinline{bash}{npm view} command shows data about a package. It is possible to retrieve a specific field of the package registry by specifying fhe field name after the package descriptor. For example to retrieve information about the \textit{lodash} package, the following command can be used: \mintinline{bash}{npm view lodash}.
+The \mintinline{text}{npm view} command shows data about a package. It is possible to retrieve a specific field of the package registry by specifying fhe field name after the package descriptor. For example to retrieve information about the \textit{lodash} package, the following command can be used: \mintinline{text}{npm view lodash}.
 
-For this particular case, only the url of the repository associated with the package is needed. This can be achieved by adding the correponding field name: \mintinline{bash}{npm view <PACKAGE> repository.url}.
+For this particular case, only the url of the repository associated with the package is needed. This can be achieved by adding the correponding field name: \mintinline{text}{npm view <PACKAGE> repository.url}.
 
 \begin{bashinline}
 $ npm view npm repository.url
@@ -85,7 +100,7 @@ The url for downloading a raw file from a Github Repository is the following:
 https://raw.githubusercontent.com/THE-REPOSITORY/master/PATH-TO-FILE
 \end{bashinline}
 
-After the repository url is extracted from the npm package, the url for downloading the readme file needs to be constructed performing some string manipulation. Finally, the readme file is obtained with a simple \mintinline{bash}{curl} or \mintinline{bash}{wget} command.
+After the repository url is extracted from the npm package, the url for downloading the readme file needs to be constructed performing some string manipulation. Finally, the readme file is obtained with a simple \mintinline{text}{curl} or \mintinline{text}{wget} command.
 
 \begin{bashinline}
 $ npm view abs repository.url
@@ -98,7 +113,7 @@ $ curl -L -o readme.md --fail \
 \subsection{Code examples}
 Readme files are written using Markdown\footnote{https://www.markdownguide.org}, a very common lightweight and simple markup language. GitHub or BitBucket will convert the readme files into HTML automatically and render them when accessing the repository through a web browser.
 
-It is very common to write code examples within code blocks indicating the programming language, so that it gets highlighted with the specific syntax. The Markdown identifiers for JavaScript are \mintinline{bash}{js} or \mintinline{bash}{javascript}. The code examples are finally retrieved by filtering the content within the corresponding code blocks.
+It is very common to write code examples within code blocks indicating the programming language, so that it gets highlighted with the specific syntax. The Markdown identifiers for JavaScript are \mintinline{text}{js} or \mintinline{text}{javascript}. The code examples are finally retrieved by filtering the content within the corresponding code blocks.
 
 \begin{textinline}
 $ cat example-readme.md
@@ -127,23 +142,23 @@ Hello World!
 As shown in a simple example in \figref{fig:run-time-information-gathering-simple-example}, run-time analysis will gather information such as:
 
 \begin{enumerate}
-  \item Function \mintinline{bash}{f} got invoked with parameters \mintinline{bash}{a} and \mintinline{bash}{b} with types \mintinline{bash}{string} and \mintinline{bash}{number}.
-  \item Property or method \mintinline{bash}{foo} of parameter \mintinline{bash}{a} of function \mintinline{bash}{f} was accessed within the function.
-  \item Parameter \mintinline{bash}{a} of function \mintinline{bash}{f} was used as operand for operator \mintinline{bash}{==}.
+  \item Function \mintinline{text}{f} got invoked with parameters \mintinline{text}{a} and \mintinline{text}{b} with types \mintinline{text}{string} and \mintinline{text}{number}.
+  \item Property or method \mintinline{text}{foo} of parameter \mintinline{text}{a} of function \mintinline{text}{f} was accessed within the function.
+  \item Parameter \mintinline{text}{a} of function \mintinline{text}{f} was used as operand for operator \mintinline{text}{==}.
 \end{enumerate}
 
 The dynamic analysis framework used for gathering this kind of information is Jalangi. As explained in \secref{sec:jalangi}, the configurable analysis modules enable programming custom callbacks that get triggered with virtually any JavaScript event. The events that are observed are:
 \begin{enumerate}
-  \item Binary operations, like \mintinline{bash}{==}, \mintinline{bash}{+} or \mintinline{bash}{===}.
+  \item Binary operations, like \mintinline{text}{==}, \mintinline{text}{+} or \mintinline{text}{===}.
   \item Variable declaration.
   \item Function, method, or constructor invocation.
   \item Access to an object's property.
-  \item Unary operations, like \mintinline{bash}{!} or \mintinline{bash}{typeof}.
+  \item Unary operations, like \mintinline{text}{!} or \mintinline{text}{typeof}.
 \end{enumerate}
 
 The implementation stores these observations as entities called \textit{interactions}. As explained later in \secref{sec:run-time-analysis}, they are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation.
 
-The main goal of the run-time analysis is to gather information useful for determining a function's signature. Therefore, observations need to get associated with a function's argument. The implementation wraps variables around Proxy Objects to store tracking data, hereby enabling to associate the observation with a specific argument. The effect is reverted using Jalangi's callbacks to modify the behaviour of the affected operators, such as \mintinline{bash}{===} or \mintinline{bash}{typeof}.
+The main goal of the run-time analysis is to gather information useful for determining a function's signature. Therefore, observations need to get associated with a function's argument. The implementation wraps variables around Proxy Objects to store tracking data, hereby enabling to associate the observation with a specific argument. The effect is reverted using Jalangi's callbacks to modify the behaviour of the affected operators, such as \mintinline{text}{===} or \mintinline{text}{typeof}.
 
 Jalangi fails to instrument some JavaScript Libraries. No effort was made in trying to fix failing instrumentation. Failing JS Libraries were ommited from the analysis by providing a list with the names of the modules that should not be instrumented.
 
@@ -168,125 +183,125 @@ The provided analysis module implements the following Jalangi callbacks, which w
   \item write()
 \end{itemize}
 
-They enable observation of all JS operations considered relevant. Every invoked function is given an unique identifier and information for each argument of every function gets stored. The entities \mintinline{bash}{FunctionContainer}, \mintinline{bash}{ArgumentContainer} and \mintinline{bash}{Interaction} are introduced to support the representation of the gathered run-time information. 
+They enable observation of all JS operations considered relevant. Every invoked function is given an unique identifier and information for each argument of every function gets stored. The entities \mintinline{text}{FunctionContainer}, \mintinline{text}{ArgumentContainer} and \mintinline{text}{Interaction} are introduced to support the representation of the gathered run-time information. 
 
-Run-time information is stored in a map that contains objects of type \mintinline{bash}{FunctionContainer}.
+Run-time information is stored in a map that contains objects of type \mintinline{text}{FunctionContainer}.
 This entity contains static information about the function as well as implementation specific data needed for generating the right type of declaration file, as explained in \secref{sec:declaration-files-background}. Each field of the entity is explained in \coderef{code:function-container}.
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/function-container.js}
-  \caption[FunctionContainer object]{\textbf{\mintinline{bash}{FunctionContainer} object} - \mintinline{bash}{FunctionContainer} is the main entity in the map where the run-time information gets gathered. It contains implementation specific information for the declaration files generation. Entities of type \mintinline{bash}{ArgumentContainer} get appended to the \mintinline{bash}{args} property.}
+  \caption[FunctionContainer object]{\textbf{\mintinline{text}{FunctionContainer} object} - \mintinline{text}{FunctionContainer} is the main entity in the map where the run-time information gets gathered. It contains implementation specific information for the declaration files generation. Entities of type \mintinline{text}{ArgumentContainer} get appended to the \mintinline{text}{args} property.}
   \label{code:function-container}
 \end{code}
 
-Moreover, as explained in \coderef{code:argument-container}, the \mintinline{bash}{ArgumentContainer} object works as a container for all interactions recorded for that argument. Additionally, it contains simple information about the argument itself, like the index or the name given in the function declaration.
+Moreover, as explained in \coderef{code:argument-container}, the \mintinline{text}{ArgumentContainer} object works as a container for all interactions recorded for that argument. Additionally, it contains simple information about the argument itself, like the index or the name given in the function declaration.
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/argument-container.js}
-  \caption[ArgumentContainer object]{\textbf{\mintinline{bash}{ArgumentContainer} object} - The \mintinline{bash}{ArgumentContainer} object works mainly as a container for all relevant observations regarding that argument.}
+  \caption[ArgumentContainer object]{\textbf{\mintinline{text}{ArgumentContainer} object} - The \mintinline{text}{ArgumentContainer} object works mainly as a container for all relevant observations regarding that argument.}
   \label{code:argument-container}
 \end{code}
 
-Finally, observations on the arguments of a function are stored as objects of type \mintinline{bash}{Interaction}. They have to be always associated to an \mintinline{bash}{ArgumentContainer} object or to another \mintinline{bash}{Interaction}. They are explained in detail in \secref{sec:run-time-interactions}.
+Finally, observations on the arguments of a function are stored as objects of type \mintinline{text}{Interaction}. They have to be always associated to an \mintinline{text}{ArgumentContainer} object or to another \mintinline{text}{Interaction}. They are explained in detail in \secref{sec:run-time-interactions}.
 
 \subsection{Interactions} \label{sec:run-time-interactions}
 Jalangi enables the developer to create custom analysis modules by implementing the callbacks that are relevant for the application. However, the callbacks belong to an abstraction layer that is not aware of the actual implementation. 
 
-Observations of the arguments are stored as \mintinline{bash}{Interactions}. They represent the relevant observation data that needs to be extracted for the purpose of best describing a function in order to generate a TypeScript declaration file.
+Observations of the arguments are stored as \mintinline{text}{Interactions}. They represent the relevant observation data that needs to be extracted for the purpose of best describing a function in order to generate a TypeScript declaration file.
 
-The object \mintinline{bash}{Interaction} is associated to an \mintinline{bash}{ArgumentContainer}. If the \mintinline{bash}{ArgumentContainer} does not exist when the Jalangi callback is triggerd, the \mintinline{bash}{Interaction} is not saved. The main goal of gathering run-time information is to describe a function and its arguments. Thus, callbacks triggered on variables that are not arguments of functions are ignored, as shown in \coderef{code:ignored-observations}. The mechanism to map an observation with an \textit{ArgumentContainer} is described in detail in \secref{sec:run-time-wrapper-objects}
+The object \mintinline{text}{Interaction} is associated to an \mintinline{text}{ArgumentContainer}. If the \mintinline{text}{ArgumentContainer} does not exist when the Jalangi callback is triggerd, the \mintinline{text}{Interaction} is not saved. The main goal of gathering run-time information is to describe a function and its arguments. Thus, callbacks triggered on variables that are not arguments of functions are ignored, as shown in \coderef{code:ignored-observations}. The mechanism to map an observation with an \textit{ArgumentContainer} is described in detail in \secref{sec:run-time-wrapper-objects}
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/ignored-observations.js}
-  \caption[Ignored observations]{\textbf{Ignored observations} - Variable \mintinline{bash}{b} gets declared within the scope of function \mintinline{bash}{foo}. Therefore, no observation on it gets stored.}
+  \caption[Ignored observations]{\textbf{Ignored observations} - Variable \mintinline{text}{b} gets declared within the scope of function \mintinline{text}{foo}. Therefore, no observation on it gets stored.}
   \label{code:ignored-observations}
 \end{code}
 
 \subsubsection{\textit{inputValue} interaction}
-It is the most simple interaction. As shown in \figref{fig:run-time-information-gathering-input-value}, it gets triggered when a function is invoked and it stores the input value of a specific argument. If a function gets invoked several times, different interactions get stored, each one of them with a different \mintinline{bash}{traceId}.
+It is the most simple interaction. As shown in \figref{fig:run-time-information-gathering-input-value}, it gets triggered when a function is invoked and it stores the input value of a specific argument. If a function gets invoked several times, different interactions get stored, each one of them with a different \mintinline{text}{traceId}.
 
 \input{figures/approach/run-time-information-gathering/analysis/input-value.tex}
 
 \subsubsection{\textit{getField} interaction}
-This interaction gets triggered whenever a property of an object gets accessed, either if the get field operation is \mintinline{bash}{obj.field} or \mintinline{bash}{obj['field']}. As shown in \figref{fig:run-time-information-gathering-get-field}, the name of the accessed field and the type of the actual property get stored.
+This interaction gets triggered whenever a property of an object gets accessed, either if the get field operation is \mintinline{text}{obj.field} or \mintinline{text}{obj['field']}. As shown in \figref{fig:run-time-information-gathering-get-field}, the name of the accessed field and the type of the actual property get stored.
 
-It should be noted that the field \mintinline{bash}{returnTypeOf} represents the type of the accessed property at the time when the interaction gets triggered. The accessed property may somehow get modified afterwards, which will not modify the existing interaction. If the property gets accessed again, a new interaction with a new \mintinline{bash}{returnTypeOf} value will be added, as shown in \coderef{code:get-field-changing-at-runtime}.
+It should be noted that the field \mintinline{text}{returnTypeOf} represents the type of the accessed property at the time when the interaction gets triggered. The accessed property may somehow get modified afterwards, which will not modify the existing interaction. If the property gets accessed again, a new interaction with a new \mintinline{text}{returnTypeOf} value will be added, as shown in \coderef{code:get-field-changing-at-runtime}.
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/get-field-changing-at-runtime.js}
-  \caption[Modified accessed property]{\textbf{Modified accessed property} - Variable \mintinline{bash}{b} gets declared within the scope of function \mintinline{bash}{foo}. Therefore, no observation on it gets stored.}
+  \caption[Modified accessed property]{\textbf{Modified accessed property} - Variable \mintinline{text}{b} gets declared within the scope of function \mintinline{text}{foo}. Therefore, no observation on it gets stored.}
   \label{code:get-field-changing-at-runtime}
 \end{code}
 
 \input{figures/approach/run-time-information-gathering/analysis/get-field.tex}
 
 \subsubsection{\textit{methodCall} interaction}
-This interaction gets triggered with the invocation of an object's method. As explained in \figref{fig:run-time-information-gathering-method-call}, information about the method itself is stored as another \mintinline{bash}{FunctionContainer} in the overall map. The reference to the \mintinline{bash}{FunctionContainer} is achieved through the properties \mintinline{bash}{functionId} and \mintinline{bash}{traceIdInTargetFunction}.
+This interaction gets triggered with the invocation of an object's method. As explained in \figref{fig:run-time-information-gathering-method-call}, information about the method itself is stored as another \mintinline{text}{FunctionContainer} in the overall map. The reference to the \mintinline{text}{FunctionContainer} is achieved through the properties \mintinline{text}{functionId} and \mintinline{text}{traceIdInTargetFunction}.
 
 \input{figures/approach/run-time-information-gathering/analysis/method-call.tex}
 
 \subsubsection{\textit{setField} interaction}
-The trigger for this interaction is writing an object's property, either by accessing the field as \mintinline{bash}{obj.field = 1} or \mintinline{bash}{obj['field'] = 1}. It can be seen in \figref{fig:run-time-information-gathering-set-field} that the interaction contains the name of the property to be written and the type of the value to be stored.
+The trigger for this interaction is writing an object's property, either by accessing the field as \mintinline{text}{obj.field = 1} or \mintinline{text}{obj['field'] = 1}. It can be seen in \figref{fig:run-time-information-gathering-set-field} that the interaction contains the name of the property to be written and the type of the value to be stored.
 
 \input{figures/approach/run-time-information-gathering/analysis/set-field.tex}
 
 
 \subsubsection{\textit{usedAsArgument} interaction}
-The run-time information is stored in a map with one \mintinline{bash}{FunctionContainer} entry per function. As seen in \figref{fig:run-time-information-gathering-used-as-argument}, an argument of function \mintinline{bash}{foo()} is used as parameter to invoke a second function \mintinline{bash}{bar()}. Interactions triggered within function \mintinline{bash}{bar()} are going to be stored within the \mintinline{bash}{FunctionContainer} corresponding to function \mintinline{bash}{bar()}, i.e. not the one associated to function \mintinline{bash}{foo()}.
+The run-time information is stored in a map with one \mintinline{text}{FunctionContainer} entry per function. As seen in \figref{fig:run-time-information-gathering-used-as-argument}, an argument of function \mintinline{text}{foo()} is used as parameter to invoke a second function \mintinline{text}{bar()}. Interactions triggered within function \mintinline{text}{bar()} are going to be stored within the \mintinline{text}{FunctionContainer} corresponding to function \mintinline{text}{bar()}, i.e. not the one associated to function \mintinline{text}{foo()}.
 
-However, for the example provided in \figref{fig:run-time-information-gathering-used-as-argument} it is relevant to also associate interactions triggered within function \mintinline{bash}{bar()} to the function \mintinline{bash}{foo()}, since they can  be useful for describing the argument of \mintinline{bash}{foo()} more accurately.
+However, for the example provided in \figref{fig:run-time-information-gathering-used-as-argument} it is relevant to also associate interactions triggered within function \mintinline{text}{bar()} to the function \mintinline{text}{foo()}, since they can  be useful for describing the argument of \mintinline{text}{foo()} more accurately.
 
-Therefore, \mintinline{bash}{usedAsArgument} interaction is introduced. It gets triggered when an argument is used in the invocation of a consecutive function. It serves the purpose of connecting related interactions. As shown in \figref{fig:run-time-information-gathering-used-as-argument}, it mainly contains information for identifying the target \mintinline{bash}{FunctionContainer}.
+Therefore, \mintinline{text}{usedAsArgument} interaction is introduced. It gets triggered when an argument is used in the invocation of a consecutive function. It serves the purpose of connecting related interactions. As shown in \figref{fig:run-time-information-gathering-used-as-argument}, it mainly contains information for identifying the target \mintinline{text}{FunctionContainer}.
 
 \input{figures/approach/run-time-information-gathering/analysis/used-as-argument.tex}
 
 \subsubsection{\textit{operator} interaction}
-Identifying if an argument is used with a specific operator is very important for infering the type of that variable. Relational operators like \mintinline{bash}{<, >, <=, >=} are mainly used with type \mintinline{bash}{number}. On the other side, operator \mintinline{bash}{+} is mainly used with \mintinline{bash}{number} or \mintinline{bash}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
+Identifying if an argument is used with a specific operator is very important for infering the type of that variable. Relational operators like \mintinline{text}{<, >, <=, >=} are mainly used with type \mintinline{text}{number}. On the other side, operator \mintinline{text}{+} is mainly used with \mintinline{text}{number} or \mintinline{text}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
 
-The \mintinline{bash}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. \figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{bash}{+}.
+The \mintinline{text}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. \figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{text}{+}.
 
-The supported operators are the ones that trigger Jalangi's \mintinline{bash}{binaryPre()} callback. Conditionals are merged into one operator name \mintinline{bash}{conditional}, since Jalangi's \mintinline{bash}{conditional()} callback does not offer a way of identifying the operator for this cases. Both callbacks are explained in section \secref{sec:jalangi}. Right hand operand is left as \mintinline{bash}{undefined} for that case.
+The supported operators are the ones that trigger Jalangi's \mintinline{text}{binaryPre()} callback. Conditionals are merged into one operator name \mintinline{text}{conditional}, since Jalangi's \mintinline{text}{conditional()} callback does not offer a way of identifying the operator for this cases. Both callbacks are explained in section \secref{sec:jalangi}. Right hand operand is left as \mintinline{text}{undefined} for that case.
 
 \input{figures/approach/run-time-information-gathering/analysis/operator.tex}
 
 \subsubsection{\textit{followingInteractions}}
-If a property of an argument is accessed the Jalangi callback \mintinline{bash}{getField()} gets triggered and a \mintinline{bash}{getField} interaction gets associated to the corresponding \mintinline{bash}{ArgumentContainer}. In order to describe the interface of the argument more accurately, it is also relevant to recursively record if properties of the return values are accessed, as explained in \figref{fig:run-time-information-gathering-following-interactions}.
+If a property of an argument is accessed the Jalangi callback \mintinline{text}{getField()} gets triggered and a \mintinline{text}{getField} interaction gets associated to the corresponding \mintinline{text}{ArgumentContainer}. In order to describe the interface of the argument more accurately, it is also relevant to recursively record if properties of the return values are accessed, as explained in \figref{fig:run-time-information-gathering-following-interactions}.
 
-This was implemented by not only mapping the observation with an \mintinline{bash}{ArgumentContainer} but also with a \mintinline{bash}{getField} or \mintinline{bash}{methodCall} interaction. Both \mintinline{bash}{ArgumentContainer} and \mintinline{bash}{Interaction} implement the \mintinline[breaklines]{javascript}{addInteraction} method, as shown in \coderef{code:add-interaction-example}
+This was implemented by not only mapping the observation with an \mintinline{text}{ArgumentContainer} but also with a \mintinline{text}{getField} or \mintinline{text}{methodCall} interaction. Both \mintinline{text}{ArgumentContainer} and \mintinline{text}{Interaction} implement the \mintinline[breaklines]{javascript}{addInteraction} method, as shown in \coderef{code:add-interaction-example}
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/add-interaction-example.js}
-  \caption[addInteraction method]{\textbf{addInteraction method} - Example showing how interactions can be associated with \mintinline{bash}{ArgumentContainer} or with another \mintinline{bash}{Interaction}.}
+  \caption[addInteraction method]{\textbf{addInteraction method} - Example showing how interactions can be associated with \mintinline{text}{ArgumentContainer} or with another \mintinline{text}{Interaction}.}
   \label{code:add-interaction-example}
 \end{code}
 
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
 
 \subsubsection{Traces}
-Different executions of a function are identified through different \mintinline{bash}{traceIds}. Each interaction and return value of a \mintinline{bash}{FunctionContainer} stores the corresponding \mintinline{bash}{traceId}. The \mintinline{bash}{traceId} field enables identifying correlations between input types and return values, as explained in \secref{sec:typescript-overloading}. An example is provided in \figref{fig:run-time-information-gathering-traces}.
+Different executions of a function are identified through different \mintinline{text}{traceIds}. Each interaction and return value of a \mintinline{text}{FunctionContainer} stores the corresponding \mintinline{text}{traceId}. The \mintinline{text}{traceId} field enables identifying correlations between input types and return values, as explained in \secref{sec:typescript-overloading}. An example is provided in \figref{fig:run-time-information-gathering-traces}.
 
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
 
 
 \subsection{Wrapper Objects} \label{sec:run-time-wrapper-objects}
-An \mintinline{bash}{Interaction} needs to be associated to an \mintinline{bash}{ArgumentContainer} or to another \mintinline{bash}{Interaction}. This means that when Jalangi triggers a callback, it must be determined if that callback is relevant or not, i.e. if that callback refers to an argument of an invoked function. However, this can not be determined by only using the information provided in the different callbacks.
+An \mintinline{text}{Interaction} needs to be associated to an \mintinline{text}{ArgumentContainer} or to another \mintinline{text}{Interaction}. This means that when Jalangi triggers a callback, it must be determined if that callback is relevant or not, i.e. if that callback refers to an argument of an invoked function. However, this can not be determined by only using the information provided in the different callbacks.
 
-However, Jalangi exposes the actual value affected by the callback. For example, for the \mintinline{bash}{getField()} callback triggered by operation \mintinline{javascript}{myObj.prop}, Jalangi does provide the object \mintinline{javascript}{myObj} in the callback.
+However, Jalangi exposes the actual value affected by the callback. For example, for the \mintinline{text}{getField()} callback triggered by operation \mintinline{javascript}{myObj.prop}, Jalangi does provide the object \mintinline{javascript}{myObj} in the callback.
 
-The solution consists in wrapping every input argument around a Wrapper Object when the function gets invoked. The Wrapper Object will store the reference to the corresponding \mintinline{bash}{ArgumentContainer} or \mintinline{bash}{Interaction}. Jalangi callbacks will then get triggered on the Wrapper Object instead. A mapping with the corresponding \mintinline{bash}{ArgumentContainer} or \mintinline{bash}{Interaction} is then straightforward, since the reference can be directly retrieved from the Wrapper Object.
+The solution consists in wrapping every input argument around a Wrapper Object when the function gets invoked. The Wrapper Object will store the reference to the corresponding \mintinline{text}{ArgumentContainer} or \mintinline{text}{Interaction}. Jalangi callbacks will then get triggered on the Wrapper Object instead. A mapping with the corresponding \mintinline{text}{ArgumentContainer} or \mintinline{text}{Interaction} is then straightforward, since the reference can be directly retrieved from the Wrapper Object.
 
-Jalangi enables to modify the behaviour of the original code. Using \mintinline{bash}{invokFunPre} and \mintinline{javascript}{declare} callbacks, a function invocation is detected and the arguments of the function are modified in run-time.
+Jalangi enables to modify the behaviour of the original code. Using \mintinline{text}{invokFunPre} and \mintinline{javascript}{declare} callbacks, a function invocation is detected and the arguments of the function are modified in run-time.
 
-Every function invocation generates new Wrapper Objects, which means that a Wrapper Object represents the input argument for a specific invocation. \mintinline{bash}{TraceIds} are also stored within these objects.
+Every function invocation generates new Wrapper Objects, which means that a Wrapper Object represents the input argument for a specific invocation. \mintinline{text}{TraceIds} are also stored within these objects.
 
-The solution extends a similar concept already implemented by Jalangi: \mintinline{bash}{ShadowObjects}. It is a unique object associated to another object which can store meta-information. However, a \mintinline{bash}{ShadowObject} can not be created for primitives values, which is a major drawback. It is indeed relevant to capture, for example, if a \mintinline{bash}{number} is being used with a particular operator or if the property \mintinline{bash}{length} of a \mintinline{bash}{string} is being accessed.
+The solution extends a similar concept already implemented by Jalangi: \mintinline{text}{ShadowObjects}. It is a unique object associated to another object which can store meta-information. However, a \mintinline{text}{ShadowObject} can not be created for primitives values, which is a major drawback. It is indeed relevant to capture, for example, if a \mintinline{text}{number} is being used with a particular operator or if the property \mintinline{text}{length} of a \mintinline{text}{string} is being accessed.
 
-The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{bash}{number} or \mintinline{bash}{string} are converted to their native wapper objects, i.e. \mintinline{bash}{Number} and \mintinline{bash}{String}. Finally, \mintinline{bash}{null} and \mintinline{bash}{undefined} are converted to empty objects with modified \mintinline{bash}{valueOf()} and \mintinline{bash}{toString()} methods.
+The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{text}{number} or \mintinline{text}{string} are converted to their native wapper objects, i.e. \mintinline{text}{Number} and \mintinline{text}{String}. Finally, \mintinline{text}{null} and \mintinline{text}{undefined} are converted to empty objects with modified \mintinline{text}{valueOf()} and \mintinline{text}{toString()} methods.
 
-The behaviour of the original code is being explicitely modified. Therefore, original values are used instead for affected operators like \mintinline{bash}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{bash}{null} and \mintinline{bash}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{bash}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
+The behaviour of the original code is being explicitely modified. Therefore, original values are used instead for affected operators like \mintinline{text}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{text}{null} and \mintinline{text}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{text}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
 
 \subsection{Output}
-Information is stored in a map containing \mintinline{bash}{FunctionContainer} entries. When the executions stops, Jalangi's callback \mintinline{bash}{endExecution()} is called and the information is saved as a JSON to a file.
+Information is stored in a map containing \mintinline{text}{FunctionContainer} entries. When the executions stops, Jalangi's callback \mintinline{text}{endExecution()} is called and the information is saved as a JSON to a file.
 
 
 \subsection{Blacklisted Modules}
@@ -301,23 +316,78 @@ The application can be invoked by passing an optional argument with the path to 
 \input{figures/approach/blacklisted-modules/blacklistedModules.tex}
 
 \section{TypeScript Declaration File Generation}
-The actual generation of the declaration file is the next step in the pipeline after gathering the run-time information, as shown in \figref{fig:tsd_generation_method_block_diagram}. It uses the JSON output file containing the run-time information and generates a TypeScript declaration file.
+The actual generation of the declaration file is the next step in the pipeline after gathering the run-time information, as shown in \figref{fig:tsd_generation_method_block_diagram}. It is a lightweight, simple and fast application, which does not interact with the actual JavaScript module at run-time. Instead, it uses the JSON output file containing the run-time information and generates a TypeScript declaration file which is use ready to be used within a TypeScript project. The tool itself is written in TypeScript and runs within a Docker container in NodeJS. 
 
-\input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file.tex}
+\subsection{Templates}
+TypeScript provides templates for writing declaration files, as explained in \secref{sec:declaration-files-background}. Each template corresponds to a different way of exporting a JS module. The code uses different fields from the \mintinline{text}{FunctionContainer} entity in the run-time information to detect how the module is being used:
+
+\begin{itemize}
+  \item \mintinline{text}{requiredModule}: The name of the module that exported the corresponding function. It is useful for processing only functions exported by the module for which the declaration files is being generated.
+  \item \mintinline{text}{isExported}: Boolean that indicates whether the function is exported when importing the module.
+  \item \mintinline{text}{isConstructor}: Boolean that indicates whether the function was used as a constructor through the \mintinline{text}{new} operator.
+  \item \mintinline{text}{constructedBy}: Indicates the \mintinline{text}{functionId} that constructed the object invoking the corresponding function.
+\end{itemize}
+
+The following templates were implemented:
+
+\begin{enumerate}
+  \item \mintinline{text}{module.d.ts}: It is used when the exported module is a JavaScript object containing several properties and methods. It is the most common used template: more than 70\% of the modules uploaded to DefinitelyTyped are based on this template. The code checks if the exported module is neither a function nor a constructor, i.e. if properties \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are \mintinline{text}{false}. An example is provided in \figref{fig:ts-declaration-file-module-template}.
+
+  \item \mintinline{text}{module-class.d.ts}: As shown in \figref{fig:ts-declaration-file-module-class-template}, this template is used when the exported function is supposed to be used as a constructor with the \mintinline{text}{new} operator. The code will use this template when both the fields \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are true. It should be noted that the module exports only the constructor function. Methods belonging to the class are detected using the \mintinline{text}{constructedBy} field from the run-time data.
+  
+  \item \mintinline{text}{module-function.d.ts}: It is used when the module exports only a function. The field \mintinline{text}{isExported} field is used to determine whether this templates should be used or not. An example is provided in \figref{fig:ts-declaration-file-module-function-template}. If further interfaces or types are required, they are written within a namespace named like the exported function.
+\end{enumerate}
+
+\input{figures/approach/typescript-declaration-files-generation-method/examples/templates/module-template.tex}
+
+\input{figures/approach/typescript-declaration-files-generation-method/examples/templates/module-class-template.tex}
+
+\input{figures/approach/typescript-declaration-files-generation-method/examples/templates/module-function-template.tex}
+
+JavaScript construtors where explained in \secref{sec:background-javascript}. There are built-in functions that are not able to be used as a constructors. For example, if \mintinline{text}{Math} is intended to be used as a constructor with the \mintinline{text}{new} operator, the following error will arise: \mintinline{text}{TypeError: Math is not a constructor}. ES6 arrow functions are not allowed to used as a constructor either. However, for those functions that can be both used as constructors or called as regular functions, there is no difference between them that actually indicate whether a function is intended to be used with the \mintinline{text}{new} operator or not. The choice of using the \mintinline{text}{module-function.d.ts} or the \mintinline{text}{module-class.d.ts} template is made after executing the code and depends on how the function was used.
+
+\coderef{code:typescript-templates-function-as-constructor} exposes a scenario for which a module could be infered as \mintinline{text}{module-function.d.ts} or \mintinline{text}{module-class.d.ts} depending only on how it was executed. Thus, examples that execute the module under analysis by truly representing the developer's intention are crucial for an accurate generation of declaration files and inference of types and interfaces. As explained in \secref{sec:initial-code-base}, this was achieved by extracting the code examples written by the developers from the repositories.
+
+\begin{code}
+  \jscode{code/typescript-declaration-file-generation/templates/function-as-constructor.js}
+  \caption[Choice between module-function.d.ts or module-class.d.ts]{\textbf{Choice between module-function.d.ts or module-class.d.ts} - If the exported module is used without the \mintinline{text}{new} operator, the \mintinline{text}{module-function.d.ts} template will be used. If used with the \mintinline{text}{new} operator, the \mintinline{text}{module-class.d.ts} template will be applied.}
+  \label{code:typescript-templates-function-as-constructor}
+\end{code}
+
+\subsection{Interfaces}
+Interfaces are created by exploring \mintinline{text}{getField} and \mintinline{text}{methodCall} interactions from the run-time information. The code will gather the interactions for a specific argument and build the interface by incrementally adding new properties. Interactions within the \mintinline{text}{followingInteractions} field are recursively traversed, building a new interface in each recursion level.
+
+An example is provided in \figref{fig:ts-declaration-file-generation-interfaces}. The name given to the interface is based on the name of the input argument.
+
+It can be also seen in \figref{fig:ts-declaration-file-generation-nested-interfaces} that nested interfaces are declared as independent interfaces and then declared as types of the prior interface.
 
 \input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file-with-interfaces.tex}
 
 \input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file-with-nested-interfaces.tex}
 
-TypeScript provides templates 
-\todo{Tres tipos de modulos en TypeScript}
-\todo{Traceids y que las signatures de las funciones no se unen, sino que se acumulan segun traceId. Obviamente las iguales no se escriben de vuelta.}
-\todo{El nombre de las interfaces se crea con el nombre de la variable}
-\todo{El tipo se extrae del valor en runtime.}
-\subsection{Overloading} \label{sec:typescript-overloading}
 \subsection{Type inference}
+\todo{El tipo se extrae del valor en runtime.}
 \subsection{Implementation}
-\todo{TypeScript \& Docker. Mostrar cómo se invoca, etc.}
+The application runs within a Docker container. \coderef{code:declaration-file-generation-docker} explains how to build and run the application and how to extract the declaration file from the container.
+
+\begin{code}
+\begin{bashinline}
+$ ./build/build.sh
+$ docker run --name generate-declaration-file \
+  -v PATH_TO_RUN_TIME_INFORMATION_JSON:/tmp/output.json \
+  tsd-generator \
+  --module-name calculator \
+  -i /tmp/output.json
+
+$ docker cp generate-declaration-file:/usr/local/app/output/. /tmp/ts-declaration-file
+$ docker rm generate-declaration-file
+$ cat /tmp/ts-declaration-file/calculator/index.d.ts
+export function sum(a: number, b: number): number;
+export function multiply(a: number, b: number): number;
+\end{bashinline}
+  \caption[Declaration file generation]{\textbf{Declaration file generation} - The Docker image needs to be built after cloning the repository. Afterwards, the declaration file is generated by the run-time information and then retrieved from the container.}
+  \label{code:declaration-file-generation-docker}
+\end{code}
 
 \section{Evaluation}
 \input{figures/approach/evaluation/evaluationDiagram.tex}
