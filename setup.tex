@@ -71,9 +71,15 @@
 
     \usepackage[newfloat]{minted}
 
-    \newenvironment{code}{\captionsetup{type=listing}}{}
+    \newenvironment{code}{
+        \captionsetup{type=listing,aboveskip=10pt}
+    }{}
+
+    \captionsetup[listing]{aboveskip=0pt}
 
     \usepackage{pgfplots}
+
+    \usepackage{csquotes}
 %------------------------------------------------------------------------------
 %       (re)new commands / settings
 %------------------------------------------------------------------------------
@@ -155,7 +161,8 @@
         tabsize=3,
         linenos,
         bgcolor=code_background,
-        breaklines
+        breaklines,
+        baselinestretch=1
     }
 
     \newmintedfile[tscode]{typescript}{
@@ -164,14 +171,16 @@
         tabsize=3,
         linenos,
         bgcolor=code_background,
-        breaklines
+        breaklines,
+        baselinestretch=1
     }
 
     \newmintedfile[jsoncode]{json}{
         fontsize=\footnotesize,
         tabsize=2,
         bgcolor=code_background,
-        breaklines
+        breaklines,
+        baselinestretch=1
     }
 
     \newminted[bashinline]{bash}{

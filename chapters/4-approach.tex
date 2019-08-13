@@ -1,23 +1,21 @@
 \chapter{Approach}\label{chap:approach}
 
-\section{Problem Definition}
-In spite of the fact that JavaScript was originally intended for simple web-pages scripting, it's popularity has increased over the last years, being the most commonly used programming language among professional developers in 2018. Development of robust and high-quality frameworks such as jQuery, AngularJS, React or Vue.js contributed to JavaScript being the leading programming language for client-side development. 
+\section{Problem Definition} \label{sec:problem-definition}
+In spite of the fact that JavaScript was originally intended for simple web-pages scripting, it's popularity has increased over the last years, being the most commonly used programming language among professional developers in 2018. Development of robust and high-quality frameworks such as jQuery\footnote{https://jquery.com}, AngularJS\footnote{https://angularjs.org}, React\footnote{https://reactjs.org} or Vue.js\footnote{https://vuejs.org} contributed to JavaScript being the leading programming language for client-side development. 
 
-Moreover, several back-end applications are being written in JavaScript using Node.js, thus unifying the programming languages of client and back-end code. Companies with architectures based on concepts such as serverless and microservices are moving traditional back-end code written in Java, Python or PHP to the cloud and replacing it by small compute services, like AWS Lambda or Google Cloud Functions, or directly by cloud managed services. It is very common that development teams decide to write the compute services in Node.js, thus reducing the technological stack.
+Moreover, several back-end applications are being written in JavaScript using Node.js, thus unifying the programming languages of client and back-end code. Companies with architectures based on concepts such as serverless and micro-services are moving traditional back-end code written in Java, Python or PHP to the cloud and replacing it by small compute services, like AWS Lambda or Google Cloud Functions, or directly by cloud managed services. It is very common that development teams decide to write the compute services in Node.js, thus reducing the technological stack.
 
-However, JavaScript was not intented for developing large-scale applications. Lack of good interface descriptions using types and unintuitive type coercion have been slowing development of JavaScript applications.
+However, JavaScript was not intended for developing large-scale applications. Lack of good interface descriptions using types and unintuitive type coercion have been slowing development of JavaScript applications.
 
 The TypeScript programming language is a superset of JavaScript with optional type annotations that compiles to plain JavaScript. It has become a widely used alternative for JavaScript. It enables IDEs to perform code intelligence tasks such as code completion, code navigation or refactoring and it rules out possible run-time errors through static type checking.
 
-Aware that types are important for developing maintainable software systems, several industrial developers started using TypeScript in JavaScript projects. However, despite TypeScript's popularity, many new and existing JavaScript Libraries are still being written in pure JavaScript.
+Types are important for developing maintainable software systems. Therefore, several industrial developers started using TypeScript in JavaScript projects. However, despite TypeScript's popularity, many new and existing JavaScript Libraries are still being written in pure JavaScript.
 
-The possibility of using exissting JS libraries in TypeScript projects is critical for a smooth transition and for its adoption in industrial development. TypeScript enables it through \textit{declaration files}, a typed description of the library's API. A public repository, DefinitelyTyped \citep{definitely-typed-repository}, contains declaration files for more than 6000 JS Libraries. 71\% of the top 1000 depended-upon packages have their corresponding declaration file in DefinitelyTyped, as explained in \chapref{chap:background}.
+The possibility of using existing JS libraries in TypeScript projects is critical for a smooth transition and for its adoption in industrial development. TypeScript enables it through \textit{declaration files}, a typed description of the library's API. A public repository, DefinitelyTyped, contains declaration files for more than 6000 JS Libraries \citep{definitely-typed-repository}. 71\% of the top 1000 depended-upon packages have their corresponding declaration file in DefinitelyTyped, as explained in \chapref{chap:background}.
 
-Unfortunately, such files are written and maintained manually, which is tedious, error prone and highly time consuming. The evolution of the declaration files does not follow in some cases the continous development of the corresponding libraries. As a result, some declaration files end up being out of date, thus hindering their usability. Mismatches between the declaration files and the actual JavaScript Library code have a negative impact on developers. Type checking messages and IDE code intelligence features are not accurate, thus increasing developing costs, generating actually more difficulties than before migrating to TypeScript.
+Unfortunately, such files are written and maintained manually, which is tedious, error prone and highly time consuming. The evolution of the declaration files does not follow in some cases the continuous development of the corresponding libraries. As a result, some declaration files end up being out of date, thus hindering their usability. Discrepancies between the declaration files and the actual JavaScript Library code have a negative impact on developers. Type checking messages and IDE code intelligence features are not accurate, thus increasing developing costs, generating actually more difficulties than before migrating to TypeScript.
 
-Declaration files are critical for TypeScript projects. TypeScript's popularity increase and the continuous growth of packages uploaded to the NPM registry, surpassing \textit{1 million} packages by June 2019, indicate that mismatches between declaration files and JavaScript implementations will likely grow. This Thesis tackles the declaration file generation problem and proposes a solution for assiting programmers in creating TypeScript Declaration Files from JavaScript code and keeping them up to date after.
-
-\todo{Agregar una imagen de un modulo simple con codigo JavaScript y que del otro lado salga el declaration file.}
+Declaration files are critical for TypeScript projects. The increase of TypeScript's popularity and the continuous growth of packages uploaded to the NPM registry, surpassing 1 million packages by June 2019, indicate that mismatches between declaration files and JavaScript implementations will likely grow. This Thesis tackles the declaration file generation problem and proposes a solution for assisting programmers in creating TypeScript Declaration Files from JavaScript code and keeping them up to date.
 
 \section{TypeScript Declaration Files Generation Method}
 
@@ -27,9 +25,9 @@ We introduce a \textit{TypeScript Declaration Files Generation Method}, \mintinl
 
 The method consists of a continuous refinement process. It generates a TypeScript Declaration File based on data flow and type information gathered at run-time from a code base that executes the JavaScript Library. The code base is expanded by a Symbolic Execution Engine that generates test cases using the generated type definitions. As a result, new execution paths are explored, gathering new run-time information and thus refining the declaration file in every iteration.
 
-Following the goal of easing and automating the generation of TypeScript Declaration Files for existings JavaScript Libraries, the method receives the name of the JavaScript Library published to the NPM Registry as an input argument and returns the corresponding TypeScript declaration file.
+Following the goal of easing and automating the generation of TypeScript Declaration Files for existing JavaScript Libraries, the method receives the name of the JavaScript Library published to the NPM Registry as an input argument and returns the corresponding TypeScript declaration file.
 
-The declaration file returned by the method is valid and fully functional, making it suitable for being used within the development process. It contains no errors and matches the structure of the JavaScript Library under analysis, so that the JavaScript code generated after compilation runs. The conducted experiments included tests that consisted on replacing a specific type definition from DefinitelyTyped \citep{definitely-typed-repository} with the one generated in the experiments: TypeScript compilation was sucessful, the generated JavaScript code ran without errors and code intelligence features performed by IDEs like code completion worked as expected.
+The declaration file returned by the method is valid and fully functional, making it suitable for being used within the development process. It contains no errors and matches the structure of the JavaScript Library under analysis, so that the JavaScript code generated after compilation runs. The conducted experiments included tests that consisted on replacing a specific type definition from DefinitelyTyped \citep{definitely-typed-repository} with the one generated in the experiments: TypeScript compilation was successful, the generated JavaScript code ran without errors and code intelligence features performed by IDEs like code completion worked as expected.
 
 The feedback loop was not included in the implementation, though. As explained, exploring new execution paths by creating new test cases will refine the declaration files: new types will be assigned to different variables, new interfaces will be detected and existing interfaces will be defined more accurately by detecting new properties. From an incremental point of view, generating the declaration files from run-time information has to be developed in a first place. A declaration file must exist first so that it can be refined afterwards.
 
@@ -38,7 +36,7 @@ For that reason, the decision was to keep the focus on building an end-to-end ar
 \subsection{Implementation}
 As explained before, the DefinitelyTyped Repository is the official repository for finding declaration files for existing JavaScript Libraries. The \textit{TypeScript Declaration Files Generation Method} is intended to be used on existing, published npm packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
 
-Code examples that execute the JavaScript Library are needed to extract the run-time information via code instrumentation. It is achieved by retrieving the examples provided in the README files of the repositories of the different libraries. This is generally the place where developers explicitely show how to use their code. It showed to be an appropriate and pragmatic way of extracting the developer's intention and providing an useful initial code base with meaningful examples, thus avoiding a possible cold start problem. 
+Code examples that execute the JavaScript Library are needed to extract the run-time information via code instrumentation. It is achieved by retrieving the examples provided in the README files of the repositories of the different libraries. This is generally the place where developers explicitly show how to use their code. It showed to be an appropriate and pragmatic way of extracting the developer's intention and providing an useful initial code base with meaningful examples, thus avoiding a possible cold start problem. 
 
 The examples and the code base of the library are instrumented with Jalangi \citep{DBLP:conf/sigsoft/SenKBG13}\citep{DBLP:conf/sigsoft/SenKBG13a} to gather data flow information and type information at runtime. Jalangi is a dynamic analysis configurable framework that provides several analysis modules that were extended as needed to retrieve the required run-time information, which is then saved to an output JSON file. This block is written in JavaScript and it runs in Node.js within a Docker container.
 
@@ -63,12 +61,10 @@ declare function Abs(input: string): string;
   \label{code:dts-generate-example}
 \end{code}
 
-\todo{Agregar una imagen mostrando que es un unico script que hace todo. Mostrar imagenes de docker mostrando en qué está escrito cada cosa.}
-
 \section{Initial code base} \label{sec:initial-code-base}
 To extract run-time information of a JavaScript Library, it is necessary, by definition, to actually execute the code. It is not enough to instrument the source files of the library. The analysis modules provided by Jalangi to gather information are only triggered if the instrumented code gets executed.
 
-We decided to extract the code examples from the Readme files of the repository associated to the NPM Package. Readme files are usually used by developers for briefly describing what the code does, what problem it solves, how to install the application, how to build the code, etc. It is very common that developers provide code examples in the readme files to show how the code works and how to use it. This is specially true for NPM Packages, which are in general created to solve a specific problem of JavaScript development.
+It was decided to extract the code examples from the Readme files of the repository associated to the NPM Package. Readme files are usually used by developers for briefly describing what the code does, what problem it solves, how to install the application, how to build the code, etc. It is very common that developers provide code examples in the readme files to show how the code works and how to use it. This is specially true for NPM Packages, which are in general created to solve a specific problem of JavaScript development.
 
 Obtaining code examples for a specific NPM Package is achieved in three steps:
 \begin{enumerate}
@@ -78,9 +74,9 @@ Obtaining code examples for a specific NPM Package is achieved in three steps:
 \end{enumerate}
 
 \subsection{Repository}
-The \mintinline{text}{npm view} command shows data about a package. It is possible to retrieve a specific field of the package registry by specifying fhe field name after the package descriptor. For example to retrieve information about the \textit{lodash} package, the following command can be used: \mintinline{text}{npm view lodash}.
+The \mintinline{text}{npm view} command shows data about a package. It is possible to retrieve a specific field of the package registry by specifying the field name after the package descriptor. For example to retrieve information about the \mintinline{text}{lodash} package, the following command can be used: \mintinline{text}{npm view lodash}.
 
-For this particular case, only the url of the repository associated with the package is needed. This can be achieved by adding the correponding field name: \mintinline{text}{npm view <PACKAGE> repository.url}.
+For this particular case, only the url of the repository associated with the package is needed. This can be achieved by adding the corresponding field name: \mintinline{text}{npm view <PACKAGE> repository.url}.
 
 \begin{bashinline}
 $ npm view npm repository.url
@@ -158,9 +154,9 @@ The dynamic analysis framework used for gathering this kind of information is Ja
 
 The implementation stores these observations as entities called \textit{interactions}. As explained later in \secref{sec:run-time-analysis}, they are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation.
 
-The main goal of the run-time analysis is to gather information useful for determining a function's signature. Therefore, observations need to get associated with a function's argument. The implementation wraps variables around Proxy Objects to store tracking data, hereby enabling to associate the observation with a specific argument. The effect is reverted using Jalangi's callbacks to modify the behaviour of the affected operators, such as \mintinline{text}{===} or \mintinline{text}{typeof}.
+The main goal of the run-time analysis is to gather information useful for determining a function's signature. Therefore, observations need to get associated with a function's argument. The implementation wraps variables around Proxy Objects to store tracking data, hereby enabling to associate the observation with a specific argument. The effect is reverted using Jalangi's callbacks to modify the behavior of the affected operators, such as \mintinline{text}{===} or \mintinline{text}{typeof}.
 
-Jalangi fails to instrument some JavaScript Libraries. No effort was made in trying to fix failing instrumentation. Failing JS Libraries were ommited from the analysis by providing a list with the names of the modules that should not be instrumented.
+Jalangi fails to instrument some JavaScript Libraries. No effort was made in trying to fix failing instrumentation. Failing JS Libraries were omitted from the analysis by providing a list with the names of the modules that should not be instrumented.
 
 Each function is given an unique key, which is used as the primary key of a map where the run-time information is stored. Each function has an array of arguments and each interaction gets associated with an argument. The map is finally returned as a JSON file that can be used for later processing.
 
@@ -209,7 +205,7 @@ Jalangi enables the developer to create custom analysis modules by implementing 
 
 Observations of the arguments are stored as \mintinline{text}{Interactions}. They represent the relevant observation data that needs to be extracted for the purpose of best describing a function in order to generate a TypeScript declaration file.
 
-The object \mintinline{text}{Interaction} is associated to an \mintinline{text}{ArgumentContainer}. If the \mintinline{text}{ArgumentContainer} does not exist when the Jalangi callback is triggerd, the \mintinline{text}{Interaction} is not saved. The main goal of gathering run-time information is to describe a function and its arguments. Thus, callbacks triggered on variables that are not arguments of functions are ignored, as shown in \coderef{code:ignored-observations}. The mechanism to map an observation with an \textit{ArgumentContainer} is described in detail in \secref{sec:run-time-wrapper-objects}
+The object \mintinline{text}{Interaction} is associated to an \mintinline{text}{ArgumentContainer}. If the \mintinline{text}{ArgumentContainer} does not exist when the Jalangi callback is triggered, the \mintinline{text}{Interaction} is not saved. The main goal of gathering run-time information is to describe a function and its arguments. Thus, callbacks triggered on variables that are not arguments of functions are ignored, as shown in \coderef{code:ignored-observations}. The mechanism to map an observation with an \textit{ArgumentContainer} is described in detail in \secref{sec:run-time-wrapper-objects}
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/ignored-observations.js}
@@ -256,7 +252,7 @@ Therefore, \mintinline{text}{usedAsArgument} interaction is introduced. It gets 
 \input{figures/approach/run-time-information-gathering/analysis/used-as-argument.tex}
 
 \subsubsection{\textit{operator} interaction}
-Identifying if an argument is used with a specific operator is very important for infering the type of that variable. Relational operators like \mintinline{text}{<, >, <=, >=} are mainly used with type \mintinline{text}{number}. On the other side, operator \mintinline{text}{+} is mainly used with \mintinline{text}{number} or \mintinline{text}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
+Identifying if an argument is used with a specific operator is very important for inferring the type of that variable. Relational operators like \mintinline{text}{<, >, <=, >=} are mainly used with type \mintinline{text}{number}. On the other side, operator \mintinline{text}{+} is mainly used with \mintinline{text}{number} or \mintinline{text}{string}. Empirical evidence of how operators are used is presented in \secref{sec:experiments-js-operators-usage}.
 
 The \mintinline{text}{operator} interaction stores the operator being used and the type of the left hand and right hand operands. It also indicates which operand is the one that triggered the interaction. \figref{fig:run-time-information-gathering-operator} provides an example for operator \mintinline{text}{+}.
 
@@ -278,7 +274,7 @@ This was implemented by not only mapping the observation with an \mintinline{tex
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
 
 \subsubsection{Traces}
-Different executions of a function are identified through different \mintinline{text}{traceIds}. Each interaction and return value of a \mintinline{text}{FunctionContainer} stores the corresponding \mintinline{text}{traceId}. The \mintinline{text}{traceId} field enables identifying correlations between input types and return values, as explained in \secref{sec:typescript-overloading}. An example is provided in \figref{fig:run-time-information-gathering-traces}.
+Different executions of a function are identified through different \mintinline{text}{traceIds}. Each interaction and return value of a \mintinline{text}{FunctionContainer} stores the corresponding \mintinline{text}{traceId}. The \mintinline{text}{traceId} field enables identifying correlations between input types and return values. An example is provided in \figref{fig:run-time-information-gathering-traces}.
 
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
 
@@ -290,24 +286,24 @@ However, Jalangi exposes the actual value affected by the callback. For example,
 
 The solution consists in wrapping every input argument around a Wrapper Object when the function gets invoked. The Wrapper Object will store the reference to the corresponding \mintinline{text}{ArgumentContainer} or \mintinline{text}{Interaction}. Jalangi callbacks will then get triggered on the Wrapper Object instead. A mapping with the corresponding \mintinline{text}{ArgumentContainer} or \mintinline{text}{Interaction} is then straightforward, since the reference can be directly retrieved from the Wrapper Object.
 
-Jalangi enables to modify the behaviour of the original code. Using \mintinline{text}{invokFunPre} and \mintinline{javascript}{declare} callbacks, a function invocation is detected and the arguments of the function are modified in run-time.
+Jalangi enables to modify the behavior of the original code. Using \mintinline{text}{invokFunPre} and \mintinline{javascript}{declare} callbacks, a function invocation is detected and the arguments of the function are modified in run-time.
 
 Every function invocation generates new Wrapper Objects, which means that a Wrapper Object represents the input argument for a specific invocation. \mintinline{text}{TraceIds} are also stored within these objects.
 
 The solution extends a similar concept already implemented by Jalangi: \mintinline{text}{ShadowObjects}. It is a unique object associated to another object which can store meta-information. However, a \mintinline{text}{ShadowObject} can not be created for primitives values, which is a major drawback. It is indeed relevant to capture, for example, if a \mintinline{text}{number} is being used with a particular operator or if the property \mintinline{text}{length} of a \mintinline{text}{string} is being accessed.
 
-The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{text}{number} or \mintinline{text}{string} are converted to their native wapper objects, i.e. \mintinline{text}{Number} and \mintinline{text}{String}. Finally, \mintinline{text}{null} and \mintinline{text}{undefined} are converted to empty objects with modified \mintinline{text}{valueOf()} and \mintinline{text}{toString()} methods.
+The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{text}{number} or \mintinline{text}{string} are converted to their native wrapper objects, i.e. \mintinline{text}{Number} and \mintinline{text}{String}. Finally, \mintinline{text}{null} and \mintinline{text}{undefined} are converted to empty objects with modified \mintinline{text}{valueOf()} and \mintinline{text}{toString()} methods.
 
-The behaviour of the original code is being explicitely modified. Therefore, original values are used instead for affected operators like \mintinline{text}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{text}{null} and \mintinline{text}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{text}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
+The behavior of the original code is being explicitly modified. Therefore, original values are used instead for affected operators like \mintinline{text}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{text}{null} and \mintinline{text}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{text}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
 
 \subsection{Output}
 Information is stored in a map containing \mintinline{text}{FunctionContainer} entries. When the executions stops, Jalangi's callback \mintinline{text}{endExecution()} is called and the information is saved as a JSON to a file.
 
 
 \subsection{Blacklisted Modules}
-When instrumenting a JS Library, Jalangi will try to instrument all required modules by resolving and finding the modules. Unfortunately, Jalangi's native behaviour is to stop the complete analysis if there is an error in the instrumentation of any of the required modules or in the script itself.
+When instrumenting a JS Library, Jalangi will try to instrument all required modules by resolving and finding the modules. Unfortunately, Jalangi's native behavior is to stop the complete analysis if there is an error in the instrumentation of any of the required modules or in the script itself.
 
-The workaround introduced by the implementation modifies Jalangi's behaviour for failing instrumentation. For a given required module, it first tries to instrument it. If the instrumentation if unsuccesful, it simply skips the instrumentation and returns the original uninstrumented module.
+The workaround introduced by the implementation modifies Jalangi's behavior for failing instrumentation. For a given required module, it first tries to instrument it. If the instrumentation if unsuccessful, it simply skips the instrumentation and returns the original module without instrumenting it.
 
 As expected, no Jalangi callbacks will be triggered for that module's code. However, this workaround enables to at least still get run-time information of other required modules by not breaking the complete analysis. As explained in \figref{fig:blacklisted-modules}, instead of stopping the analysis, failing modules are skipped but modules required by them do get instrumented anyway. Modifying Jalangi's instrumentation algorithm is out of the scope of this work.
 
@@ -344,9 +340,9 @@ The following templates were implemented:
 
 \input{figures/approach/typescript-declaration-files-generation-method/examples/templates/module-function-template.tex}
 
-JavaScript construtors where explained in \secref{sec:background-javascript}. There are built-in functions that are not able to be used as a constructors. For example, if \mintinline{text}{Math} is intended to be used as a constructor with the \mintinline{text}{new} operator, the following error will arise: \mintinline{text}{TypeError: Math is not a constructor}. ES6 arrow functions are not allowed to used as a constructor either. However, for those functions that can be both used as constructors or called as regular functions, there is no difference between them that actually indicate whether a function is intended to be used with the \mintinline{text}{new} operator or not. The choice of using the \mintinline{text}{module-function.d.ts} or the \mintinline{text}{module-class.d.ts} template is made after executing the code and depends on how the function was used.
+JavaScript constructors where explained in \secref{sec:background-javascript}. There are built-in functions that are not able to be used as a constructors. For example, if \mintinline{text}{Math} is intended to be used as a constructor with the \mintinline{text}{new} operator, the following error will arise: \mintinline{text}{TypeError: Math is not a constructor}. ES6 arrow functions are not allowed to used as a constructor either. However, for those functions that can be both used as constructors or called as regular functions, there is no difference between them that actually indicate whether a function is intended to be used with the \mintinline{text}{new} operator or not. The choice of using the \mintinline{text}{module-function.d.ts} or the \mintinline{text}{module-class.d.ts} template is made after executing the code and depends on how the function was used.
 
-\coderef{code:typescript-templates-function-as-constructor} exposes a scenario for which a module could be infered as \mintinline{text}{module-function.d.ts} or \mintinline{text}{module-class.d.ts} depending only on how it was executed. Thus, examples that execute the module under analysis by truly representing the developer's intention are crucial for an accurate generation of declaration files and inference of types and interfaces. As explained in \secref{sec:initial-code-base}, this was achieved by extracting the code examples written by the developers from the repositories.
+\coderef{code:typescript-templates-function-as-constructor} exposes a scenario for which a module could be inferred as \mintinline{text}{module-function.d.ts} or \mintinline{text}{module-class.d.ts} depending only on how it was executed. Thus, examples that execute the module under analysis by truly representing the developer's intention are crucial for an accurate generation of declaration files and inference of types and interfaces. As explained in \secref{sec:initial-code-base}, this was achieved by extracting the code examples written by the developers from the repositories.
 
 \begin{code}
   \jscode{code/typescript-declaration-file-generation/templates/function-as-constructor.js}
@@ -365,8 +361,6 @@ It can be also seen in \figref{fig:ts-declaration-file-generation-nested-interfa
 
 \input{figures/approach/typescript-declaration-files-generation-method/examples/generation-declaration-file-with-nested-interfaces.tex}
 
-\subsection{Type inference}
-\todo{El tipo se extrae del valor en runtime.}
 \subsection{Implementation}
 The application runs within a Docker container. \coderef{code:declaration-file-generation-docker} explains how to build and run the application and how to extract the declaration file from the container.
 
@@ -390,13 +384,137 @@ export function multiply(a: number, b: number): number;
 \end{code}
 
 \section{Evaluation}
+After generating a declaration file for a published NPM module, it is necessary to evaluate the quality of it. It was decided to compare the generated declaration file against the one uploaded to the DefinitelyTyped repository for the same module, as shown in \figref{fig:evaluation-diagram}.
+
+It is arguable, however, to use a baseline for evaluation that it is known to be incorrect or inaccurate for some modules. It was exposed in \secref{sec:problem-definition} that mismatches between definition files and JS libraries do exist. The presented approach actually tackles that issue. 
+
+Nevertheless, it was decided that during a first stage of development comparing against DefinitelyTyped provides an acceptable baseline, guiding the tool to generate declaration files that are \textit{as good as} the ones uploaded to the repository. Furthermore, comparing two files is extremely fast, which is useful for creating an automated test suite that aids the development process.
+
+Finally, in a future stage, declaration files should be checked against the JS library itself. Approaches based on feedback-directed random testing like TSTest already made considerable progress and new solutions could be built on top of them \citep{DBLP:journals/pacmpl/KristensenM17}.
+
 \input{figures/approach/evaluation/evaluationDiagram.tex}
+
 \subsection{Parsing}
-\subsubsection{TypeScript Compiler API}
-\subsection{Comparison}
-\todo{Number of functions}
-\todo{Number of parameters}
-\todo{Interfaces}
-\todo{methodCall}
-\todo{usedAsArgument}
-\todo{Syntax \& Semantic Errors}
+Before comparison, declaration files need to be parsed so that both of them share the same structure. It was achieved by using the TypeScript Compiler API, a library developed by Microsoft that allows to traverse the Abstract Syntax Tree in an easy and intuitive way \citep{ts-compiler-api}.
+
+An simple example for the \mintinline{text}{abs} module described in \coderef{code:dts-generate-example} can be seen in \coderef{code:parsing-module-function}. 
+
+\begin{code}
+  \jscode{code/parsing/parsed-abs-definitely-typed.json}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Parsed declaration file example]{\textbf{Parsed declaration file example} - Parsed declaration for module \mintinline{text}{abs}. The declaration file was generated using the \mintinline{text}{module-function} template.}
+  \label{code:parsing-module-function}
+\end{code}
+
+The parsing consists in creating a structure where declared \mintinline{text}{interfaces}, \mintinline{text}{functions}, \mintinline{text}{classes} and \mintinline{text}{namespaces} are stored separated. Function arguments are correctly described, identifying complex types like union types or callbacks. Optional parameters are also identified. For \mintinline{text}{classes}, a distinction between the constructor and methods is made. Finally, syntax and semantic errors are also checked by the TypeScript Compiler API.
+
+The tool is called \mintinline{text}{parse-dts} and is naturally written in TypeScript. It also runs in NodeJS within its corresponding Docker container.
+
+\subsection{Comparator}
+An independent tool will compare two parsed declaration files. As described in \figref{fig:evaluation-diagram}, the comparator will compare the generated declaration file against the corresponding file in the DefinitelyTyped repository.
+
+As explained before, in a future stage a generated declaration file should not be compared against an existing one, since there would be no master file to compare against. A declaration file should be checked against the JavaScript library itself. The comparator explained in this section should assist the development process until the quality of the generated declaration files matches the one of the files uploaded to the DefinitelyTyped repository.
+
+It was discovered that the implementation was easier when focusing on each template independently. For this implementation, only the \mintinline{text}{module-function} was considered for the comparison.
+
+The following criteria were applied:
+\begin{itemize}
+  \item Number of declared functions: Checks the number of declared and exported functions for each of both declaration files.
+  \item Name of declared functions: Checks whether both of the declaration files declared a function with the same name.
+  \item Number of parameters: Checks the number of parameters of the declared functions. This is checked for optional and non-optional parameters.
+  \item Interfaces: Checks the number of declared interfaces and the fields within those interfaces.
+  \item Errors: Indicates whether there are errors in the declaration files.
+\end{itemize}
+
+Each of these criteria will add a penalty score. The lower the comparison score the more similar the files according to the presented criteria.
+
+\section{Type Inference}
+Type inference for JavaScript is a topic that was deeply investigated. Nevertheless, it was not included in the implementation. Types were directly imported from the types at run-time. For example, if a function \mintinline{text}{f(input)} was invoked as \mintinline{text}{f("hello")}, argument \mintinline{text}{input} would be declared as \mintinline{text}{string} in the declaration file.
+The refinement of the overall architecture of the generation of TypeScript declaration files was prioritized over type inference accuracy. Extracting the code examples from the repositories proved to be a solid and pragmatic way of capturing the developer's intention. Using the types imported from those examples allowed to focus on creating an end-to-end solution while still obtaining declaration files with reasonable types. It is worth noting that this would not have been the case if randomly generated test cases were used.
+The discussed approach on how to deal with type inference in JavaScript is presented in detail below.
+
+\subsection{Developer's intention}
+The crucial aspect while inferring a type is trying to reproduce the developer's intention as good as possible. 
+
+A plausible approach for inferring a type in JavaScript would be binding a type to an operation. As a result, for example, everything that is used in an \mintinline{text}{if-else} clause would be inferred as \mintinline{text}{boolean}.
+
+Nevertheless, there are several reasons that may lead a JavaScript developer to use a a value with a type that is not a \mintinline{text}{boolean} in a conditional operator. It is a common practice to check for empty strings or zero values. As a result, developers end up using a value of type \mintinline{text}{string} or \mintinline{text}{number} in a conditional. \coderef{code:type-inference-if-clause-boolean-string} exposes the inconsistencies of binding the usage of an operator with a fix type by providing an example where the argument is inferred as a \mintinline{text}{string} even though it is used in an \mintinline{text}{if} clause.
+
+\begin{code}
+  \jscode{code/type-inference/if_clause_boolean_string.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[String inference]{\textbf{String inference} - Argument \mintinline{text}{a} should be inferred as a \mintinline{text}{string}. Usage of methods \mintinline{text}{indexOf()} and \mintinline{text}{toLowerCase()} clearly indicate that \mintinline{text}{a} is a \mintinline{text}{string}, in spite of the \mintinline{text}{if} clause.}
+  \label{code:type-inference-if-clause-boolean-string}
+\end{code}
+
+On the other hand, it can be seen in \coderef{code:type-inference-number-with-plus-operator} that assuming operands in a string concatenation operation to be of type \mintinline{text}{string} is not accurate either. As explained in \secref{sec:background-js-type-coercion}, concatenating a \mintinline{text}{string} and a \mintinline{text}{number} without explicitly converting the \mintinline{text}{number} into a \mintinline{text}{string} improves readability by reducing verbosity.
+
+\begin{code}
+  \jscode{code/type-inference/type-inference-number-with-plus-operator.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Number inference]{\textbf{Number inference} - Even though argument \mintinline{text}{a} is used as part of a string concatenation through the \mintinline{text}{+} operator, the developer's intention of \mintinline{text}{a} being a \mintinline{text}{number} is clear. Several classic arithmetic operations support the assumption.}
+  \label{code:type-inference-number-with-plus-operator}
+\end{code}
+
+Both \coderef{code:type-inference-if-clause-boolean-string} and \coderef{code:type-inference-number-with-plus-operator} show that the developer's intention is independent from the input value's type. Functions could be invoked with different values but the developer's intention remains unmodified in each invocation, unless new execution paths are explored and new indicators of the developer's intention get known. It is useful, though, to consider specific examples provided by the developer as strong indicators of the intention, as explained in \secref{sec:initial-code-base}. It is decisive if a developer explicitly manifests her intention in code, for example by creating an example where a specific function is used with a \mintinline{text}{string} type.
+
+Finally, it is possible for JavaScript developers to perform uncommon operations like multiplying an \mintinline{text}{array} with a \mintinline{text}{function}. Furthermore, within a particular context unintuitive code fragments may yield a valid development pattern. \coderef{code:type-inference-value-of-method-modified} provides an example where a developer might choose to add two arrays because the module she is developing works in a scenario where the \mintinline{text}{valueOf} method of the built-in \mintinline{text}{Array} object is modified.
+
+\begin{code}
+  \jscode{code/type-inference/value-of-method-modified.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Sum of arrays]{\textbf{Sum of arrays} - Unintuitive usage of operator \mintinline{text}{+} with arrays. \mintinline{text}{valueOf()} method of \mintinline{text}{Array} object is modified. Operator \mintinline{text}{+} is explained in detail in \secref{sec:background-js-type-coercion}.}
+  \label{code:type-inference-value-of-method-modified}
+\end{code}
+
+It is clear that types can not be inferred only with assumptions based on constraints imposed to the JavaScript language. Such constraints could be based on uncommon usages of the language. JavaScript allows indeed to perform such unintuitive operations. However, type inference is intended to be performed for already existing working JavaScript libraries. JavaScript developers may be already applying patterns and using operations that ought to be restricted. Developer's intention is exposed through indicators in the code. Some indicators are more determinant than other ones in revealing the intention. The presented approach elaborates the concept by presenting a map of indicators and a way of determining the relevance.
+
+\subsubsection{Behavior and correctness}
+The definition of incorrect code in JavaScript needs to be broader than a piece of code which throws a run-time error. \coderef{code:type-inference-examples-definition-of-incorrect} exposes different examples of legal JavaScript code, i.e. code that does not throw any error. Even though the code will run flawlessly, accessing a non-existing property of an object, is something that should probably be considered as incorrect, since the result will be \mintinline{text}{undefined}. On the other hand, it would probably be incorrect to invoke a function that multiplies two variables with an \mintinline{text}{object} and an \mintinline{text}{array}, since it will \mintinline{text}{NaN}, as shown in \coderef{code:type-inference-multiply-probably-incorrect}.
+
+\begin{code}
+  \jscode{code/type-inference/definition-of-incorrect/examples-definition-of-incorrect.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Legal JavaScript code]{\textbf{Legal JavaScript code} - The presented examples will not throw any run-time error. These examples expose the problem of considering a code correct or not.}
+  \label{code:type-inference-examples-definition-of-incorrect}
+\end{code}
+
+\begin{code}
+  \jscode{code/type-inference/definition-of-incorrect/multiply-probably-incorrect.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Number inference]{\textbf{Number inference} - Invoking a function that multiplies both of their arguments with anything different than a \mintinline{text}{number} is probably not expected.}
+  \label{code:type-inference-multiply-probably-incorrect}
+\end{code}
+
+\input{figures/approach/type-inference/behavior_correctness/ecma-script-min-specification.tex}
+
+According to the specification of the native \mintinline{text}{Math.min()} method, each argument will be converted to a number before actually computing the minimum \citep{ecma-script}. Therefore, according to the definition shown in \figref{fig:type-inference-ecma-script-min-specification}, it is possible to compute the minimum between, for example, an \mintinline{text}{object} and a \mintinline{text}{function}. Although legal, there is no reasonable argument to define the examples in \coderef{code:type-inference-multiply-probably-incorrect} as correct.
+
+\begin{code}
+  \jscode{code/type-inference/definition-of-incorrect/math_min.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Math.min() possible usage]{\textbf{Math.min() possible usage} - Invoking \mintinline{text}{Math.min()} with values of type different as \mintinline{text}{number} should not be expected.}
+  \label{code:type-inference-multiply-probably-incorrect}
+\end{code}
+
+The key aspect is that the ECMAScript Language Specification defines behavior. It perfectly describes what is going to happen if a developer invokes \textit{Math.min()} with an argument that is not a \mintinline{text}{number}: every argument will be coerced to a \mintinline{text}{number}. However, such a definition is not related to \textit{correctness}.
+
+Ryan Cavanaugh, development lead for the TypeScript team at Microsoft, stated the following\footnote{https://stackoverflow.com/questions/41750390/what-does-all-legal-javascript-is-legal-typescript-mean}:
+
+\begin{displayquote}
+  \textit{After all, this code does have defined behavior! But this misses the forest for the trees - it is plainly implausible that this code is correct for any reasonable definition of "correct". TypeScript's existence is predicated on the notion that some JavaScript code is not correct and you'd like to know about it.}
+  \\
+  \\
+  \textit{The fact that the spec describes what happens is not instructive as to whether or not you're writing a correct program. A doctor can clearly describe what will happen to you if you eat a rock, but that doesn't mean rocks are food.}
+\end{displayquote}
+
+Probably no developer would argue with the fact that \mintinline{text}{Math.min()} should indeed receive numbers as arguments. Actually, TypeScript only accepts numbers as possible arguments for \mintinline{text}{Math.min()}, as shown in 
+
+\begin{code}
+  \tscode{code/type-inference/definition-of-incorrect/math_min_typescript_definition.ts}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[TypeScript definition for Math.min()]{\textbf{TypeScript definition for Math.min()} - TypeScript defines \mintinline{text}{Math.min()} as a function that receives arguments only of type \mintinline{text}{number}.}
+  \label{code:type-inference-multiply-probably-incorrect}
+\end{code}
+
+\todo{What does the developer expect from each operation? How do they use them? Esa es la clave, en realidad la type inference se trata de adinivar lo que quiere hacer el developer y para eso hace falta responder a esas preguntas. Eso se logra con los experiments que se hicieron sobre la info sobre los tipos y los operators.}
