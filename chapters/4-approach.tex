@@ -274,7 +274,7 @@ This was implemented by not only mapping the observation with an \mintinline{tex
 \input{figures/approach/run-time-information-gathering/analysis/following-interactions.tex}
 
 \subsubsection{Traces}
-Different executions of a function are identified through different \mintinline{text}{traceIds}. Each interaction and return value of a \mintinline{text}{FunctionContainer} stores the corresponding \mintinline{text}{traceId}. The \mintinline{text}{traceId} field enables identifying correlations between input types and return values. An example is provided in \figref{fig:run-time-information-gathering-traces}.
+Different executions of a function are identified through different \mintinline{text}{traceIds}. Each interaction and return value of a \mintinline{text}{FunctionContainer} stores the corresponding \mintinline{text}{traceId}. The \mintinline{text}{traceId} field enables identifying correlations between input types and return values. An example is provided in \figref{fig:run-time-information-gathering-traces}. The field can also be helpful in determining common interactions happening on the same execution path.
 
 \input{figures/approach/run-time-information-gathering/analysis/traces.tex}
 
@@ -508,13 +508,92 @@ Ryan Cavanaugh, development lead for the TypeScript team at Microsoft, stated th
   \textit{The fact that the spec describes what happens is not instructive as to whether or not you're writing a correct program. A doctor can clearly describe what will happen to you if you eat a rock, but that doesn't mean rocks are food.}
 \end{displayquote}
 
-Probably no developer would argue with the fact that \mintinline{text}{Math.min()} should indeed receive numbers as arguments. Actually, TypeScript only accepts numbers as possible arguments for \mintinline{text}{Math.min()}, as shown in 
+Probably no developer would argue with the fact that \mintinline{text}{Math.min()} should indeed receive numbers as arguments. Actually, TypeScript only accepts numbers as possible arguments for \mintinline{text}{Math.min()}, as shown in \
 
 \begin{code}
   \tscode{code/type-inference/definition-of-incorrect/math_min_typescript_definition.ts}
   \captionsetup{aboveskip=0pt, belowskip=10pt}
   \caption[TypeScript definition for Math.min()]{\textbf{TypeScript definition for Math.min()} - TypeScript defines \mintinline{text}{Math.min()} as a function that receives arguments only of type \mintinline{text}{number}.}
-  \label{code:type-inference-multiply-probably-incorrect}
+  \label{code:type-inference-math-min-typescript-definition}
 \end{code}
 
-\todo{What does the developer expect from each operation? How do they use them? Esa es la clave, en realidad la type inference se trata de adinivar lo que quiere hacer el developer y para eso hace falta responder a esas preguntas. Eso se logra con los experiments que se hicieron sobre la info sobre los tipos y los operators.}
+\subsection{Case study: inference for \mintinline{text}{+} operator}
+
+The following section exposes the difficulties that may arise when trying to infer the type of a value using the \mintinline{text}{+} operator.
+
+\coderef{code:type-inference-string-concatenation} provides an example where a function can be reasonably used with a \mintinline{text}{string}, a \mintinline{text}{number} or even an \mintinline{text}{object}. On the other hand, \coderef{code:type-inference-string-concatenation-only-string} presents an example using the same \mintinline{text}{+} operator where only a \mintinline{text}{string} would be accepted.
+
+Finally, for both cases it would be technically correct to infer the input argument as \mintinline{text}{any}. JavaScript will accept a value of any type and will perform the according type coercion without throwing any run-time error. It is clear then that the developer's intention is the most relevant aspect for inferring a type.
+
+\begin{code}
+  \jscode{code/type-inference/example-plus-operator/string-concatenation.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Operator + used with string and number]{\textbf{Operator + used with \mintinline{text}{string} and \mintinline{text}{number}} - The following simple function can be invoked with a \mintinline{text}{string}, a \mintinline{text}{number} or even an \mintinline{text}{object} with a defined \mintinline{text}{valueOf} method.}
+  \label{code:type-inference-string-concatenation}
+\end{code}
+
+\begin{code}
+  \jscode{code/type-inference/example-plus-operator/string-concatenation-only-string.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Operator + used only with string]{\textbf{Operator + used with \mintinline{text}{string}} - The following function provides an example where only a \mintinline{text}{string} would be accepted.}
+  \label{code:type-inference-string-concatenation-only-string}
+\end{code}
+
+\subsection{Constraints and restrictions}
+The following section presents the restrictions that different type checkers perform on JavaScript code. The state of the art is shown through a comparison between \mintinline{text}{TypeScript}{TypeScript}, \mintinline{text}{Flow} and \mintinline{text}{Infernu}. All of them introduce the concept of restrictions for JS from different angles and for different use cases. The analysis is going to be performed on the \mintinline{text}{+} operator.
+
+\subsubsection{TypeScript}
+Typescript defines the \mintinline{text}{+} operator using the table presented in \figref{fig:type-inference-typescript-definition-plus-operator}. It is important to note that TypeScript allows a \mintinline{text}{string} to be added to anything. On the other hand, it does not allow, for example, to add a \mintinline{text}{boolean} and an \mintinline{text}{object} or a \mintinline{text}{number} and a \mintinline{text}{boolean}.
+
+\input{figures/approach/type-inference/constraints/typescript.tex}
+
+\subsubsection{Flow}
+Flow is a static type checker for JavaScript developed by Facebook \citep{flow}. It is intended to aid developers while writing JS code by detecting different errors. It only allows to use the \mintinline{text}{+} operator between \mintinline{text}{string} and \mintinline{text}{string}, \mintinline{text}{number} and \mintinline{text}{number} or \mintinline{text}{string} and \mintinline{text}{number}, as explained in \coderef{code:type-inference-constraints-flow}.
+
+\begin{code}
+  \jscode{code/type-inference/constraints/constraints-flow.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Restrictions in Flow type checker]{\textbf{Restrictions in Flow type checker} - The \mintinline{text}{+} can be used only with \mintinline{text}{string} or \mintinline{text}{number}.}
+  \label{code:type-inference-constraints-flow}
+\end{code}
+
+
+\subsubsection{Infernu}
+Infernu is a static type checker for JavaScript that applies the concept of Type Classes to JS \citep{infernu}. It is inspired by Haskell's Type Classes. According to Infernu's documentation, operator \mintinline{text}{+} can be used only when both operands are either \mintinline{text}{string} or \mintinline{text}{number}, as shown in \coderef{code:type-inference-constraints-infernu}.
+
+\begin{code}
+  \jscode{code/type-inference/constraints/constraints-infernu.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Restrictions in Infernu type checker]{\textbf{Restrictions in Infernu type checker} - The \mintinline{text}{+} can be used only when both operands are either \mintinline{text}{string} or \mintinline{text}{number}.}
+  \label{code:type-inference-constraints-infernu}
+\end{code}
+
+
+\subsection{Proposal}
+The challenge in type inference automation is to capture the developer's intention. It is fundamental to understand the code written by the developer. As explained, JavaScript is a language for which very unintuitive operations do not throw any errors at run-time. Developers may be already using this kind of behavior consciously by creating uncommon patterns which are useful in different scenarios. Therefore, working with constraints and hard rules that forbid certain operations, like adding an \mintinline{text}{array} and a \mintinline{text}{number}, is not ideal.
+
+The proposal is to use a scoring system that favors coding best practices and disfavors uncommon or unexpected ones. In the end, based on this scoring you can infer the type of the variable, since types with higher score will represent the developer's intention more accurately. Uncommon operations will not be restricted but they would get lower scores. The scoring is generated by registering all interactions performed by the code to a particular variable.
+
+Applying the presented approach would mean that despite uncommon usage of a particular type, if there is enough evidence that supports the developer's intention, that type should be inferred anyway.
+
+\coderef{code:type-inference-unintuitive-developers-intention} presents a code where it is clear that \mintinline{text}{a} is an \mintinline{text}{array}. We see in line 9 that the developer is using an array with the \mintinline{text}{+} operator. It is known that such an usage is not common. However, there is enough evidence to support inferring \mintinline{text}{a} as an \mintinline{text}{array}. We are therefore assuming that the developer is consciously adding the number \mintinline{text}{1} to an \mintinline{text}{array}. In fact, applying a constraint on using an \mintinline{text}{array} with the \mintinline{text}{+} operator would have made it impossible to actually infer the type \mintinline{text}{array}.
+
+\begin{code}
+  \jscode{code/type-inference/proposal/intention-to-use-array.js}
+  \captionsetup{aboveskip=0pt, belowskip=10pt}
+  \caption[Unintuitive developer's intention]{\textbf{Unintuitive developer's intention} - The developer's intention of using \mintinline{text}{a} as an \mintinline{text}{array} is clear, despite the usage of the \mintinline{text}{+} operator. A scoring system would assign a high score to the type \mintinline{text}{array} because of other hints in the code and therefore the type of \mintinline{text}{a} would be inferred as \mintinline{text}{array}.}
+  \label{code:type-inference-unintuitive-developers-intention}
+\end{code}
+
+Code examples provided by the developer should be considered as additional hints for inferring a type. In fact, they should be considered as very strong indicators, since the developer is explicitly stating her intention through code.
+
+There is no doubt about the developer's intention, however, when an interface needs to be inferred. The developer explicitly reveals the shape of the required interface by accessing an object's property or invoking a method.
+
+Finally, in order to define a scoring system it is crucial to understand what the developers are expecting from each operation and how are they using them. For answering those questions, it is necessary to analyze existing code bases and extracting common patterns. \secref{sec:experiments-js-operators-usage} presents the results from the analysis performed for this approach, where a heat map was created for each operator by analyzing existing JS libraries uploaded to the NPM registry. This way, the most common types for different operators could be identified. The following section discusses the application of the obtained results.
+
+\subsubsection{Scoring for operators}
+Results presented in \secref{sec:experiments-js-operators-usage} are briefly commented in the following section. Information was retrieved by execution JavaScript libraries through the code examples in the repositories, so the results intent to represent the developer's common usage. Obtained values are used to create a scoring for operators and the type of their operands. Analyze is limited to operators \mintinline{text}{+} and \mintinline{text}{===} but they can be easily extended. Usage distribution for these operators are presented in \figref{fig:type-inference-proposal-scoring-plus} and \figref{fig:type-inference-proposal-scoring-strict-equal}. Scores can be built using the results. For operator \mintinline{text}{+}, when an operand is known to be a \mintinline{text}{number}, the second operand is extremely likely to be also a \mintinline{text}{number} and should therefore be greatly favored.
+
+\input{figures/approach/type-inference/proposal/scoring/operator-plus.tex}
+
+\input{figures/approach/type-inference/proposal/scoring/operator-strict-equal.tex}
