@@ -6,9 +6,13 @@ Directions for future work (if applicable).
 
 \draft{Una de las conclusiones mas importantes es que la type inference al final no es tan importante. Lo dificil es generar el declaration file como corresponde, detectar las interfaces, etc. El tipo de las variables puede, en principio, inferirse de los ejemplos de los developers. Es una aproximación bastante acertada y se atacan los otros problemas.}
 
+\draft{Los code examples son la posta! Como estos ejecutan el codigo y la generacion de los declaration files depende de la runtime information que se junta, la calidad de los declaration files es dependiente de los code examples!}
+
+\draft{Compara contra definitely typed puede no estar tan bueno! Muchas cosas son elecciones del que escribe el file y hace lo que se le canta. Si se sigue comparando con fines de mejorar el desarrollo se puede hcer siempre y cuando sólo se tengan en cuenta los parametros importantes tipo los metodos de una clase, etc etc.}
+
 \draft{Decir que todos los bloques pueden mejorarse independientemente: Extraer mejor los readme files, mejorar la instrumentation usando Babel para quedarse siempre en ES5... mejorar la generation de declaration files, etc.}
 
-\section{Future Work}
+\section{Future Work} \label{sec:conclusions-future-work}
 
 \subsection{Type Inference}
 \todo{Deberia ser hecho en otro modulo que no sea el runtime information. El runtime information deberia exponer unicamente los datos que le hacen falta al otro para inferir los tipos.}

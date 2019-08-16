@@ -1,39 +1,59 @@
 \chapter{Experiments}\label{chap:experiments}
+Declaration files were generated for existing modules repository. The DefinitelyTyped repository was used as a benchmark. Each one of the generated files was compared against the corresponding declaration file already uploaded to the repository.
 
-Experiments often include benchmarks.
-You need to describe you benchmarking setup: parameters of the machine used (architecture, memory, etc), parameters of the software used (OS version, libraries used and their version), the benchmark programs.
-The programs need not be part of the thesis, but they should be described and available separately.
+\figref{fig:experiments-overall-funnel} shows that a declaration file was generated for 244 modules out of 6029. The following sections explain each stage of the process. Examples of generated declaration files for existing modules are presented in \secref{sec:experiments-declaration-files-generation}.
 
-If you measure run times and evaluate your findings statistically, then there is great potential for errors.
-Consult SIGPLAN's checklist for empirical evaluations \url{http://www.sigplan.org/Resources/EmpiricalEvaluation/} for advice. 
+\input{figures/experiments/overall-funnel.tex}
 
-\input{figures/experiments/overallFunnel.tex}
+An analysis on the usage of JavaScript operators can be seen in \secref{sec:experiments-js-operators-usage}.
 
-
-\section{Definitely Typed Modules}
-\todo{Poner cómo es la distribución de los tipos de declaration files.}
-
-\draft{
-module-class	503	8,27%
-module	4379	71,99%
-module-function	1201	19,74%
-}
+\section{Definitely Typed Benchmark}
 
 \draft{Chequear modulo 'acl' por ejempo que tiene errores y esta exportado como module pero deberia ser exportado como module-class. Habia otro modulo pero no lo recuerdo.}
 
 
-\section{Code Examples Extraction}
-\subsection{Repositories URL}
-\subsection{Readme Files}
-\subsection{Code Examples}
+\subsection{Code Examples Extraction}
+Extracting the code examples from the repositories of the JavaScript libraries proved to be a pragmatic way of capturing the types. However, code examples for only 2260 out of 6029 modules could be retrieved.
 
-\section{Code Execution}
+\subsubsection{Repositories URL}
+The url of the repositories could be retrieved for only 4974 modules. More than 1000 modules do not have the repository entry in their corresponding \mintinline{text}{package.json} files. Therefore, the \mintinline{text}{npm view <module> repository.url} command returns an empty value. This is even happening for important modules like \mintinline{text}{ace}.
 
-\section{Run-time Information Gathering}
+\subsubsection{Readme Files}
+700 modules simply do not have a readme file in their repositories. The implementation does contemplate, however, different naming conventions like \mintinline{text}{readme.md} or \mintinline{text}{README.md}.
 
-\section{Declaration Files Generation}
+\subsubsection{Code Examples Extraction}
+The 50\% loss is mainly explained because developers did not tag their code around the \mintinline{text}{javascript} tag in their markdown readme files. As explained in \secref{sec:conclusions-future-work}, the process of extracting code examples from a repository can be greatly improved. Counting with code examples for 2200 modules was considered to be enough for this work.
 
-\section{Evaluation}
+\subsubsection{Code Examples Execution}
+Only 1448 modules had working code examples. The 2260 extracted code examples were executed by installing the required packages and running the code as a \mintinline{text}{node} application. 812 modules did not run correctly and were discarded from the analysis. Some failing examples were analyzed and there were mainly two reasons for the failure: 1) The code example had been properly extracted but the code itself was not working properly and 2) the extracted code example was not correct.
+Improving the retrieval the code examples for a specific module will definitely have a positive impact in this number.
+
+\subsection{Run-time Information Gathering} \label{sec:experiments-run-time-information-gathering}
+Run-time information could only be extracted for 442 modules out of 1448 modules with working code examples. As explained in \secref{sec:run-time-wrapper-objects}, the behavior of the code under analysis was explicitly modified by wrapping the arguments around Wrapper Objects. This definitely had an influence on the executed code of some modules by causing new run-time errors. Furthermore, Jalangi's own limitation in the instrumentation process caused some of the modules to be unable to be instrumented.
+
+A plain Jalangi instrumentation, i.e. without user defined analysis modules, was not applied to the 1448 working code examples. Therefore, it was not possible to determine which modules are failing only because of Jalangi's own limitations.
+
+\subsection{Declaration Files Generation} \label{sec:experiments-declaration-files-generation}
+Finally, a declaration file was generated for 244 modules. Despite the correct gathering of run-time information, some of the 442 modules mentioned in \secref{sec:experiments-run-time-information-gathering} did not contain valid run-time information for the generation of the declaration file. The main reason for this behavior is that the extracted code examples did not execute the modules in a way that which gathers valid run-time information.
+
+\subsection{Evaluation}
+As shown in \figref{fig:experiments-typescript-templates-distribution-definitely-typed}, 72\% of the modules uploaded to DefinitelyTyped are written using the \mintinline{text}{modules} template. On the other hand, 20\% of them are written using the \mintinline{text}{module-function}. The complexity of evaluating declaration files written with the \mintinline{text}{module-function} is considerably lower than for the other templates. Templates \mintinline{text}{module-class} and \mintinline{text}{module} were not evaluated. 20\% was considered enough as a starting point.
+
+\input{figures/experiments/template-distribution-definitely-typed.tex}
+
+\subsection{Results}
+
+\input{figures/experiments/results/module-function-results.tex}
+
+\input{figures/experiments/results/module-class-results-flake-idgen.tex}
+
+\input{figures/experiments/results/module-class-results-route-parser.tex}
+
+\input{figures/experiments/results/module-class-results-timer-machine.tex}
+
+\input{figures/experiments/results/module-results.tex}
+
+\input{figures/experiments/results/datadog-metrics.tex}
 
 \section{JS Operators Usage} \label{sec:experiments-js-operators-usage}
 \todo{Agregar que es una matriz simetrica. Que era para hacer un analisis mas global. Para algunos operators se puede inferir que el orden de los tipos sí afecta. Por ejemplo para instance of donde obviamente importa el orden. Pero para == por ejemplo generalmente se pone a == null y no null == a}.

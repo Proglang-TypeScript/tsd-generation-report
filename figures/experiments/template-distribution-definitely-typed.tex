@@ -1,0 +1,30 @@
+\begin{figure}[tp]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			ybar,
+			width=0.7\textwidth,
+			ybar=0pt,
+			ymax=6000,
+			enlargelimits=0.15,
+			bar width=0.08\textwidth,
+			legend style={at={(0.5,-0.2)}, anchor=north,legend columns=-1},
+			symbolic x coords={module-class,module-function,module},
+			xtick=data,
+			nodes near coords, 
+			nodes near coords align={vertical},
+			x tick label style={rotate=45,anchor=east},
+		]
+		\addplot coordinates {
+			(module-class, 503)
+			(module-function, 1201)
+			(module, 4379)
+		};
+		\end{axis}
+	\end{tikzpicture}
+
+	\caption[TypeScript templates distribution in DefinitelyTyped]{\textbf{TypeScript templates distribution in DefinitelyTyped} - Out of a total of 6029, 72\% of the modules uploaded to the DefinitelyTyped repository use the \mintinline{text}{module} template.
+	}
+
+	\label{fig:experiments-typescript-templates-distribution-definitely-typed}
+\end{figure}

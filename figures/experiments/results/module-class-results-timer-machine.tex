@@ -1,0 +1,19 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/timer-machine/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[timer-machine/index.d.ts - Generated]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/timer-machine/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[timer-machine/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\caption[Module-class results | timer-machine]{\textbf{Module-class results | timer-machine} - Parameter \mintinline{text}{started} is inferred as \mintinline{text}{undefined} instead of marking it as optional. Methods that were not executed do not appear in the generated declaration file.}
+	\label{fig:experiments-results-module-class-timer-machine}
+\end{figure}

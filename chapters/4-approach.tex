@@ -394,7 +394,7 @@ Finally, in a future stage, declaration files should be checked against the JS l
 
 \input{figures/approach/evaluation/evaluationDiagram.tex}
 
-\subsection{Parsing}
+\subsection{Parsing} \label{sec:approach-parsing}
 Before comparison, declaration files need to be parsed so that both of them share the same structure. It was achieved by using the TypeScript Compiler API, a library developed by Microsoft that allows to traverse the Abstract Syntax Tree in an easy and intuitive way \citep{ts-compiler-api}.
 
 An simple example for the \mintinline{text}{abs} module described in \coderef{code:dts-generate-example} can be seen in \coderef{code:parsing-module-function}. 

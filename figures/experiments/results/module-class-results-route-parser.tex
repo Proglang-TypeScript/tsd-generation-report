@@ -1,0 +1,19 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/route-parser/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[route-parser/index.d.ts - Generated]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/route-parser/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[route-parser/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\caption[Module-class results | route-parser]{\textbf{Module-class results | route-parser} - Constructor and methods are correctly identified. Specific signature of dictionary \mintinline{text}{params} is not detected. Instead, a generic \mintinline{text}{object} is inferred.}
+	\label{fig:experiments-results-module-class-route-parser}
+\end{figure}

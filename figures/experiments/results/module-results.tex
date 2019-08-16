@@ -1,0 +1,19 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module/is-uuid/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[is-uuid/index.d.ts - Generated]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module/is-uuid/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[is-uuid/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\caption[Module results | is-uuid]{\textbf{Module results | is-uuid} - Methods that were not executed are not included in the declaration file.}
+	\label{fig:experiments-results-module-is-uuid}
+\end{figure}

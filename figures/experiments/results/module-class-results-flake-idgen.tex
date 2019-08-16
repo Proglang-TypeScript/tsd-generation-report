@@ -1,0 +1,19 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/flake-idgen/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[flake-idgen/index.d.ts - Generated]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\tscode{code/experiments/results/module-class/flake-idgen/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[flake-idgen/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\caption[Module-class results | flake-idgen]{\textbf{Module-class results | flake-idgen} - Parameters of interface \mintinline{text}{ConstructorOptions} are correctly detected. Name of interface differs since it is automatically generated based on the name of the argument variable. Optional properties were not implemented, hence the \mintinline{text}{undefined} type for some properties. Analogously, callback \mintinline{text}{cb} is inferred as \mintinline{text}{undefined}.}
+	\label{fig:experiments-results-module-class-flake-idgen}
+\end{figure}

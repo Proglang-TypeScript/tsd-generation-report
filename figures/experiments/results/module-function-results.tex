@@ -1,0 +1,47 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/abs/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[abs/index.d.ts - Generated]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/abs/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[abs/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/dirname-regex/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[dirname-regex/index.d.ts - Generated]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/dirname-regex/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[dirname-regex/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/escape-html/generated.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[escape-html/index.d.ts - Generated]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.49\textwidth}
+			\tscode{code/experiments/results/module-function/escape-html/definitely-typed.d.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[escape-html/index.d.ts - DefinitelyTyped]{\usebox{\mintedbox}}
+
+	\caption[Module-function results]{\textbf{Module-function results} - Results are shown for modules \mintinline{text}{abs}, \mintinline{text}{dirname-regex}, \mintinline{text}{escape-html}. On the left side the generated declaration file with \mintinline{text}{dts-generate}. On the right side the corresponding file in the DefinitelyTyped repository. Functions are correctly detected and input types are accurately inferred. Both files are parsed for comparison, as explained in \secref{sec:approach-parsing}. Therefore, subtle differences in the syntax between both files are not important.}
+	\label{fig:experiments-results-module-function}
+\end{figure}
