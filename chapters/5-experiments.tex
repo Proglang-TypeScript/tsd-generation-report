@@ -1,19 +1,24 @@
 \chapter{Experiments}\label{chap:experiments}
-Declaration files were generated for existing modules repository. The DefinitelyTyped repository was used as a benchmark. Each one of the generated files was compared against the corresponding declaration file already uploaded to the repository.
+Declaration files were generated for existing modules uploaded to the NPM registry. The DefinitelyTyped repository was used as a benchmark. Each one of the generated files was compared against the corresponding declaration file already uploaded to the repository.
 
-\figref{fig:experiments-overall-funnel} shows that a declaration file was generated for 244 modules out of 6029. The following sections explain each stage of the process. Examples of generated declaration files for existing modules are presented in \secref{sec:experiments-declaration-files-generation}.
+\figref{fig:experiments-overall-funnel} shows that a declaration file was generated for 244 modules out of 6029 modules. The following sections elaborate each stage of the process and expose the reasons for generating a declaration file for only 4\% of the modules uploaded to DefinitelyTyped. Samples of the generated declaration files for templates \mintinline{text}{module}, \mintinline{text}{module-class} and \mintinline{text}{module-function} are presented in \secref{sec:experiments-declaration-files-generation}.
 
 \input{figures/experiments/overall-funnel.tex}
 
-An analysis on the usage of JavaScript operators can be seen in \secref{sec:experiments-js-operators-usage}.
+Finally, an analysis on the usage of JavaScript operators can be seen in \secref{sec:experiments-js-operators-usage}. The goal is to gather empirical evidence that shows which are the most common types that developers use with every JavaScript operator.
 
 \section{Definitely Typed Benchmark}
 
-\draft{Chequear modulo 'acl' por ejempo que tiene errores y esta exportado como module pero deberia ser exportado como module-class. Habia otro modulo pero no lo recuerdo.}
+\subsection{Code Examples}
+Retrieving the code examples from the JavaScript libraries' repositories proved to be a pragmatic way of capturing the types. However, as shown in \figref{fig:experiments-overall-funnel}, working code examples for only 2260 modules could be retrieved. The process of getting a valid code example for a module is divided in 4 blocks:
+\begin{itemize}
+	\item Extracting repositories url.
+	\item Extracting readme files.
+	\item Extracting code examples within readme files.
+	\item Executing code examples and discarding failing ones.
+\end{itemize}
 
-
-\subsection{Code Examples Extraction}
-Extracting the code examples from the repositories of the JavaScript libraries proved to be a pragmatic way of capturing the types. However, code examples for only 2260 out of 6029 modules could be retrieved.
+The results obtained for each on of them are described in the following sections.
 
 \subsubsection{Repositories URL}
 The url of the repositories could be retrieved for only 4974 modules. More than 1000 modules do not have the repository entry in their corresponding \mintinline{text}{package.json} files. Therefore, the \mintinline{text}{npm view <module> repository.url} command returns an empty value. This is even happening for important modules like \mintinline{text}{ace}.
@@ -22,26 +27,35 @@ The url of the repositories could be retrieved for only 4974 modules. More than 
 700 modules simply do not have a readme file in their repositories. The implementation does contemplate, however, different naming conventions like \mintinline{text}{readme.md} or \mintinline{text}{README.md}.
 
 \subsubsection{Code Examples Extraction}
-The 50\% loss is mainly explained because developers did not tag their code around the \mintinline{text}{javascript} tag in their markdown readme files. As explained in \secref{sec:conclusions-future-work}, the process of extracting code examples from a repository can be greatly improved. Counting with code examples for 2200 modules was considered to be enough for this work.
+The 50\% loss is mainly explained because developers did not wrap their code around a block using the \mintinline{text}{javascript} or \mintinline{text}{js} tags. As explained in \secref{sec:conclusions-future-work}, the process of extracting code examples from a repository can be greatly improved. However, counting with code examples for 2200 modules was considered to be enough for evaluating the generation of declaration files.
 
 \subsubsection{Code Examples Execution}
-Only 1448 modules had working code examples. The 2260 extracted code examples were executed by installing the required packages and running the code as a \mintinline{text}{node} application. 812 modules did not run correctly and were discarded from the analysis. Some failing examples were analyzed and there were mainly two reasons for the failure: 1) The code example had been properly extracted but the code itself was not working properly and 2) the extracted code example was not correct.
-Improving the retrieval the code examples for a specific module will definitely have a positive impact in this number.
+The 2260 extracted code examples were executed by installing the required packages and running the code as a \mintinline{text}{node} application. Working and functional code examples could only be extracted for 1448 modules. 812 modules did not run correctly and were discarded. Some failing samples were analyzed and there were mainly two reasons for the failure:
+\begin{enumerate}
+	\item The code example had been properly extracted but the code itself was not working. It was executing the library in an unsupported way, hence the error at run-time.
+	\item The extracted code example was not intended to be executed or it was not even valid JavaScript code.
+\end{enumerate}
+
+Improving the retrieval of code examples for a specific module will definitely have a positive impact in this number.
 
 \subsection{Run-time Information Gathering} \label{sec:experiments-run-time-information-gathering}
-Run-time information could only be extracted for 442 modules out of 1448 modules with working code examples. As explained in \secref{sec:run-time-wrapper-objects}, the behavior of the code under analysis was explicitly modified by wrapping the arguments around Wrapper Objects. This definitely had an influence on the executed code of some modules by causing new run-time errors. Furthermore, Jalangi's own limitation in the instrumentation process caused some of the modules to be unable to be instrumented.
+Run-time information could only be extracted for 442 modules out of 1448 modules with working code examples. As explained in \secref{sec:run-time-wrapper-objects}, the behavior of the code under analysis was explicitly modified by wrapping the arguments around Wrapper Objects. It definitely had an influence on some modules by causing run-time errors when executing the code examples. Furthermore, Jalangi's instrumentation itself caused some executions to fail, since the modules contained JavaScript features that are not supported by Jalangi. As a result, these modules could not be executed.
 
-A plain Jalangi instrumentation, i.e. without user defined analysis modules, was not applied to the 1448 working code examples. Therefore, it was not possible to determine which modules are failing only because of Jalangi's own limitations.
+An instrumentation without user defined analysis modules was not applied to the 1448 working code examples. Therefore, it was not possible to determine which modules were failing only because of Jalangi's own limitations.
 
 \subsection{Declaration Files Generation} \label{sec:experiments-declaration-files-generation}
-Finally, a declaration file was generated for 244 modules. Despite the correct gathering of run-time information, some of the 442 modules mentioned in \secref{sec:experiments-run-time-information-gathering} did not contain valid run-time information for the generation of the declaration file. The main reason for this behavior is that the extracted code examples did not execute the modules in a way that which gathers valid run-time information.
+Finally, a declaration file was generated for 244 modules. Despite the correct execution of instrumented code examples, some of the 442 modules mentioned in \secref{sec:experiments-run-time-information-gathering} did not contain suitable run-time information for generating a declaration file. 198 of the extracted code examples did not execute the library itself and therefore the collected run-time information was not useful for generating a declaration file.
 
-\subsection{Evaluation}
-As shown in \figref{fig:experiments-typescript-templates-distribution-definitely-typed}, 72\% of the modules uploaded to DefinitelyTyped are written using the \mintinline{text}{modules} template. On the other hand, 20\% of them are written using the \mintinline{text}{module-function}. The complexity of evaluating declaration files written with the \mintinline{text}{module-function} is considerably lower than for the other templates. Templates \mintinline{text}{module-class} and \mintinline{text}{module} were not evaluated. 20\% was considered enough as a starting point.
+\subsubsection{Results}
+The following section exhibits some samples of the 244 generated declaration files.  It shows some results for each of the implemented templates: \mintinline{text}{module}, \mintinline{text}{module-function} and \mintinline{text}{module-class}.
 
-\input{figures/experiments/template-distribution-definitely-typed.tex}
+\figref{fig:experiments-results-module-function} shows the generated declaration files for simple modules like \mintinline{text}{abs}, \mintinline{text}{dirname-regex} and \mintinline{text}{escape-html}. All of them were generated using the \mintinline{text}{module-function} template. There are no differences between the generated files and the corresponding declaration files uploaded to DefinitelyTyped.
 
-\subsection{Results}
+Templates of type \mintinline{text}{module-class} are shown for modules \mintinline{text}{flake-idgen}, \mintinline{text}{route-parser} and \mintinline{text}{timer-machine} in \figref{fig:experiments-results-module-class-flake-idgen}, \figref{fig:experiments-results-module-class-route-parser} and \figref{fig:experiments-results-module-class-timer-machine}, respectively. Properties of interfaces and class methods are correctly generated. Optional parameters are not detected, as it was not considered for the implementation.
+
+Finally, \mintinline{text}{module} template is presented for \mintinline{text}{is-uuid} module in \figref{fig:experiments-results-module-is-uuid}.
+
+It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was not correct. For example, for \mintinline{text}{datadog-metrics}, some properties of an interface were included in the generated declaration file but they were not present in the one in DefinitelyTyped. However, as shown in \figref{fig:experiments-results-module-datadog-metrics}, the properties are indeed used in the source code and should be included. The limitations of using DefinitelyTyped as a baseline for comparison are explained in detail in \chapref{chap:conclusion}.
 
 \input{figures/experiments/results/module-function-results.tex}
 
@@ -55,10 +69,59 @@ As shown in \figref{fig:experiments-typescript-templates-distribution-definitely
 
 \input{figures/experiments/results/datadog-metrics.tex}
 
-\section{JS Operators Usage} \label{sec:experiments-js-operators-usage}
-\todo{Agregar que es una matriz simetrica. Que era para hacer un analisis mas global. Para algunos operators se puede inferir que el orden de los tipos sí afecta. Por ejemplo para instance of donde obviamente importa el orden. Pero para == por ejemplo generalmente se pone a == null y no null == a}.
+\subsection{Evaluation}
+As shown in \figref{fig:experiments-typescript-templates-distribution-definitely-typed}, 20\% of the declaration files in DefinitelyTyped are written using the \mintinline{text}{module-function}. However, 57\% of the 244 generated declaration files are written with the \mintinline{text}{module-function} template. Additionally, the complexity of evaluating declaration files written with the \mintinline{text}{module-function} is considerably lower than for other templates. The evaluation for templates \mintinline{text}{module-class} and \mintinline{text}{module} was not implemented.
+
+33 out of 116 evaluated modules have no difference with their corresponding declaration file in DefinitelyTyped.
+
+\input{figures/experiments/template-distribution-definitely-typed.tex}
+
+\section{JavaScript Operators Usage} \label{sec:experiments-js-operators-usage}
+The following section presents a study on the usage of JavaScript operators. The types of the operands of each operator were recorded with Jalangi. The goal is to better understand how developers are using JavaScript operators and what they expect from them. The study was performed on the 442 modules used for gathering the run-time information, as shown in \figref{fig:experiments-overall-funnel}.
+
+The results might have exposed unexpected development patterns like multiplying a \mintinline{text}{function} and an \mintinline{text}{object}. Conversely, the obtained results support the idea that developers are using operators in a traditional way, despite the possibility in JavaScript of using any type with any operator. 
+
+Table \ref{table:experiments-number-of-events-per-operator} summarizes the distribution of events per operator. In total, 1263866 events were collected.
+
+The most relevant results are presented in the following sections.
+
+\input{figures/experiments/operators/operators-distribution.tex}
+
+\subsection{Relational operators}
+As shown in \figref{fig:experiments-relational-operators}, operators \mintinline{text}{<, >, <=, >=} are only used with both operands of type \mintinline{text}{number}.
+
+Operator \mintinline{text}{instanceof} is mostly used in the expected way. First and second operand are of type \mintinline{text}{object} and \mintinline{text}{function}, respectively.
+
+Operator \mintinline{text}{in} will check if the second operand has a property that matches the name of the first operand. Most of the events are \mintinline{text}{[number] in [array]}, which means that developers are using the operator to check whether an array has a specific key. The expected usage of this operator is \mintinline{text}{[string] in [object]}, which matches the second most used combination.
+
+\subsection{Additive operators}
+Operator \mintinline{text}{+} is mostly used for adding numbers. The combination \mintinline{text}{number-number} represents 77\% of all collected events for this operator. Moreover, 16\% of all events corresponds to the pure string concatenation combination \mintinline{text}{string-string}. Finally, the concatenation of a string a number represents only 1.5\% of all events.
+
+On the other hand, operator \mintinline{text}{-} is only used with type \mintinline{text}{number} for both operands.
+
+Results for additive operators are summarized in \figref{fig:experiments-additive-operators}.
+
+\subsection{Multiplicative operators}
+It can be seen in \figref{fig:experiments-multiplicative-operators} that operators \mintinline{text}{*, /, %} are only used with type \mintinline{text}{number}.
+
+\subsection{Equality operators}
+\figref{fig:experiments-equality-operators} exhibits the usage of operators \mintinline{text}{==, !=, ===, !==}.
+
+Number and string comparison represent the most used combination for both operators \mintinline{text}{==} and \mintinline{text}{===}.
+
+Operators \mintinline{text}{!=, !==} are mostly used for performing a comparison against \mintinline{text}{null}.
+
+\subsection{Conditional operators}
+Jalangi executes the same callback for all operators that trigger a condition check before branching. Therefore, \figref{fig:experiments-conditional-operators} combines operators \mintinline{text}{if-else}, \mintinline{text}{switch-case}, \mintinline{text}{while}, \mintinline{text}{for}, \mintinline{text}{||}, \mintinline{text}{&&} and \mintinline{text}{? :}.
+
+Representing an 82.63\% of all collected events, type \mintinline{text}{boolean} is the most used type with these operators. Types \mintinline{text}{number} and \mintinline{text}{string} come in second and third place, respectively.
+
 \input{figures/experiments/operators/relational-operators/relationalOperators.tex}
+
 \input{figures/experiments/operators/additive-operators/additiveOperators.tex}
+
 \input{figures/experiments/operators/multiplicative-operators/multiplicativeOperators.tex}
+
 \input{figures/experiments/operators/equality-operators/equalityOperators.tex}
+
 \input{figures/experiments/operators/conditional-operators/conditionalOperators.tex}

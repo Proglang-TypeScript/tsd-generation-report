@@ -428,7 +428,7 @@ The following criteria were applied:
 
 Each of these criteria will add a penalty score. The lower the comparison score the more similar the files according to the presented criteria.
 
-\section{Type Inference}
+\section{Type Inference} \label{sec:approach-type-inference}
 Type inference for JavaScript is a topic that was deeply investigated. Nevertheless, it was not included in the implementation. Types were directly imported from the types at run-time. For example, if a function \mintinline{text}{f(input)} was invoked as \mintinline{text}{f("hello")}, argument \mintinline{text}{input} would be declared as \mintinline{text}{string} in the declaration file.
 The refinement of the overall architecture of the generation of TypeScript declaration files was prioritized over type inference accuracy. Extracting the code examples from the repositories proved to be a solid and pragmatic way of capturing the developer's intention. Using the types imported from those examples allowed to focus on creating an end-to-end solution while still obtaining declaration files with reasonable types. It is worth noting that this would not have been the case if randomly generated test cases were used.
 The discussed approach on how to deal with type inference in JavaScript is presented in detail below.

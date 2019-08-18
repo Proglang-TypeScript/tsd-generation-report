@@ -80,11 +80,15 @@
     \usepackage{pgfplots}
     
     \usepackage{csquotes}
+
+    \usepackage{chngcntr}
+    \counterwithin{figure}{chapter}
+    \counterwithin{table}{chapter}
 %------------------------------------------------------------------------------
 %       (re)new commands / settings
 %------------------------------------------------------------------------------
     % ----------------- referencing ----------------
-    \newcommand{\secref}[1]{Section~\ref{#1}}
+    \newcommand{\secref}[1]{Section~\ref{#1} - \nameref{#1}}
     \newcommand{\chapref}[1]{Chapter~\ref{#1}}
     \renewcommand{\eqref}[1]{Equation~(\ref{#1})}
     \newcommand{\figref}[1]{Figure~\ref{#1}}

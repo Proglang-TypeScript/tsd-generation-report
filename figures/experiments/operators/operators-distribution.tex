@@ -1,0 +1,36 @@
+\begin{table}[tp]
+	\centering
+
+	\begin{tabular}{ |c|c|c| } 
+		\hline
+		\textbf{Operator} & \multicolumn{2}{|c|}{\textbf{Number of events}} \\
+		\hline
+		\mintinline{text}{<} & 143666 & 11.37\% \\
+		\mintinline{text}{>} & 8914 & 0.71\% \\
+		\mintinline{text}{<=} & 2537 & 0.20\% \\
+		\mintinline{text}{>=} & 1835 & 0.15\% \\
+		\mintinline{text}{instanceof} & 1823 & 0.14\% \\
+		\mintinline{text}{in} & 2242 & 0.18\% \\
+		\mintinline{text}{+} & 261669 & 20.70\% \\
+		\mintinline{text}{-} & 196598 & 15.56\% \\
+		\mintinline{text}{*} & 82821 & 6.55\% \\
+		\mintinline{text}{/} & 318 & 0.03\% \\
+		\mintinline{text}{==} & 4094 & 0.32\% \\
+		\mintinline{text}{!=} & 377 & 0.03\% \\
+		\mintinline{text}{===} & 28815 & 2.28\% \\
+		\mintinline{text}{!==} & 33265 & 2.63\% \\
+		\mintinline{text}{conditional} & 366215 & 28.98\% \\
+		\mintinline{text}{%} & 939 & 0.07\% \\
+		\mintinline{text}{|} & 17815 & 1.41\% \\
+		\mintinline{text}{>>>} & 64668 & 5.12\% \\
+		\mintinline{text}{delete} & 97 & 0.01\% \\
+		\mintinline{text}{^} & 97 & 0.01\% \\
+		\mintinline{text}{>>} & 13741 & 1.09\% \\
+		\mintinline{text}{&} & 29063 & 2.30\% \\
+		\hline
+		\textbf{Total} & \textbf{1263866} & \textbf{100\%}\\
+		\hline
+	\end{tabular}
+	\caption{\textbf{Number of events per operator} - More than 1 million events were collected. The \mintinline{text}{conditional} operator includes all operators that trigger a condition check before branching: \mintinline{text}{if-else}, \mintinline{text}{switch-case}, \mintinline{text}{while}, \mintinline{text}{for}, \mintinline{text}{||}, \mintinline{text}{&&} and \mintinline{text}{? :}.}
+	\label{table:experiments-number-of-events-per-operator}
+\end{table}

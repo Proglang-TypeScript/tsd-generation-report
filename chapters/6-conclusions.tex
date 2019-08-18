@@ -1,29 +1,40 @@
 \chapter{Conclusion}\label{chap:conclusion}
 
-Brief wrapup of the achievements of this thesis.
+We have presented \mintinline{text}{dts-generate}, a tool for generating a TypeScript declaration file for a specific JavaScript library. The tool downloads code samples written by the developers from the library's repository. It uses these samples to execute the library and gather data flow and type information. The tool finally generates a TypeScript declaration file based on the information gathered at run-time.
 
-Directions for future work (if applicable).
+We developed an architecture that supports the automatic generation of declaration files for specific JavaScript libraries without additional manual tasks. The architecture contemplates a future incorporation of a Symbolic Execution Engine that refines the initial code base enabling the exploration of new execution paths. However not implemented in this work, its incorporation would result in small incremental modifications to the presented architecture as it is considered to only expand the existing code base.
 
-\draft{Una de las conclusiones mas importantes es que la type inference al final no es tan importante. Lo dificil es generar el declaration file como corresponde, detectar las interfaces, etc. El tipo de las variables puede, en principio, inferirse de los ejemplos de los developers. Es una aproximación bastante acertada y se atacan los otros problemas.}
+Building and end-to-end solution for the generation of TypeScript declaration files was prioritized over type inference accuracy. Consequently, types were taken over from the values at run-time. Obtaining the types from the code examples extracted from the repositories proved to be a pragmatic and effective approximation, enabling to work on specific aspects regarding the TypeScript declaration file generation.
 
-\draft{Los code examples son la posta! Como estos ejecutan el codigo y la generacion de los declaration files depende de la runtime information que se junta, la calidad de los declaration files es dependiente de los code examples!}
+We built a mechanism to automatically create declaration files for every module uploaded to DefinitelyTyped and evaluate the results, creating a TypeScript declaration files parser and a comparator.
 
-\draft{Compara contra definitely typed puede no estar tan bueno! Muchas cosas son elecciones del que escribe el file y hace lo que se le canta. Si se sigue comparando con fines de mejorar el desarrollo se puede hcer siempre y cuando sólo se tengan en cuenta los parametros importantes tipo los metodos de una clase, etc etc.}
+We exposed the fundamental aspect of capturing the developer's intention when inferring types in JavaScript. Instead of applying constraints and restrictions for operations with certain types, we presented a proposal where common practices are favored. Uncommon usage is not forbidden but greatly disfavored. Used in a first place merely as an initial code base for executing the library and approximating types, code examples turned out to be extremely useful for inferring types. They expose the developer's intention explicitly through code.
 
-\draft{Decir que todos los bloques pueden mejorarse independientemente: Extraer mejor los readme files, mejorar la instrumentation usando Babel para quedarse siempre en ES5... mejorar la generation de declaration files, etc.}
+
+Finally, the architecture is composed of different blocks that interact with each other. Each block is independent and has a well defined behavior as well as clear input and output values. As a result, each block can be independently and simultaneously improved.
 
 \section{Future Work} \label{sec:conclusions-future-work}
 
-\subsection{Type Inference}
-\todo{Deberia ser hecho en otro modulo que no sea el runtime information. El runtime information deberia exponer unicamente los datos que le hacen falta al otro para inferir los tipos.}
+\subsection{Instrumentation}
+\draft{Babel}
 
-\todo{Tambien se puede identificar patterns de programacion donde siempre los tipos son los mismos!!! El concepto de inferir el tipo en realidad pasa a detectar la intencion del developer.}
+\subsection{Declaration files generation}
+\draft{Optional parameters}
+\draft{Functions as paramters}
+\subsubsection{Uploading Results to Definitely Typed Repository}
+
+
+\subsection{Type Inference}
+% \todo{Deberia ser hecho en otro modulo que no sea el runtime information. El runtime information deberia exponer unicamente los datos que le hacen falta al otro para inferir los tipos.}
+
+% \todo{Tambien se puede identificar patterns de programacion donde siempre los tipos son los mismos!!! El concepto de inferir el tipo en realidad pasa a detectar la intencion del developer.}
 
 \subsubsection{Return values}
-\todo{El return value se podria incluir en el analysis de Jalangi, detectando las interactions que tiene etc etc. Esto no es tan facil porque no se puede simplemente inspeccionar el return value, sino que hay que saber para qué se usa. Los ejemplos podrían ser útiles}.
+% \todo{El return value se podria incluir en el analysis de Jalangi, detectando las interactions que tiene etc etc. Esto no es tan facil porque no se puede simplemente inspeccionar el return value, sino que hay que saber para qué se usa. Los ejemplos podrían ser útiles}.
 
 \subsubsection{Variable Names}
-\todo{Se puede extraer info del nombre de las variables y del nombre de los metodos, etc. La developer's intention.}
+% \todo{Se puede extraer info del nombre de las variables y del nombre de los metodos, etc. La developer's intention.}
 
+\subsubsection{Variable Content}
 
-\subsection{Uploading Results to Definitely Typed Repository}
+\subsubsection{Function Names}
