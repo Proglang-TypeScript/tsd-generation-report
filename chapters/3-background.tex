@@ -1,13 +1,17 @@
 \chapter{Background}\label{chap:background}
 \section{JavaScript} \label{sec:background-javascript}
-% \todo{Agregar img con data de la survey de stackoverflow indicando la popularidad de JS. Agarrar data de encuestas viejas y hacer una comparación de agunas techs, tipo JS, PHP, Python, Java, etc.}
+JavaScript is the standard programming language for developing client-side web applications. In addition to HTML and CSS, they conform the key technology stack of the Web. It is compliant with the ECMAScript Language Specification \citep{ecma-script}.
+
+JavaScript is an interpreted, dynamically typed language that allows to program small scripts very fast. Its low learning curve, the possibility of fast prototyping and its easy interaction with the browser's DOM made it the ideal programming languages for introducing dynamic behavior to web applications.
+
+All browsers have built-in interpreters that support running JavaScript code. The language is also used to develop backend applications that run in server side runtime environments like NodeJS \citep{nodejs}.
+
+\figref{fig:background-survey-programming-languages} shows that it is the most popular programming languages among professional developers. Additionally, 5 of the 12 most popular frameworks used for web developing are JavaScript frameworks. Similarly, it can be seen in \figref{fig:background-programming-languages-evolution} that JavaScript's popularity remained constant in the last 3 years while being the most popular programming language for seven consecutive years.
+
 
 \input{figures/background/stackoverflowSurvey-ProgrammingLanguages2019.tex}
 
 \input{figures/background/stackoverflowSurvey-ProgrammingLanguagesEvolution.tex}
-
-% \todo{Agregar tema serverless. Que NodeJS tiene el 75\% de los deploys}
-
 
 \subsection{TypeCoercion} \label{sec:background-js-type-coercion}
 Type coercion is the process of converting one type into another one. In JavaScript, a variable can be converted into different types depending on the operator and the value of the other operands. The specific definition can be found in the ECMAScript Language Specification \citep{ecma-script}. The following section will cover the basic forms of type coercion but providing a detailed explanation of how JavaScript converts a variable type into another one for each operator is beyond the scope of this section. It is however intended to give insight about this kind of behavior to show its importance while performing type inference in JavaScript. As a result, specific operator related type coercion is explained only for operator \mintinline{text}{+}.
@@ -171,13 +175,27 @@ If any of the operands is an object, it will first convert it into a primitive b
 \end{code}
 
 
-
-
 \subsection{NPM Packages} \label{sec:background-npm-packages}
-% \todo{Agregar info de NPM by numbers! Cuantos downloads, cuantos packages, etc.}
-% \todo{https://snyk.io/blog/npm-passes-the-1-millionth-package-milestone-what-can-we-learn/}
+The Node Package Manager (NPM) is the default package manager for NodeJS, a JavaScript runtime environment built on Google Chrome's V8 JavaScript engine \citep{nodejs}. It offers a public registry where JavaScript libraries can be uploaded to be used by the developer's community.
 
-% \todo{Agregar info de cómo se resuelve el modulo y dónde se busca, etc -> Mirar link Requiring modules in Node.js: Everything you need to know}
+Dependencies can be installed either globally or as local dependencies of specific a JavaScript projects. NPM installs the dependencies described in the \mintinline{text}{package.json} file and local dependencies are saved in the \mintinline{text}{node_modules} directory in the project's root directory. An example of NPM's usage is shown in \coderef{code:background-npm-usage-example}. The registry contains currently more than 1 million modules and it has 11000 million downloads per week.
+
+\begin{code}
+	\begin{bashinline}
+$ cat index.js 
+const abs = require('abs');
+console.log(abs('/foo'));
+
+$ node index.js
+Error: Cannot find module 'abs'
+
+$ npm i abs
+$ node index.js
+/foo
+	  \end{bashinline}
+	\caption[NPM usage example]{\textbf{NPM usage example} - Requiring the module before installing the dependencies will fail since the library is not available. After installing the dependencies locally under the \mintinline{text}{node_modules} directory, the \mintinline{text}{abs} module can be imported using the \mintinline{text}{require} function.}
+	\label{code:background-npm-usage-example}
+  \end{code}
 
 \section{TypeScript} \label{sec:background-typescript}
 \subsection{Declaration Files} \label{sec:declaration-files-background}
