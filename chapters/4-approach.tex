@@ -540,7 +540,7 @@ Finally, for both cases it would be technically correct to infer the input argum
 \end{code}
 
 \subsection{Constraints and restrictions}
-The following section presents the restrictions that different type checkers perform on JavaScript code. The state of the art is shown through a comparison between \mintinline{text}{TypeScript}{TypeScript}, \mintinline{text}{Flow} and \mintinline{text}{Infernu}. All of them introduce the concept of restrictions for JS from different angles and for different use cases. The analysis is going to be performed on the \mintinline{text}{+} operator.
+The following section presents the restrictions that different type checkers perform on JavaScript code. The state of the art is shown through a comparison between \mintinline{text}{TypeScript}, \mintinline{text}{Flow} and \mintinline{text}{Infernu}. All of them introduce the concept of restrictions for JS from different angles and for different use cases. The analysis is going to be performed on the \mintinline{text}{+} operator.
 
 \subsubsection{TypeScript}
 Typescript defines the \mintinline{text}{+} operator using the table presented in \figref{fig:type-inference-typescript-definition-plus-operator}. It is important to note that TypeScript allows a \mintinline{text}{string} to be added to anything. On the other hand, it does not allow, for example, to add a \mintinline{text}{boolean} and an \mintinline{text}{object} or a \mintinline{text}{number} and a \mintinline{text}{boolean}.
@@ -548,7 +548,7 @@ Typescript defines the \mintinline{text}{+} operator using the table presented i
 \input{figures/approach/type-inference/constraints/typescript.tex}
 
 \subsubsection{Flow}
-Flow is a static type checker for JavaScript developed by Facebook \citep{flow}. It is intended to aid developers while writing JS code by detecting different errors. It only allows to use the \mintinline{text}{+} operator between \mintinline{text}{string} and \mintinline{text}{string}, \mintinline{text}{number} and \mintinline{text}{number} or \mintinline{text}{string} and \mintinline{text}{number}, as explained in \coderef{code:type-inference-constraints-flow}.
+Flow is a static type checker for JavaScript developed by Facebook \citep{flow}\citep{FLOW_DBLP:journals/pacmpl/ChaudhuriVGRL17}. It is intended to aid developers while writing JS code by detecting different errors. It only allows to use the \mintinline{text}{+} operator between \mintinline{text}{string} and \mintinline{text}{string}, \mintinline{text}{number} and \mintinline{text}{number} or \mintinline{text}{string} and \mintinline{text}{number}, as explained in \coderef{code:type-inference-constraints-flow}.
 
 \begin{code}
   \jscode{code/type-inference/constraints/constraints-flow.js}
