@@ -8,6 +8,8 @@ JavaScript has become the most popular language for writing web applications \ci
 	\item Type related rigidity: Dynamically typed languages allow functions to return different types for different inputs. For example, a function that returns a \mintinline{text}{number} most of the time but \mintinline{text}{false} for specific inputs.
 \end{enumerate}
 
+JavaScripts allows the developer to do things that are probably not intuitive like multiplying objects and strings, adding strings and arrays or computing the minimum between a boolean and an object. On one hand, this kind of behavior helps the developer to spare several lines of code, making it more readable and understandable. On the other hand, however, JavaScript's native behavior might lead to moments of great frustration and long debugging sessions.
+
 Nowadays, complex and large applications are being written in JavaScript. However, JavaScript was not intended to be more than a scripting language. Maintaining and evolving large JavaScript codebases is notably challenging. Mistakes such as mistyped property names and misunderstood or unexpected type coercion cause developers to spend a significant amount of time in debugging sessions. A JavaScript code blog\footnote{https://wtfjs.com} compiles experiences from developers facing unexpected situations while programming in JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some of these unintuitive JavaScript behaviors.
 
 \begin{code}
