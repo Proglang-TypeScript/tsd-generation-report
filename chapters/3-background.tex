@@ -257,6 +257,8 @@ There are two possibilities for importing declaration files of NPM packages:
 	\item If the library is not written in TypeScript, the declaration files have to be manually created and uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. After a successful pull request, files will be automatically published to the \mintinline{text}{@types} organization on NPM \citep{types-organization-npm}.
 \end{itemize}
 
+\todo{Agregar templates!}
+
 \subsection{Definitely Typed}
 The declaration files for NPM packages that do not already include them in the package are uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. It currently contains declaration files for more than 6000 modules. The developers community adds new declaration files or updates existing ones by creating a pull request with the changes. If it is approved, the changes will be automatically pushed to the NPM registry through Microsoft's \mintinline{text}{types-publisher} tool \citep{types-publisher}.
 
@@ -285,3 +287,20 @@ export = Abs;
   \end{code}
 
 \section{Jalangi} \label{sec:jalangi}
+Jalangi is a framework for performing dynamic analysis in JavaScript with configurable modules \citep{DBLP:conf/sigsoft/SenKBG13}. It first instruments the code and then executes the instrumented code adding the analysis module. Jalangi offers different callbacks that match virtually every JavaScript operations. The relevant callbacks for this work are listed below with short descriptions that have been directly copied from Jalangi's documentation \citep{jalangi-docs}:
+\begin{itemize}
+	\item \textbf{binaryPre()}: `This callback is called before a binary operation.'
+	\item \textbf{declare()}: `This callback is triggered at the beginning of a scope for every local variable declared in the scope, for every formal parameter, for every function defined using a function statement, for arguments variable, and for the formal parameter passed in a catch statement.'
+	\item \textbf{getField()}: `This callback is called after a property of an object is accessed.'
+	\item \textbf{putFieldPre()}: `This callback is called before a property of an object is written.'
+	\item \textbf{functionEnter()}: `This callback is called before the execution of a function body starts.'
+	\item \textbf{functionExit()}: `This callback is called when the execution of a function body completes'
+	\item \textbf{invokeFun()}: `This callback is called after a function, method, or constructor invocation.'
+	\item \textbf{invokeFunPre()}: `This callback is called before a function, method, or constructor invocation.'
+	\item \textbf{unaryPre()}: `This callback is called before a unary operation.'
+	\item \textbf{write()}: `This callback is called before a variable is written.'
+  \end{itemize}
+
+\figref{fig:background-jalangi} provides an example for the usage of Jalangi where invocations of a function are detected and printed by stdout.
+
+\input{figures/background/typescript/jalangi/jalangi-example.tex}

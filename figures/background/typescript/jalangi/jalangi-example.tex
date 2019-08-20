@@ -1,0 +1,31 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.34\textwidth}
+			\jscode{code/background/jalangi/sum.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[sum.js]{\usebox{\mintedbox}}
+	\hfill
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.64\textwidth}
+			\jscode{code/background/jalangi/analysis.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[analysis.js]{\usebox{\mintedbox}}
+
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.8\textwidth}
+			\begin{bashinline}
+$ node jalangi.js --analysis analysis.js sum.js
+Function sum was invoked with params (1,2) and returned 3
+Function sum was invoked with params (3,4) and returned 7
+Function sum was invoked with params (5,6) and returned 11
+			\end{bashinline}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[Console output]{\usebox{\mintedbox}}
+
+	\caption[Jalangi usage example]{\textbf{Jalangi usage example} - \mintinline{text}{sum.js} file is instrumented and executed alongside the analysis module defined in \mintinline{text}{analysis.js}.}
+	\label{fig:background-jalangi}
+\end{figure}
