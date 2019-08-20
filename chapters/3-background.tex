@@ -1,8 +1,17 @@
 \chapter{Background}\label{chap:background}
 \section{JavaScript} \label{sec:background-javascript}
-JavaScript is the standard programming language for developing client-side web applications. In addition to HTML and CSS, they conform the key technology stack of the Web. It is compliant with the ECMAScript Language Specification \citep{ecma-script}.
+JavaScript is the standard programming language for developing client-side web applications. Together with HTML and CSS, they conform the key technology stack of the Web.
 
-JavaScript is an interpreted, dynamically typed language that allows to program small scripts very fast. Its low learning curve, the possibility of fast prototyping and its easy interaction with the browser's DOM made it the ideal programming languages for introducing dynamic behavior to web applications.
+JavaScript is compliant with the ECMAScript Language Specification \citep{ecma-script}. It is an interpreted, dynamically typed language that allows to program small scripts very fast.  Its low learning curve, the possibility of fast prototyping and its easy interaction with the browser's DOM made it the ideal programming languages for introducing dynamic behavior to web applications.
+
+Numerous JavaScript frameworks that aid the development of web applications have been created over the years. \mintinline{text}{jQuery} is used by 74.2\% of the 10 million most popular websites, making it the most popular JavaScript framework in the market \citep{jquery}\citep{w3techs-javascript-libraries-statistics}. Other frameworks like \mintinline{text}{AngularJS}, \mintinline{text}{React} and \mintinline{text}{Vue.js} appeared as an elegant alternative for building complex and scalable web applications \citep{angularjs}\citep{react}\citep{vuejs}. A very simple example of how to use \mintinline{text}{jQuery} for adding dynamic behavior to a web page is shown in \coderef{code:background-jquery-example}.
+
+\begin{code}
+	\htmlcode{code/background/javascript/jquery-example.html}
+	\captionsetup{aboveskip=0pt, belowskip=10pt}
+	\caption[Example using JavaScript and HTML]{\textbf{Example using JavaScript and HTML} - Very simple example that uses library jQuery to hide an element from the DOM when it gets clicked. The example was extracted from W3Schools website.}
+	\label{code:background-jquery-example}
+\end{code}
 
 All browsers have built-in interpreters that support running JavaScript code. The language is also used to develop backend applications that run in server side runtime environments like NodeJS \citep{nodejs}.
 
@@ -12,6 +21,27 @@ All browsers have built-in interpreters that support running JavaScript code. Th
 \input{figures/background/stackoverflowSurvey-ProgrammingLanguages2019.tex}
 
 \input{figures/background/stackoverflowSurvey-ProgrammingLanguagesEvolution.tex}
+
+\subsection{Types}
+Section 8 of the ECMAScript Language Specification presents the allowed types for a variable \citep{ecma-script}. These are: \mintinline{text}{undefined}, \mintinline{text}{null}, \mintinline{text}{boolean}, \mintinline{text}{string}, \mintinline{text}{number}, \mintinline{text}{object} and \mintinline{text}{symbol} for ES6/ECMAScript 2015. All of them except for \mintinline{text}{object} are called primitives.
+
+It must be noted that functions and arrays are not built-in types. Functions are considered to be `member of the Object type that is an instance of the standard built-in Function constructor and that may be invoked as a subroutine' \citep{ecma-script}. The \mintinline{text}{Function} object is a built-in object with a \mintinline{text}{[[Call]]} internal property, which means that it can be invoked. Similarly, arrays are instances of the built-in \mintinline{text}{Array} object. Both concepts are shown in \coderef{code:background-functions-and-arrays}.
+
+\begin{code}
+	\jscode{code/background/javascript/functions-and-arrays.js}
+	\captionsetup{aboveskip=0pt, belowskip=10pt}
+	\caption[Functions and arrays are built-in objects in JS]{\textbf{Functions and arrays are built-in objects in JS} - A function can be created using the \mintinline{text}{function} keyword or using the \mintinline{text}{Function} built-in constructor. Similarly, arrays can be created using brackets or the \mintinline{text}{Array} built-in object.}
+	\label{code:background-functions-and-arrays}
+\end{code}
+
+Finally, the \mintinline{text}{typeof} operator is not an exact match with the built-in types. It surprisingly returns \mintinline{text}{'object'} for \mintinline{text}{null}, \mintinline{text}{'function'} for a \mintinline{text}{function} and \mintinline{text}{'object'} for an \mintinline{text}{array}. \coderef{code:background-javascript-typeof} gives some examples about this operator.
+
+\begin{code}
+	\jscode{code/background/javascript/javascript-typeof.js}
+	\captionsetup{aboveskip=0pt, belowskip=10pt}
+	\caption[typeof JavaScript operator]{\textbf{\mintinline{text}{typeof} JavaScript operator} - Examples of the \mintinline{text}{typeof} operator for \mintinline{text}{null}, \mintinline{text}{function} and \mintinline{text}{array}.}
+	\label{code:background-javascript-typeof}
+\end{code}
 
 \subsection{TypeCoercion} \label{sec:background-js-type-coercion}
 Type coercion is the process of converting one type into another one. In JavaScript, a variable can be converted into different types depending on the operator and the value of the other operands. The specific definition can be found in the ECMAScript Language Specification \citep{ecma-script}. The following section will cover the basic forms of type coercion but providing a detailed explanation of how JavaScript converts a variable type into another one for each operator is beyond the scope of this section. It is however intended to give insight about this kind of behavior to show its importance while performing type inference in JavaScript. As a result, specific operator related type coercion is explained only for operator \mintinline{text}{+}.
