@@ -1,6 +1,6 @@
 \chapter{Background}\label{chap:background}
 \section{JavaScript} \label{sec:background-javascript}
-JavaScript is the standard programming language for developing client-side web applications. Together with HTML and CSS, they conform the key technology stack of the Web.
+JavaScript (abbreviated JS) is the standard programming language for developing client-side web applications. Together with HTML and CSS, they conform the key technology stack of the Web.
 
 JavaScript is compliant with the ECMAScript Language Specification \citep{ecma-script}. It is an interpreted, dynamically typed language that allows to program small scripts very fast.  Its low learning curve, the possibility of fast prototyping and its easy interaction with the browser's DOM made it the ideal programming languages for introducing dynamic behavior to web applications.
 
@@ -239,7 +239,49 @@ $ node index.js
 
 \section{TypeScript} \label{sec:background-typescript}
 \subsection{Declaration Files} \label{sec:declaration-files-background}
-% \todo{Hablar de los tipos de declaration files que hay}
+Declaration files contain a typed description of an external JavaScript library's API. It allows the IDE to use code intelligence features like auto-completion and avoids misusing the library by declaring specific interfaces and types required by the library. They are necessary for integrating new TypeScript projects with existing JavaScript libraries that are still developed in plain JavaScript.
+
+Declaration files have the extension \mintinline{text}{.d.ts}. \figref{fig:background-declaration-files-calculator-example} provides an example where a new TypeScript program is using the declaration file of an external JavaScript library called \mintinline{text}{calculator}. The example  library \mintinline{text}{calculator} is not part of the TypeScript project, it is imported in run-time after compilation when the JavaScript code is executed.
+
+\input{figures/background/typescript/declaration-files/calculator-example.tex}
+
+It is important to mention that the compiler and the IDE will blindly trust the declaration file. There are no run-time checks being performed on the declaration file and the JavaScript code itself. TypeScript is not aware if the JavaScript library corresponding to the declaration file even exists. \figref{fig:background-declaration-files-calculator-error-example} exposes a scenario where a declaration file that does not match the JavaScript implementation. The declaration file states that types \mintinline{text}{number} and \mintinline{text}{string} are allowed for \mintinline{text}{sum} method but the JavaScript code explicitly throws an error when the arguments are not of type \mintinline{text}{number}. The IDE, however, will provide suggestions based on the inaccurate declaration file. The compiler itself will use the declaration file to perform type checking. Therefore, the code is compiled without errors and the error is only encountered at run-time.
+
+\input{figures/background/typescript/declaration-files/calculator-example-error.tex}
+
+It is clear that inaccurate declaration files will cause errors that are tedious and difficult to track and debug. Discrepancies with the actual JavaScript implementation is going to frustrate developers, stopping them from using TypeScript as an alternative to JavaScript. Hence the importance of accurate declaration files that match the JavaScript implementation.
+
+There are two possibilities for importing declaration files of NPM packages:
+\begin{itemize}
+	\item If the JavaScript library is written in TypeScript, then the declaration file will be generated automatically by the compiler using the \mintinline{text}{--declaration} flag. The generated declaration file is bundled with the JavaScript distribution files and uploaded to the NPM registry as a part of the package. The \mintinline{text}{types} field in the \mintinline{text}{package.json} file should point to the declaration file. Consequently, the declaration file and the JavaScript code will always be synchronized.
+	\item If the library is not written in TypeScript, the declaration files have to be manually created and uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. After a successful pull request, files will be automatically published to the \mintinline{text}{@types} organization on NPM \citep{types-organization-npm}.
+\end{itemize}
+
 \subsection{Definitely Typed}
+The declaration files for NPM packages that do not already include them in the package are uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. It currently contains declaration files for more than 6000 modules. The developers community adds new declaration files or updates existing ones by creating a pull request with the changes. If it is approved, the changes will be automatically pushed to the NPM registry through Microsoft's \mintinline{text}{types-publisher} tool \citep{types-publisher}.
+
+\subsubsection{Consumption}
+As shown in \coderef{code:background-definitely-typed-consumption}, the declaration files can be simply imported by running \mintinline{text}{npm install --save-dev @types/THE-MODULE}. NPM will install the files under the \mintinline{text}{node_modules/@types} directory and the compiler will include the declaration files automatically.
+
+\begin{code}
+	\begin{bashinline}
+$ npm install --save-dev @types/abs 
+$ cat node_modules/@types/abs/index.d.ts
+
+// Type definitions for abs 1.3
+// Project: https://github.com/ionicabizau/abs
+// Definitions by: Aya Morisawa <https://github.com/AyaMorisawa>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+/**
+ * Compute the absolute path of an input.
+ * @param input The input path.
+ */
+declare function Abs(input: string): string;
+export = Abs;
+	  \end{bashinline}
+	\caption[DefinitelyTyped files consumption]{\textbf{DefinitelyTyped files consumption} - The declaration files are installed as a common NPM package under the \mintinline{text}{@types} directory.}
+	\label{code:background-definitely-typed-consumption}
+  \end{code}
 
 \section{Jalangi} \label{sec:jalangi}
