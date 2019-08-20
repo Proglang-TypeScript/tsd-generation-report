@@ -43,6 +43,16 @@ Finally, the \mintinline{text}{typeof} operator is not an exact match with the b
 	\label{code:background-javascript-typeof}
 \end{code}
 
+\subsection{Wrapper Objects for Primitives}
+JavaScript also includes the built-in objects \mintinline{text}{Boolean}, \mintinline{text}{String} and \mintinline{text}{Number}. Whenever a method or a property of a primitive value of type \mintinline{text}{boolean}, \mintinline{text}{string} and \mintinline{text}{number} is accessed, JavaScript will convert the primitive value into its corresponding built-in object before accessing the property or invoking the method, as illustrated in \coderef{code:background-javascript-wrapper-objects}. It is however considered a bad practice to explicitly use the built-in objects instead of the primitive values. Several JavaScript linters like JSHint will consider this an error \citep{jshint-wrapper-objects-error}.
+
+\begin{code}
+	\jscode{code/background/javascript/javascript-wrapper-objects.js}
+	\captionsetup{aboveskip=0pt, belowskip=10pt}
+	\caption[Wrapper Objects for primitives]{\textbf{Wrapper Objects for primitives} - When a method is invoked on a primitive value like \mintinline{text}{number} or \mintinline{text}{string}, an intermediate wrapper object is created.}
+	\label{code:background-javascript-wrapper-objects}
+\end{code}
+
 \subsection{TypeCoercion} \label{sec:background-js-type-coercion}
 Type coercion is the process of converting one type into another one. In JavaScript, a variable can be converted into different types depending on the operator and the value of the other operands. The specific definition can be found in the ECMAScript Language Specification \citep{ecma-script}. The following section will cover the basic forms of type coercion but providing a detailed explanation of how JavaScript converts a variable type into another one for each operator is beyond the scope of this section. It is however intended to give insight about this kind of behavior to show its importance while performing type inference in JavaScript. As a result, specific operator related type coercion is explained only for operator \mintinline{text}{+}.
 
