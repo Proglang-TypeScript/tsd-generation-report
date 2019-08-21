@@ -327,11 +327,11 @@ TypeScript provides templates for writing declaration files, as explained in \se
 The following templates were implemented:
 
 \begin{enumerate}
-  \item \mintinline{text}{module.d.ts}: It is used when the exported module is a JavaScript object containing several properties and methods. It is the most common used template: more than 70\% of the modules uploaded to DefinitelyTyped are based on this template. The code checks if the exported module is neither a function nor a constructor, i.e. if properties \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are \mintinline{text}{false}. An example is provided in \figref{fig:ts-declaration-file-module-template}.
+  \item \mintinline{text}{module.d.ts}: The code checks if the exported module is neither a function nor a constructor, i.e. if properties \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are \mintinline{text}{false}. An example is provided in \figref{fig:ts-declaration-file-module-template}.
 
-  \item \mintinline{text}{module-class.d.ts}: As shown in \figref{fig:ts-declaration-file-module-class-template}, this template is used when the exported function is supposed to be used as a constructor with the \mintinline{text}{new} operator. The code will use this template when both the fields \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are true. It should be noted that the module exports only the constructor function. Methods belonging to the class are detected using the \mintinline{text}{constructedBy} field from the run-time data.
+  \item \mintinline{text}{module-class.d.ts}: The code will use this template when both the fields \mintinline{text}{isExported} and \mintinline{text}{isConstructor} are true. It should be noted that the module exports only the constructor function. Methods belonging to the class are detected using the \mintinline{text}{constructedBy} field from the run-time data.
   
-  \item \mintinline{text}{module-function.d.ts}: It is used when the module exports only a function. The field \mintinline{text}{isExported} field is used to determine whether this templates should be used or not. An example is provided in \figref{fig:ts-declaration-file-module-function-template}. If further interfaces or types are required, they are written within a namespace named like the exported function.
+  \item \mintinline{text}{module-function.d.ts}: The field \mintinline{text}{isExported} field is used to determine whether this templates should be used or not. An example is provided in \figref{fig:ts-declaration-file-module-function-template}. If further interfaces or types are required, they are written within a namespace named like the exported function.
 \end{enumerate}
 
 \input{figures/approach/typescript-declaration-files-generation-method/examples/templates/module-template.tex}

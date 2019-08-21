@@ -257,7 +257,15 @@ There are two possibilities for importing declaration files of NPM packages:
 	\item If the library is not written in TypeScript, the declaration files have to be manually created and uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. After a successful pull request, files will be automatically published to the \mintinline{text}{@types} organization on NPM \citep{types-organization-npm}.
 \end{itemize}
 
-\todo{Agregar templates!}
+\subsubsection{Templates}
+TypeScript provides different templates for writing declaration files \citep{typescript-declaration-files-templates}. The relevant templates are the following:
+\begin{itemize}
+	\item \mintinline{text}{module.d.ts}: It is used when the exported module is a JavaScript object containing several properties and methods.
+  
+	\item \mintinline{text}{module-class.d.ts}: This template is used when the exported function is supposed to be used as a constructor with the \mintinline{text}{new} operator.
+	
+	\item \mintinline{text}{module-function.d.ts}: It is used when the module exports only a function.
+  \end{itemize}
 
 \subsection{Definitely Typed}
 The declaration files for NPM packages that do not already include them in the package are uploaded to the DefinitelyTyped repository \citep{definitely-typed-repository}. It currently contains declaration files for more than 6000 modules. The developers community adds new declaration files or updates existing ones by creating a pull request with the changes. If it is approved, the changes will be automatically pushed to the NPM registry through Microsoft's \mintinline{text}{types-publisher} tool \citep{types-publisher}.
