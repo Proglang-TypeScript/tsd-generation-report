@@ -143,14 +143,14 @@ An implementation of this behavior is shown in \coderef{code:background-to-primi
 	\label{code:background-to-primitive-operation}
 \end{code}
 
-An important aspect that should be considered, is that the type of the return value of \mintinline{text}{ToPrimitive()} does not necessarily have to match the chosen \mintinline{text}{preferredType}. This means concretely that, for example, \mintinline{text}{ToPrimitive(a, number)} can be called and return a \mintinline{text}{string} as a result. Of course, when performing an explicit type conversion, JS will eventually convert whatever \mintinline{text}{ToPrimitive} returns into the correct type. But some operators will perform different implicit type conversions \textit{after} calling \mintinline{text}{ToPrimitive()}. The specific type conversion will then be dependent on the type of the return value of \mintinline{text}{ToPrimitive()} and not on the chosen \mintinline{text}{preferredType}.
+An important aspect that should be considered, is that the type of the return value of \mintinline{text}{ToPrimitive()} does not necessarily have to match the chosen \mintinline{text}{preferredType}. This means concretely that \mintinline{text}{ToPrimitive(a, number)} can be called and return a \mintinline{text}{string} as a result, for example. Of course, when performing an explicit type conversion, JS will eventually convert whatever \mintinline{text}{ToPrimitive} returns into the correct type. But some operators will perform different implicit type conversions \textit{after} calling \mintinline{text}{ToPrimitive()}. The specific type conversion will then be dependent on the type of the return value of \mintinline{text}{ToPrimitive()} and not on the chosen \mintinline{text}{preferredType}.
 
 All objects that are converted to \mintinline{text}{boolean} will be coerced to \mintinline{text}{true}. The following paragraphs explain how objects get converted into strings or numbers.
 
 \subsubsection{Object to String}
 The object is first converted into a primitive value calling the \mintinline{text}{ToPrimitive()} method, using \mintinline{text}{string} as \mintinline{text}{preferredType}. The obtained primitive value is then normally converted into a \mintinline{text}{string}, as explained before in \coderef{code:background-to-string-implementation}. \coderef{code:background-object-into-string} shows a straightforward example.
 
-On the other hand, \coderef{code:background-object-into-string-not-string-return-value} provides an example where \mintinline{text}{ToPrimitive(val, String)} does not return a \mintinline{text}{string}, either because simply \mintinline{text}{toString()} does not return a \mintinline{text}{string} or because \mintinline{text}{valueOf()} gets being called instead of \mintinline{text}{toString()}.
+\coderef{code:background-object-into-string-not-string-return-value} provides an example where \mintinline{text}{ToPrimitive(val, String)} does not return a \mintinline{text}{string}, either because simply \mintinline{text}{toString()} does not return a \mintinline{text}{string} or because \mintinline{text}{valueOf()} gets being called instead of \mintinline{text}{toString()}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/to-primitive/normal-object-to-string.js}
