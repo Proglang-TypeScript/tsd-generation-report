@@ -1,22 +1,22 @@
 \chapter{Background}\label{chap:background}
 \section{JavaScript} \label{sec:background-javascript}
-JavaScript (abbreviated JS) is the standard programming language for developing client-side web applications. Together with HTML and CSS, they conform the key technology stack of the Web.
+JavaScript (abbreviated JS) is a programming language that is compliant with the ECMAScript Language Specification \citep{ecma-script}. It is one of the
+key technologies for developing client-side web applications, alongside HTML and CSS.
 
-JavaScript is compliant with the ECMAScript Language Specification \citep{ecma-script}. It is an interpreted, dynamically typed language that allows to program small scripts very fast.  Its low learning curve, the possibility of fast prototyping and its easy interaction with the browser's DOM made it the ideal programming languages for introducing dynamic behavior to web applications.
+It is an interpreted, dynamically typed language that allows to program small scripts very fast.  Its low learning curve, the possibility of fast prototyping and its simple interaction with the contents of a web page through the DOM (Document Object Model) made it the ideal programming languages for introducing dynamic behavior to web applications.
 
 Numerous JavaScript frameworks that aid the development of web applications have been created over the years. \mintinline{text}{jQuery} is used by 74.2\% of the 10 million most popular websites, making it the most popular JavaScript framework in the market \citep{jquery}\citep{w3techs-javascript-libraries-statistics}. Other frameworks like \mintinline{text}{AngularJS}, \mintinline{text}{React} and \mintinline{text}{Vue.js} appeared as an elegant alternative for building complex and scalable web applications \citep{angularjs}\citep{react}\citep{vuejs}. A very simple example of how to use \mintinline{text}{jQuery} for adding dynamic behavior to a web page is shown in \coderef{code:background-jquery-example}.
 
 \begin{code}
 	\htmlcode{code/background/javascript/jquery-example.html}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[Example using JavaScript and HTML]{\textbf{Example using JavaScript and HTML} - Very simple example that uses library jQuery to hide an element from the DOM when it gets clicked. The example was extracted from W3Schools website.}
+	\caption[Example using JavaScript and HTML]{\textbf{Example using JavaScript and HTML} - Very simple example that uses library jQuery to hide an element from the DOM when it gets clicked. The example was extracted from W3Schools website \citep{w3schools}.}
 	\label{code:background-jquery-example}
 \end{code}
 
 All browsers have built-in interpreters that support running JavaScript code. The language is also used to develop backend applications that run in server side runtime environments like NodeJS \citep{nodejs}.
 
-\figref{fig:background-survey-programming-languages} shows that it is the most popular programming languages among professional developers. Additionally, 5 of the 12 most popular frameworks used for web developing are JavaScript frameworks. Similarly, it can be seen in \figref{fig:background-programming-languages-evolution} that JavaScript's popularity remained constant in the last 3 years while being the most popular programming language for seven consecutive years.
-
+\figref{fig:background-survey-programming-languages} shows that it is the most popular programming languages among professional developers. Additionally, 5 of the 12 most popular frameworks used for web developing are JavaScript frameworks. Similarly, it can be seen in \figref{fig:background-programming-languages-evolution} that JavaScript's popularity remained constant in the last 3 years and it remained as the most popular programming language for seven consecutive years.
 
 \input{figures/background/stackoverflowSurvey-ProgrammingLanguages2019.tex}
 
@@ -25,7 +25,7 @@ All browsers have built-in interpreters that support running JavaScript code. Th
 \subsection{Types}
 Section 8 of the ECMAScript Language Specification presents the allowed types for a variable \citep{ecma-script}. These are: \mintinline{text}{undefined}, \mintinline{text}{null}, \mintinline{text}{boolean}, \mintinline{text}{string}, \mintinline{text}{number}, \mintinline{text}{object} and \mintinline{text}{symbol} for ES6/ECMAScript 2015. All of them except for \mintinline{text}{object} are called primitives.
 
-It must be noted that functions and arrays are not built-in types. Functions are considered to be `member of the Object type that is an instance of the standard built-in Function constructor and that may be invoked as a subroutine' \citep{ecma-script}. The \mintinline{text}{Function} object is a built-in object with a \mintinline{text}{[[Call]]} internal property, which means that it can be invoked. Similarly, arrays are instances of the built-in \mintinline{text}{Array} object. Both concepts are shown in \coderef{code:background-functions-and-arrays}.
+It must be noted that functions and arrays are not built-in types. A Function is considered to be `member of the Object type that is an instance of the standard built-in Function constructor and that may be invoked as a subroutine' \citep{ecma-script}. The \mintinline{text}{Function} object is a built-in object with a \mintinline{text}{[[Call]]} internal property, which means that it can be invoked. Similarly, arrays are instances of the built-in \mintinline{text}{Array} object. Both concepts are shown in \coderef{code:background-functions-and-arrays}.
 
 \begin{code}
 	\jscode{code/background/javascript/functions-and-arrays.js}
@@ -44,7 +44,7 @@ Finally, the \mintinline{text}{typeof} operator is not an exact match with the b
 \end{code}
 
 \subsection{Wrapper Objects for Primitives}
-JavaScript also includes the built-in objects \mintinline{text}{Boolean}, \mintinline{text}{String} and \mintinline{text}{Number}. Whenever a method or a property of a primitive value of type \mintinline{text}{boolean}, \mintinline{text}{string} and \mintinline{text}{number} is accessed, JavaScript will convert the primitive value into its corresponding built-in object before accessing the property or invoking the method, as illustrated in \coderef{code:background-javascript-wrapper-objects}. It is however considered a bad practice to explicitly use the built-in objects instead of the primitive values. Several JavaScript linters like JSHint will consider this an error \citep{jshint-wrapper-objects-error}.
+JavaScript also includes the built-in objects \mintinline{text}{Boolean}, \mintinline{text}{String} and \mintinline{text}{Number}. Whenever a method or a property of a primitive value of type \mintinline{text}{boolean}, \mintinline{text}{string} or \mintinline{text}{number} is accessed, JavaScript will convert the primitive value into its corresponding built-in object before accessing the property or invoking the method, as illustrated in \coderef{code:background-javascript-wrapper-objects}. It is however considered a bad practice to explicitly use the built-in objects instead of the primitive values. Several JavaScript linters like JSHint will consider this an error \citep{jshint-wrapper-objects-error}.
 
 \begin{code}
 	\jscode{code/background/javascript/javascript-wrapper-objects.js}
@@ -54,13 +54,13 @@ JavaScript also includes the built-in objects \mintinline{text}{Boolean}, \minti
 \end{code}
 
 \subsection{TypeCoercion} \label{sec:background-js-type-coercion}
-Type coercion is the process of converting one type into another one. In JavaScript, a variable can be converted into different types depending on the operator and the value of the other operands. The specific definition can be found in the ECMAScript Language Specification \citep{ecma-script}. The following section will cover the basic forms of type coercion but providing a detailed explanation of how JavaScript converts a variable type into another one for each operator is beyond the scope of this section. It is however intended to give insight about this kind of behavior to show its importance while performing type inference in JavaScript. As a result, specific operator related type coercion is explained only for operator \mintinline{text}{+}.
+Type coercion is the process of converting one type into another one. In JavaScript, a variable can be converted into different types depending on the operator and the value of the other operands. The specific definition can be found in the ECMAScript Language Specification \citep{ecma-script}. The following section will cover the basics about JavaScript's type coercion. A detailed explanation of how JavaScript converts a variable type into another one for each operator can be seen in the ECMAScript Language Specification \citep{ecma-script}. It is however intended to give insight about this kind of behavior to highlight its importance for performing type inference in JavaScript. Therefore, specific operator related type coercion is explained only for operator \mintinline{text}{+}.
 
-Finally, there are excellent references regarding JavaScript's Type Coercion, like Kyle Simpson's book `You Don't Know JS: Types \& Grammar' \citep{you-dont-know-js}.
+There are excellent references regarding JavaScript's Type Coercion, like Kyle Simpson's book `You Don't Know JS: Types \& Grammar' \citep{you-dont-know-js}.
 
 \subsubsection{Types of conversion}
 \label{types_of_conversion}
-There are two types of type coercion: explicit and implicit \citep{you-dont-know-js}. Explicit type coercion is simply when the developer chooses to convert one type into another one. The developer achieves this by writing a piece of code that shows her intention, as shown in \coderef{code:background-explicit-type-coercion}. This type of coercion is also called type casting \citep{you-dont-know-js}.
+There are two types of type coercion: explicit and implicit \citep{you-dont-know-js}. Explicit type coercion is simply when the developer chooses to convert one type into another one. The developer achieves this by writing a piece of code that explicitly shows her intention, as shown in \coderef{code:background-explicit-type-coercion}. This type of coercion is also called type casting \citep{you-dont-know-js}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/explicit-type-coercion.js}
@@ -74,7 +74,7 @@ On the other hand, depending on the operator and the context, JavaScript will pe
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/implicit-type-coercion.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[Implicit JavaScript Type Coercion]{\textbf{Implicit JavaScript Type Coercion} - Examples given by Douglas Crockford in his talk `JavaScript: The Good Parts' at Google\footnote{https://www.youtube.com/watch?v=hQVTIJBZook}.}
+	\caption[Implicit JavaScript Type Coercion]{\textbf{Implicit JavaScript Type Coercion} - Examples given by Douglas Crockford in his talk `JavaScript: The Good Parts' at Google \citep{js-the-good-parts}.}
 	\label{code:background-implicit-type-coercion}
 \end{code}
 
@@ -82,7 +82,7 @@ In any case, JavaScript will always convert any value into a primitive value \ci
 
 It is fundamental to understand how a value gets coerced into one of these types. JavaScript mainly performs this by applying one of three so called \mintinline{text}{Abstract Operations} \citep{ecma-script}: \mintinline{text}{ToString()}, \mintinline{text}{ToNumber()} and \mintinline{text}{ToBoolean()}.
 
-The operation \mintinline{text}{ToPrimitive()} is also called within the operators. However, each operator will call either \mintinline{text}{ToString()}, \mintinline{text}{ToNumber()} or \mintinline{text}{ToBoolean()} after calling \mintinline{text}{ToPrimitive()}. This operator will be explained in an independent section.
+The operation \mintinline{text}{ToPrimitive()} is also called within the operators. However, each operator will call either \mintinline{text}{ToString()}, \mintinline{text}{ToNumber()} or \mintinline{text}{ToBoolean()} after calling \mintinline{text}{ToPrimitive()}. This operation will be explained in an independent section.
 
 \subsubsection{ToString}
 JavaScript performs this conversion in a very intuitive way, as explained in \coderef{code:background-to-string-operation}. Every primitive gets converted as expected. Objects are converted into strings by calling \mintinline{text}{ToPrimtive()} with \mintinline{text}{hint = string}, as presented in \coderef{code:background-to-string-implementation}.
@@ -97,12 +97,12 @@ JavaScript performs this conversion in a very intuitive way, as explained in \co
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/string-conversion.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[ToString operation]{\textbf{ToString operation}}
+	\caption[ToString operation examples]{\textbf{ToString operation examples}}
 	\label{code:background-to-string-operation}
 \end{code}
 
 \subsubsection{ToNumber}
-\coderef{code:background-to-number-operation} presents this type of conversion. Strings and boolean values get converted in the expected way. Moreover, \mintinline{text}{undefined} will be converted into \mintinline{text}{NaN} and \mintinline{text}{null} into \mintinline{text}{0}. Similarly, objects are converted into numbers by calling \mintinline{text}{ToPrimtive()} with \mintinline{text}{hint = number}, as presented in \coderef{code:background-to-number-implementation}.
+\coderef{code:background-to-number-operation} presents this type of conversion. Strings and boolean values get converted in the expected way. Curiously, \mintinline{text}{undefined} will be converted into \mintinline{text}{NaN} and \mintinline{text}{null} into \mintinline{text}{0}. Similarly, objects are converted into numbers by calling \mintinline{text}{ToPrimtive()} with \mintinline{text}{hint = number}, as presented in \coderef{code:background-to-number-implementation}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/to-number.js}
@@ -114,7 +114,7 @@ JavaScript performs this conversion in a very intuitive way, as explained in \co
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/number-conversion.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[ToNumber operation]{\textbf{ToNumber operation}}
+	\caption[ToNumber operation examples]{\textbf{ToNumber operation examples} - Every non-printable character is removed from the string before converting it into a number.}
 	\label{code:background-to-number-operation}
 \end{code}
 
@@ -127,7 +127,7 @@ Values that are converted into \mintinline{text}{false}, like \mintinline{text}{
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/boolean-conversion.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[ToBoolean operation]{\textbf{ToBoolean operation}}
+	\caption[ToBoolean operation examples]{\textbf{ToBoolean operation examples} - Values that are coerced to false are called \textit{falsy} values.}
 	\label{code:background-to-boolean-operation}
 \end{code}
 
@@ -143,7 +143,7 @@ An implementation of this behavior is shown in \coderef{code:background-to-primi
 	\label{code:background-to-primitive-operation}
 \end{code}
 
-An important aspect that should be considered, is that the type of the return value of \mintinline{text}{ToPrimitive()} does not necessarily have to match the chosen \mintinline{text}{preferredType}. This means concretely that, for example, you can call \mintinline{text}{ToPrimitive(a, number)} and get a \mintinline{text}{string} as a result. Of course, when performing an explicit type conversion, JS will eventually convert whatever \mintinline{text}{ToPrimitive} returns into the correct type. But some operators will perform different implicit type conversions \textit{after} calling \mintinline{text}{ToPrimitive()}. The specific type conversion will then be dependent on the type of the return value of \mintinline{text}{ToPrimitive()} and not on the chosen \mintinline{text}{preferredType}.
+An important aspect that should be considered, is that the type of the return value of \mintinline{text}{ToPrimitive()} does not necessarily have to match the chosen \mintinline{text}{preferredType}. This means concretely that, for example, \mintinline{text}{ToPrimitive(a, number)} can be called and return a \mintinline{text}{string} as a result. Of course, when performing an explicit type conversion, JS will eventually convert whatever \mintinline{text}{ToPrimitive} returns into the correct type. But some operators will perform different implicit type conversions \textit{after} calling \mintinline{text}{ToPrimitive()}. The specific type conversion will then be dependent on the type of the return value of \mintinline{text}{ToPrimitive()} and not on the chosen \mintinline{text}{preferredType}.
 
 All objects that are converted to \mintinline{text}{boolean} will be coerced to \mintinline{text}{true}. The following paragraphs explain how objects get converted into strings or numbers.
 
@@ -238,6 +238,75 @@ $ node index.js
   \end{code}
 
 \section{TypeScript} \label{sec:background-typescript}
+TypeScript is a programming language developed by Microsoft that compiles to plain JavaScript. Its syntax is a superset of JavaScript, which means in practice that `every JavaScript program is also a TypeScript program' \citep{typescript}. It provides optional types annotations that enable features like auto-completion and static checking. Type annotations are erased and variable names are preserved after compiling, which produces a JavaScript output that is very similar to the TypeScript source code. The extension for TypeScript files is \mintinline{text}{.ts}. An example about some of the basic TypeScript features is provided in \coderef{code:background-typescript-and-javascript}.
+
+A complete specification of the language can be found in the TypeScript Language Specification document \citep{typescript}. This section will only cover the most relevant aspects of the language.
+
+\begin{code}
+	\begin{bashinline}
+$ cat index.js 
+function f(a, b) {
+	return a + b;
+}
+
+f(1, 2);
+
+$ npm i -g typescript
+$ mv index.js index.ts
+$ tsc index.ts
+$ cat index.js
+function f(a, b) {
+    return a + b;
+}
+f(1, 2);
+
+$ cat index-with-type-annotations.ts
+function f(a: number, b: number) : number {
+	return a + b;
+}
+
+f(1, 2);
+
+$ tsc index-with-type-annotations.ts
+$ cat index-with-type-annotations.js
+function f(a, b) {
+    return a + b;
+}
+f(1, 2);
+	  \end{bashinline}
+	\caption[TypeScript compilation example]{\textbf{TypeScript compilation example} - A plain JavaScript file is renamed into a TypeScript file. The TypeScript compiler will compile it into plain JavaScript again. Secondly, a \mintinline{text}{.ts} file with typed annotations gets compiled into a common JavaScript file with no annotations.}
+	\label{code:background-typescript-and-javascript}
+  \end{code}
+
+\subsection{Types}
+The type analysis performed by TypeScript will only happen at compile-time, which means that the compiled JavaScript has no additional overhead at run-time.
+
+\subsubsection{Any Type}
+The \mintinline{text}{any} type closely resembles a common value in JavaScript. It has been introduced to support values with no type annotations. It can be used to represent any JavaScript value. Minimal static checking is performed on values of the type \mintinline{text}{any}: properties with any name can be accessed, methods with any name and any argument list can be invoked and the value can be invoked as a function.
+
+\subsubsection{Primitive Types}
+As stated in the specification, `The primitive types are the \mintinline{text}{Number}, \mintinline{text}{Boolean}, \mintinline{text}{String}, \mintinline{text}{Symbol}, \mintinline{text}{Void}, \mintinline{text}{Null} and \mintinline{text}{Undefined} types and all user defined enum types.' \citep{typescript}.
+
+The types \mintinline{text}{Number}, \mintinline{text}{Boolean}, \mintinline{text}{String}, \mintinline{text}{Symbol}, \mintinline{text}{Null} and \mintinline{text}{Undefined} closely match the JavaScript equivalent types. The \mintinline{text}{Void} type stands for the absence of a value, for a example when a function returns no value.
+
+\subsubsection{Object Types}
+The following types are considered to be object types: Class and interface type references, array types, tuple types, function types, and constructor types.
+
+Array types can be written as \mintinline{text}{string[]} or as \mintinline{text}{Array<string>}.
+
+The signature of a function can be represented with the \mintinline{text}{Function} type. It is useful for the very common case where a callback is an argument of another function. For example the following function has two arguments, a \mintinline{text}{string} and a callback that receives a \mintinline{text}{number} and returns a \mintinline{text}{boolean}: \mintinline{text}{function f(a: string, c: (x: number) => boolean) { // ... }}.
+
+Interfaces can be used to parametrize object types by defining the types and signatures of properties and methods of a value. It is important to mention that interfaces are not exported in any way to the compiled JavaScript. They are only useful for static type checking at compile-time and code intelligence features provided by the IDE.
+
+Classes are implemented in the expected way according to the usual Object Oriented programming languages. \figref{fig:background-typescript-class-example} shows an example of a TypeScript class implementation and its corresponding JavaScript file after compilation.
+
+\input{figures/background/typescript/classes/class-example.tex}
+
+\subsubsection{Union \& Intersection Types}
+A Union Type represents a value that may have only one of multiple possible types. It is represented as \mintinline{text}{let a: string | number}, meaning that \mintinline{text}{a} is either of type \mintinline{text}{string} or \mintinline{text}{number}.
+
+On the other hand, the Intersection Type stands for a value that can simultaneously two types. It can be useful for defining a value that implements two interfaces simultaneously.
+
 \subsection{Declaration Files} \label{sec:declaration-files-background}
 Declaration files contain a typed description of an external JavaScript library's API. It allows the IDE to use code intelligence features like auto-completion and avoids misusing the library by declaring specific interfaces and types required by the library. They are necessary for integrating new TypeScript projects with existing JavaScript libraries that are still developed in plain JavaScript.
 

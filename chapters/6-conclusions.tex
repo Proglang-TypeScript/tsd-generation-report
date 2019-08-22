@@ -4,38 +4,32 @@ We have presented \mintinline{text}{dts-generate}, a tool for generating a TypeS
 
 We developed an architecture that supports the automatic generation of declaration files for specific JavaScript libraries without additional manual tasks. The architecture contemplates a future incorporation of a Symbolic Execution Engine that refines the initial code base enabling the exploration of new execution paths. However not implemented in this work, its incorporation would result in small incremental modifications to the presented architecture as it is considered to only expand the existing code base.
 
-Building and end-to-end solution for the generation of TypeScript declaration files was prioritized over type inference accuracy. Consequently, types were taken over from the values at run-time. Obtaining the types from the code examples extracted from the repositories proved to be a pragmatic and effective approximation, enabling to work on specific aspects regarding the TypeScript declaration file generation.
+Building an end-to-end solution for the generation of TypeScript declaration files was prioritized over type inference accuracy. Consequently, types were taken over from the values at run-time. Since developers expose through code how a library should be used, obtaining the types from the code examples extracted from the repositories proved to be a pragmatic and effective approximation, enabling to work on specific aspects regarding the TypeScript declaration file generation itself.
 
-We built a mechanism to automatically create declaration files for every module uploaded to DefinitelyTyped and evaluate the results, creating a TypeScript declaration files parser and a comparator.
+We built a mechanism to automatically create declaration files for potentially every module uploaded to DefinitelyTyped. We managed to generate declaration files for 244 modules. We compared the results against the corresponding files uploaded to DefinitelyTyped by creating a TypeScript declaration files parser and a comparator.
 
-We exposed the fundamental aspect of capturing the developer's intention when inferring types in JavaScript. Instead of applying constraints and restrictions for operations with certain types, we presented a proposal where common practices are favored. Uncommon usage is not forbidden but greatly disfavored. Accordingly, we collected evidence regarding the usage of JavaScript operators by analyzing 400 libraries. Furthermore, used in a first place merely as an initial code base for executing the library and approximating types, code examples turned out to be extremely useful for inferring types. They expose the developer's intention explicitly through code.
+We exposed the fundamental aspect of capturing the developer's intention when inferring types in JavaScript. Instead of applying constraints and restrictions for operations with certain types, we presented a proposal where common practices are favored. Uncommon usage is not forbidden but greatly disfavored. Accordingly, we collected evidence regarding the usage of JavaScript operators by analyzing 400 libraries.
 
 Finally, the architecture is composed of different blocks that interact with each other. Each block is independent and has a well defined behavior as well as clear input and output values. As a result, each block can be independently and simultaneously improved.
 
 \section{Future Work} \label{sec:conclusions-future-work}
-
 \subsection{Instrumentation}
-\draft{Babel}
+The latest commit to Jalangi's Github repository was on April 5, 2017 \citep{jalangi-repository}. The are 49 open issues but the last comment on an issue was on January 31, 2018. Jalangi plays a key role in the process of generating declaration files. In order to increase the number of modules that are able to be instrumented shown in \figref{fig:experiments-overall-funnel}, it is necessary to perform some changes to Jalangi's code. Since it is a library that seems to be no longer maintained, the repository might need to be forked.
 
-\subsection{Declaration files generation}
-\draft{Optional parameters}
-\draft{Functions as paramters}
-\subsubsection{Uploading Results to Definitely Typed Repository}
+On of the main drawbacks of Jalangi is that is does not offer full support of ES6, as stated in their repository: `Jalangi2 supports ECMAScript 5.1. Some ES6 features may work, but have not been tested.' \citep{jalangi-repository}. A possible solution for this would be to use Babel to convert ES6 code into a backwards compatible version like ECMAScript 5.1 before instrumenting the code \citep{babel}.
 
+\subsection{Optional parameters}
+The concept of optional parameters was not implemented. The difference between an optional parameter and a parameter of type \mintinline{text}{undefined} has to be further studied. In practice, JavaScript does return \mintinline{text}{undefined} for both the cases of accessing a nonexistent property or a property with the value \mintinline{text}{undefined}. Therefore, the developer's intention of treating a parameter as optional has to be clearly captured.
+
+\subsection{Function types}
+TypeScript enables the developer to clearly specify the signature of a function that is a parameter of an interface or of another function. This is considered a good practice and it greatly enriches the declaration file. The current implementation assigns to a parameter that is a function the type \mintinline{text}{Function}, which is naturally very unspecific. The gathered run-time information is already sufficient for creating the signatures of function types. The code that uses the run-time information for clearly representing the signatures needs to be developed.
+
+\subsection{Uploading Results to DefinitelyTyped}
+Automatic creation of pull requests on the DefinitelyTyped repository could be attached to the pipeline. Compliance with the contribution guidelines specified by DefinitelyTyped can be checked before generating the pull requests.
 
 \subsection{Type Inference}
-% \todo{Deberia ser hecho en otro modulo que no sea el runtime information. El runtime information deberia exponer unicamente los datos que le hacen falta al otro para inferir los tipos.}
+Inspecting the semantics of the code can be of great use for inferring types. The name that a developer chooses for a variable or a function is very important to determine the purpose of that variable. A function that performs the operation \mintinline{text}{firstArgument + secondArgument} has a complete different meaning if its called \mintinline{text}{sum()} or \mintinline{text}{concatenate()}, even though the JavaScript operator is the same in both cases.
 
-% \todo{Tambien se puede identificar patterns de programacion donde siempre los tipos son los mismos!!! El concepto de inferir el tipo en realidad pasa a detectar la intencion del developer.}
+Furthermore, the content of a value can also be useful. Some strings may represent, for example, known error codes or RGB colors representations. This information can be used by a type inferrer to determine the type more accurately.
 
-\subsubsection{Return values}
-% \todo{El return value se podria incluir en el analysis de Jalangi, detectando las interactions que tiene etc etc. Esto no es tan facil porque no se puede simplemente inspeccionar el return value, sino que hay que saber para qué se usa. Los ejemplos podrían ser útiles}.
-
-\subsubsection{Variable Names}
-% \todo{Se puede extraer info del nombre de las variables y del nombre de los metodos, etc. La developer's intention.}
-
-\subsubsection{Variable Content}
-
-\subsubsection{Function Names}
-
-\draft{JAVERT!!}
+Finally, detecting common development patterns is important. Developers tend to apply the same patterns for solving similar problems. For example, a very common pattern that developers use for dealing with optional parameters is \mintinline{text}{let a = firstArgument || {}}. Identifying such patterns and relating them with commonly used types can be extremely useful for a better capture of the developer's intention.

@@ -1,0 +1,19 @@
+\begin{figure}[tp]
+	\centering
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.9\textwidth}
+			\tscode{code/background/typescript/classes/index.ts}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[index.ts]{\usebox{\mintedbox}}
+	
+	\begin{lrbox}{\mintedbox}
+		\begin{minipage}{0.9\textwidth}
+			\jscode{code/background/typescript/classes/index.js}
+		\end{minipage}
+	\end{lrbox}
+	\subfloat[index.js]{\usebox{\mintedbox}}
+
+	\caption[TypeScript classes compilation]{\textbf{TypeScript classes compilation} - A TypeScript class is compiled into the common ES5 construct used for emulating classes in JavaScript. Private and public methods are only checked at compile-time. Both methods are exported in the same way, since JavaScript has no concept of method's visibility.}
+	\label{fig:background-typescript-class-example}
+\end{figure}

@@ -9,6 +9,6 @@ Boolean(""); // false
 Boolean(-123.45); // true
 Boolean(" "); // true
 Boolean(" a "); // true
-Boolean([1, 2, 3]); // true
+Boolean([]); // true
 Boolean(new Date()); // true
 Boolean({}); // true
