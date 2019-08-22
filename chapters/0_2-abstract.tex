@@ -1,5 +1,6 @@
 \chapter*{Abstract}
-foo bar
+Developers are starting to write complex and large JavaScript applications in TypeScript, a typed superset of JavaScript. TypeScript applications use untyped JavaScript libraries through typed descriptions of their APIs called declaration files. These files are maintained manually, which is error prone and highly time consuming. Discrepancies between a declaration file and the JavaScript implementation will prevent developers from using them.
 
-\chapter*{Zusammenfassung}
-German version is only needed for an undergraduate thesis.
+This work presents \mintinline{text}{dts-generate}, a tool that generates a declaration file for JavaScript libraries uploaded to the NPM registry. It executes the library, gathers run-time information and generates the declaration file based on it. 244 declaration files were generated and compared against DefinitelyTyped, the standard public repository for declaration files. 33 files out of 244 had no differences.
+
+A study on type inference in JavaScript that leverages the developer's intention is presented along with evidence that describes the usage of JavaScript operators.
