@@ -3,7 +3,7 @@ true == "1.00"; // true
 false == "    \n\r\t     "; // true
 false == []; // true
 0 == []; // true
- null == undefined; // true 4
+null == undefined; // true
 "01" < "00100"; // false
 [1] + 1; //'11'
 [2] == "2"; // true

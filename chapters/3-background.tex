@@ -25,7 +25,7 @@ All browsers have built-in interpreters that support running JavaScript code. Th
 \subsection{Types}
 Section 8 of the ECMAScript Language Specification presents the allowed types for a variable \citep{ecma-script}. These are: \mintinline{text}{undefined}, \mintinline{text}{null}, \mintinline{text}{boolean}, \mintinline{text}{string}, \mintinline{text}{number}, \mintinline{text}{object} and \mintinline{text}{symbol} for ES6/ECMAScript 2015. All of them except for \mintinline{text}{object} are called primitives.
 
-It must be noted that functions and arrays are not built-in types. A Function is considered to be `member of the Object type that is an instance of the standard built-in Function constructor and that may be invoked as a subroutine' \citep{ecma-script}. The \mintinline{text}{Function} object is a built-in object with a \mintinline{text}{[[Call]]} internal property, which means that it can be invoked. Similarly, arrays are instances of the built-in \mintinline{text}{Array} object. Both concepts are shown in \coderef{code:background-functions-and-arrays}.
+It must be noted that functions and arrays are not built-in types. A Function is considered to be `member of the Object type that is an instance of the standard built-in \mintinline{text}{Function} constructor and that may be invoked as a subroutine' \citep{ecma-script}. The \mintinline{text}{Function} object is a built-in object with a \mintinline{text}{[[Call]]} internal property, which means that it can be invoked. Similarly, arrays are instances of the built-in \mintinline{text}{Array} object. Both concepts are shown in \coderef{code:background-functions-and-arrays}.
 
 \begin{code}
 	\jscode{code/background/javascript/functions-and-arrays.js}
@@ -85,24 +85,24 @@ It is fundamental to understand how a value gets coerced into one of these types
 The operation \mintinline{text}{ToPrimitive()} is also called within the operators. However, each operator will call either \mintinline{text}{ToString()}, \mintinline{text}{ToNumber()} or \mintinline{text}{ToBoolean()} after calling \mintinline{text}{ToPrimitive()}. This operation will be explained in an independent section.
 
 \subsubsection{ToString}
-JavaScript performs this conversion in a very intuitive way, as explained in \coderef{code:background-to-string-operation}. Every primitive gets converted as expected. Objects are converted into strings by calling \mintinline{text}{ToPrimtive()} with \mintinline{text}{hint = string}, as presented in \coderef{code:background-to-string-implementation}.
+JavaScript performs this conversion in a very intuitive way, as explained in \coderef{code:background-to-string-operation}. Every primitive gets converted as expected. Objects are converted into strings by calling \mintinline{text}{ToPrimitive()} with \mintinline{text}{hint = string}, as presented in \coderef{code:background-to-string-implementation}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/to-string.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[ToString implementation]{\textbf{ToString implementation}}
+	\caption[ToString implementation]{\textbf{ToString implementation} - If the input argument has type \mintinline{text}{object}, it will call \mintinline{text}{ToPrimitive()} with \mintinline{text}{hint = string} and then recursively call itself again.}
 	\label{code:background-to-string-implementation}
 \end{code}
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/string-conversion.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[ToString operation examples]{\textbf{ToString operation examples}}
+	\caption[ToString operation examples]{\textbf{ToString operation examples} - Numbers are converted into string in an expected way. The values \mintinline{text}{true, false, null, undefined, NaN}, however, are converted into a \mintinline{text}{string} containing the value's name. This is one of the main reasons why it is common to see the words 'undefined', 'null' or 'NaN' in web applications.}
 	\label{code:background-to-string-operation}
 \end{code}
 
 \subsubsection{ToNumber}
-\coderef{code:background-to-number-operation} presents this type of conversion. Strings and boolean values get converted in the expected way. Curiously, \mintinline{text}{undefined} will be converted into \mintinline{text}{NaN} and \mintinline{text}{null} into \mintinline{text}{0}. Similarly, objects are converted into numbers by calling \mintinline{text}{ToPrimtive()} with \mintinline{text}{hint = number}, as presented in \coderef{code:background-to-number-implementation}.
+\coderef{code:background-to-number-operation} presents this type of conversion. Strings and boolean values get converted in the expected way. Curiously, \mintinline{text}{undefined} will be converted into \mintinline{text}{NaN} and \mintinline{text}{null} into \mintinline{text}{0}. Similarly, objects are converted into numbers by calling \mintinline{text}{ToPrimitive()} with \mintinline{text}{hint = number}, as presented in \coderef{code:background-to-number-implementation}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/to-number.js}
@@ -148,9 +148,9 @@ An important aspect that should be considered, is that the type of the return va
 All objects that are converted to \mintinline{text}{boolean} will be coerced to \mintinline{text}{true}. The following paragraphs explain how objects get converted into strings or numbers.
 
 \subsubsection{Object to String}
-The object is first converted into a primitive value calling the \mintinline{text}{ToPrimitive()} method, using \mintinline{text}{string} as \mintinline{text}{preferredType}. The obtained primitive value is then normally converted into a \mintinline{text}{string}, as explained before in \coderef{code:background-to-string-implementation}.
+The object is first converted into a primitive value calling the \mintinline{text}{ToPrimitive()} method, using \mintinline{text}{string} as \mintinline{text}{preferredType}. The obtained primitive value is then normally converted into a \mintinline{text}{string}, as explained before in \coderef{code:background-to-string-implementation}. \coderef{code:background-object-into-string} shows a straightforward example.
 
-\coderef{code:background-object-into-string} shows a straightforward example. On the other hand, \coderef{code:background-object-into-string-not-string-return-value} provides an example where \mintinline{text}{ToPrimitive(val, String)} does not return a \mintinline{text}{string}, either because simply \mintinline{text}{toString()} does not return a \mintinline{text}{string} or because \mintinline{text}{valueOf()} gets being called instead of \mintinline{text}{toString()}.
+On the other hand, \coderef{code:background-object-into-string-not-string-return-value} provides an example where \mintinline{text}{ToPrimitive(val, String)} does not return a \mintinline{text}{string}, either because simply \mintinline{text}{toString()} does not return a \mintinline{text}{string} or because \mintinline{text}{valueOf()} gets being called instead of \mintinline{text}{toString()}.
 
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/to-primitive/normal-object-to-string.js}
@@ -210,7 +210,7 @@ If any of the operands is an object, it will first convert it into a primitive b
 \begin{code}
 	\jscode{code/background/javascript/type-coercion/plus-operator-object.js}
 	\captionsetup{aboveskip=0pt, belowskip=10pt}
-	\caption[JavaScript + operator with object]{\textbf{JavaScript \mintinline{text}{+} operator with object}}
+	\caption[JavaScript + operator with an object]{\textbf{JavaScript \mintinline{text}{+} operator with an object}}
 	\label{code:background-plus-operator-object-example}
 \end{code}
 
@@ -218,7 +218,7 @@ If any of the operands is an object, it will first convert it into a primitive b
 \subsection{NPM Packages} \label{sec:background-npm-packages}
 The Node Package Manager (NPM) is the default package manager for NodeJS, a JavaScript runtime environment built on Google Chrome's V8 JavaScript engine \citep{nodejs}. It offers a public registry where JavaScript libraries can be uploaded to be used by the developer's community.
 
-Dependencies can be installed either globally or as local dependencies of specific a JavaScript projects. NPM installs the dependencies described in the \mintinline{text}{package.json} file and local dependencies are saved in the \mintinline{text}{node_modules} directory in the project's root directory. An example of NPM's usage is shown in \coderef{code:background-npm-usage-example}. The registry contains currently more than 1 million modules and it has 11000 million downloads per week.
+Dependencies can be installed either globally or as local dependencies of specific JavaScript projects. NPM installs the dependencies described in the \mintinline{text}{package.json} file and local dependencies are saved in the \mintinline{text}{node_modules} directory in the project's root directory. An example of NPM's usage is shown in \coderef{code:background-npm-usage-example}. The registry contains currently more than 1 million modules and it has 11000 million downloads per week.
 
 \begin{code}
 	\begin{bashinline}
@@ -250,7 +250,6 @@ function f(a, b) {
 }
 
 f(1, 2);
-
 $ npm i -g typescript
 $ mv index.js index.ts
 $ tsc index.ts
@@ -259,14 +258,12 @@ function f(a, b) {
     return a + b;
 }
 f(1, 2);
-
 $ cat index-with-type-annotations.ts
 function f(a: number, b: number) : number {
 	return a + b;
 }
 
 f(1, 2);
-
 $ tsc index-with-type-annotations.ts
 $ cat index-with-type-annotations.js
 function f(a, b) {

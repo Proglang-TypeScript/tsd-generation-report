@@ -36,7 +36,7 @@ For that reason, the decision was to keep the focus on building an end-to-end ar
 \subsection{Implementation}
 As explained before, the DefinitelyTyped Repository is the official repository for finding declaration files for existing JavaScript libraries. The \textit{TypeScript Declaration Files Generation Method} is intended to be used on existing, published npm packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
 
-Code examples that execute the JavaScript Library are needed to extract the run-time information via code instrumentation. It is achieved by retrieving the examples provided in the README files of the repositories of the different libraries. This is generally the place where developers explicitly show how to use their code. It showed to be an appropriate and pragmatic way of extracting the developer's intention and providing an useful initial code base with meaningful examples, thus avoiding a possible cold start problem. 
+Code examples that execute the JavaScript Library are needed in order to extract the run-time information via code instrumentation. It is achieved by retrieving the examples provided in the README files of the repositories of the different libraries. This is generally the place where developers explicitly show how to use their code. It showed to be an appropriate and pragmatic way of extracting the developer's intention and providing an useful initial code base with meaningful examples, thus avoiding a possible cold start problem. 
 
 The examples and the code base of the library are instrumented with Jalangi \citep{DBLP:conf/sigsoft/SenKBG13}\citep{DBLP:conf/sigsoft/SenKBG13a} to gather data flow information and type information at runtime. Jalangi is a dynamic analysis configurable framework that provides several analysis modules that were extended as needed to retrieve the required run-time information, which is then saved to an output JSON file. This block is written in JavaScript and it runs in Node.js within a Docker container.
 
@@ -225,7 +225,7 @@ It should be noted that the field \mintinline{text}{returnTypeOf} represents the
 
 \begin{code}
   \jscode{code/run-time-information-gathering/analysis/get-field-changing-at-runtime.js}
-  \caption[Modified accessed property]{\textbf{Modified accessed property} - Variable \mintinline{text}{b} gets declared within the scope of function \mintinline{text}{foo}. Therefore, no observation on it gets stored.}
+  \caption[Modified accessed property]{\textbf{Modified accessed property} - Property \mintinline{text}{bar} gets accessed twice. Two interactions are saved.}
   \label{code:get-field-changing-at-runtime}
 \end{code}
 
@@ -294,7 +294,7 @@ The solution extends a similar concept already implemented by Jalangi: \mintinli
 
 The implemented solution wraps objects around JavaScript Proxies. Primitive values like \mintinline{text}{number} or \mintinline{text}{string} are converted to their native wrapper objects, i.e. \mintinline{text}{Number} and \mintinline{text}{String}. Finally, \mintinline{text}{null} and \mintinline{text}{undefined} are converted to empty objects with modified \mintinline{text}{valueOf()} and \mintinline{text}{toString()} methods.
 
-The behavior of the original code is being explicitly modified. Therefore, original values are used instead for affected operators like \mintinline{text}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{text}{null} and \mintinline{text}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{text}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in {sec:background-js-type-coercion}.
+The behavior of the original code is being explicitly modified. Therefore, original values are used instead for affected operators like \mintinline{text}{===, !==, typeof}, for which wrapper objects will not work as expected. For \mintinline{text}{null} and \mintinline{text}{undefined} wrappers, the original values are used for conditional operators, since the result of the abstract operation \mintinline{text}{ToBoolean} on an object is always \mintinline{text}{true}, as defined in the ECMAScript Language Specification \citep{ecma-script}. This approach could have been used for every operation by using the original value in the affected Jalangi callbacks. However, the implementation is complex and error prone. Instead, it was decided to modify the corresponding methods or specific operators so that they are compliant with JavaScript Type Coercion, which is explained in detail in \secref{sec:background-js-type-coercion}.
 
 \subsection{Output}
 Information is stored in a map containing \mintinline{text}{FunctionContainer} entries. When the executions stops, Jalangi's callback \mintinline{text}{endExecution()} is called and the information is saved as a JSON to a file.
@@ -369,10 +369,7 @@ The application runs within a Docker container. \coderef{code:declaration-file-g
 $ ./build/build.sh
 $ docker run --name generate-declaration-file \
   -v PATH_TO_RUN_TIME_INFORMATION_JSON:/tmp/output.json \
-  tsd-generator \
-  --module-name calculator \
-  -i /tmp/output.json
-
+  tsd-generator --module-name calculator -i /tmp/output.json
 $ docker cp generate-declaration-file:/usr/local/app/output/. /tmp/ts-declaration-file
 $ docker rm generate-declaration-file
 $ cat /tmp/ts-declaration-file/calculator/index.d.ts
@@ -395,7 +392,7 @@ Finally, in a future stage, declaration files should be checked against the JS l
 \input{figures/approach/evaluation/evaluationDiagram.tex}
 
 \subsection{Parsing} \label{sec:approach-parsing}
-Before comparison, declaration files need to be parsed so that both of them share the same structure. It was achieved by using the TypeScript Compiler API, a library developed by Microsoft that allows to traverse the Abstract Syntax Tree in an easy and intuitive way \citep{ts-compiler-api}.
+Before comparison, declaration files need to be parsed so that both of them share the same structure. It was achieved by using the TypeScript Compiler API, a library developed by Microsoft that allows to traverse the Abstract Syntax Tree in an easy and intuitive way \citep{typescript-compiler-api}.
 
 An simple example for the \mintinline{text}{abs} module described in \coderef{code:dts-generate-example} can be seen in \coderef{code:parsing-module-function}. 
 
