@@ -85,7 +85,7 @@
 
 \category{}%optional, e.g. invited paper
 
-\relatedversion{}%optional, e.g. full version hosted on arXiv, HAL, or other respository/website
+\relatedversion{}%optional, e.g. full version hosted on arXiv, HAL, or other repository/website
 %\relatedversion{A full version of the paper is available at \url{...}.}
 
 \supplement{}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
@@ -120,7 +120,7 @@
 \begin{abstract}
 Developers are starting to write complex and large JavaScript applications in TypeScript, a typed superset of JavaScript. TypeScript applications integrate JavaScript libraries by including typed descriptions of their APIs called declaration files. These files are maintained manually, which is error prone and highly time consuming. Discrepancies between a declaration file and the JavaScript implementation will prevent developers from using them.
 
-This work presents \lstinline[language={}]!dts-generate!, a tool that generates a declaration file for JavaScript libraries uploaded to the NPM registry. It executes the library, gathers run-time information from the code examples written by the developers and generates the declaration file based on it. 244 declaration files were generated and compared against DefinitelyTyped, the standard public repository for declaration files. 33 files out of 244 had no differences.
+This work presents \lstinline{dts-generate}, a tool that generates a declaration file for JavaScript libraries uploaded to the NPM registry. It executes the library, gathers run-time information from the code examples written by the developers and generates the declaration file based on it. 244 declaration files were generated and compared against DefinitelyTyped, the standard public repository for declaration files. 33 files out of 244 had no differences.
 \end{abstract}
 
 \section{Introduction}
@@ -174,7 +174,36 @@ The contributions of this paper are as follows.
     \item Finally, we present a TypeScript Declaration Files parser and comparator. Both tools were necessary for evaluating the results against DefinitelyTyped.
 \end{itemize}
 
-\section{Motivating Examples}
+\section{Motivating Example}
+The NPM package \lstinline{route-parser} is a simple route parsing, matching, and reversing library for Javascript\footnote{https://www.npmjs.com/package/route-parser}. It has about 35000 weekly downloads and 221 NPM packages depend on it. If a developer is creating or extending a JavaScript library written in TypeScript that depends on \lstinline{route-parser}, the TypeScript compiler and IDEs will need a declaration file for that JS library in order to perform static checking and code completion, respectively. We use \lstinline{dts-generate} to automatically generate a TypeScript Declaration File for this library. The tool will download the npm package, run it, gather run-time information and generate a valid TypeScript Declaration File. \figref{fig:motivating-example-route-parser-vscode} shows the generated declaration file for package \lstinline{route-parser} using \lstinline{dts-generate}. The result is a valid declaration file that can be used in a TypeScript project. For example, it can be seen in \figref{fig:motivating-example-route-parser-vscode} that Visual Studio Code performs code completion properly. Finally, if \lstinline{route-parser} gets modified in a future, a new declaration file could be automatically generated using \lstinline{dts-generate}.
+
+\begin{figure}[tp]
+  \centering
+  \begin{subfigure}{0.70\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export = Route;
+
+declare class Route {
+  constructor(spec: string);
+  match(path: string): object;
+  reverse(params: object): string;
+}
+
+declare namespace Route {
+}
+    \end{lstlisting}
+  \end{subfigure}
+
+  \hspace{10.\textwidth}
+
+  \begin{subfigure}{1.\linewidth}
+    \centering
+    \includegraphics[width=0.7\linewidth]{motivating-example-route-parser-vscode.png}
+  \end{subfigure}
+
+  \caption{\textbf{Declaration file for \lstinline{route-parser} generated with \lstinline{dts-generate}} - Constructor and methods are correctly identified. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
+  \label{fig:motivating-example-route-parser-vscode}
+\end{figure}
 
 \section{dts-generate - Generation of TypeScript Declaration Files}
 We introduce \lstinline{dts-generate}, a command line tool which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}. The tool is intended to be used on existing, published \lstinline{npm} packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
@@ -245,7 +274,7 @@ The dynamic analysis framework used for gathering this kind of information is Ja
 The implementation stores these observations as entities called \lstinline{interactions}. They are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation. The run-time information is finally returned as a JSON file that can be used for later processing. The tool is written in JavaScript and runs in Node.js within a Docker container.
 
 \subsection{TypeScript Declaration File Generation}
-\paragraph*{Overwiew}
+\paragraph*{Overview}
 The actual generation of the declaration file is the next step in the pipeline after gathering the run-time information, as shown in \figref{fig:tsd_generation_method_block_diagram}. It is a lightweight, simple and fast application, which does not interact with the actual JavaScript module at run-time. Instead, it uses the JSON output file containing the run-time information and generates a TypeScript declaration file which is use ready to be used within a TypeScript project. The tool itself is written in TypeScript and runs within a Docker container in NodeJS. 
 
 \paragraph*{Templates}
@@ -456,7 +485,7 @@ export = escapeHTML;
     \caption{\textbf{Module-function results} - Results are shown for modules \lstinline{abs}, \lstinline{dirname-regex}, \lstinline{escape-html}. On the left side the generated declaration file with \lstinline{dts-generate}. On the right side the corresponding file in the DefinitelyTyped repository. Functions are correctly detected and input types are accurately inferred. Both files are parsed for comparison, as explained in \secref{sec:dts-generate-evaluation}. Therefore, subtle differences in the syntax between both files are not important.}
 \end{figure}
 
-Templates of type \lstinline{module-class} are shown for modules \lstinline{flake-idgen}, \lstinline{route-parser} and \lstinline{timer-machine} in \figref{fig:experiments-results-module-class-flake-idgen}, \figref{fig:experiments-results-module-class-route-parser} and \figref{fig:experiments-results-module-class-timer-machine}, respectively. Properties of interfaces and class methods are correctly generated. Optional parameters are not detected, as it was not considered for the implementation. Finally, \lstinline{module} template is presented for \lstinline{is-uuid} module in \figref{fig:experiments-results-module-is-uuid}.
+Templates of type \lstinline{module-class} are shown for modules \lstinline{flake-idgen}, \lstinline{route-parser} and \lstinline{timer-machine} in \figref{fig:experiments-results-module-class-flake-idgen} and \figref{fig:experiments-results-module-class-timer-machine}, respectively. Properties of interfaces and class methods are correctly generated. Optional parameters are not detected, as it was not considered for the implementation. Finally, \lstinline{module} template is presented for \lstinline{is-uuid} module in \figref{fig:experiments-results-module-is-uuid}.
 
 \begin{figure}[tp]
     \centering
@@ -506,43 +535,6 @@ export = FlakeId;
 
     \caption{\textbf{Module-class results | flake-idgen} - Parameters of interface \lstinline{ConstructorOptions} are correctly detected. Name of interface differs since it is automatically generated based on the name of the argument variable. Optional properties were not implemented, hence the \lstinline{undefined} type for some properties. Analogously, callback \lstinline{cb} is inferred as \lstinline{undefined}.}
     \label{fig:experiments-results-module-class-flake-idgen}
-\end{figure}
-
-\begin{figure}[tp]
-    \centering
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export = Route;
-
-declare class Route {
-    constructor(spec: string);
-    match(path: string): object;
-    reverse(params: object): string;
-}
-
-declare namespace Route {
-}
-      \end{lstlisting}
-      \caption{route-parser/index.d.ts - Generated}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-declare class Route {
-    constructor(spec: string);
-    match(pathname: string): { [i: string]: string } | false;
-
-    reverse(params: { [i: string]: any }): string | false;
-}
-
-declare namespace Route { }
-export = Route;       
-      \end{lstlisting}
-      \caption{route-parser/index.d.ts - DefinitelyTyped}
-    \end{subfigure}
-
-    \caption{\textbf{Module-class results | route-parser} - Constructor and methods are correctly identified. Specific signature of dictionary \lstinline{params} is not detected. Instead, a generic \lstinline{object} is inferred.}
-    \label{fig:experiments-results-module-class-route-parser}
 \end{figure}
 
 \begin{figure}[tp]
