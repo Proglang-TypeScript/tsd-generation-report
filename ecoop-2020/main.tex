@@ -119,12 +119,12 @@
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Developers are starting to write complex and large applications in
+Developers are starting to write large and complex applications in
 TypeScript, a typed dialect of JavaScript. TypeScript applications
 integrate JavaScript libraries via typed descriptions of their APIs
-called declaration files. These files are available in public
-repository DefinitelyTyped.
-This repository is maintained manually, which
+called declaration files. DefinitelyTyped is the standard public
+repository for these files.
+The repository is maintained manually by volunteers, which
 is error prone and time consuming. Discrepancies between a
 declaration file and the JavaScript implementation lead to
 incorrect feedback from the TypeScript IDE and thus to incorrect uses
@@ -136,8 +136,9 @@ registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
 information. To evaluate the tool, 244 declaration files were generated and 
-compared against the declaration file provided on DefinitelyTyped, the
-standard public repository for declaration files. 33 files out of 244 had no differences. 
+compared with the declaration file provided on DefinitelyTyped.
+33 files out of 244 had no differences.
+% but what about the remaining generated files
 \end{abstract}
 
 \section{Introduction}
