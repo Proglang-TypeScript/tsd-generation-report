@@ -119,9 +119,25 @@
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Developers are starting to write complex and large JavaScript applications in TypeScript, a typed superset of JavaScript. TypeScript applications integrate JavaScript libraries by including typed descriptions of their APIs called declaration files. These files are maintained manually, which is error prone and highly time consuming. Discrepancies between a declaration file and the JavaScript implementation will prevent developers from using them.
+Developers are starting to write complex and large applications in
+TypeScript, a typed dialect of JavaScript. TypeScript applications
+integrate JavaScript libraries via typed descriptions of their APIs
+called declaration files. These files are available in public
+repository DefinitelyTyped.
+This repository is maintained manually, which
+is error prone and time consuming. Discrepancies between a
+declaration file and the JavaScript implementation lead to
+incorrect feedback from the TypeScript IDE and thus to incorrect uses
+of the underlying JavaScript library.
 
-This work presents \lstinline{dts-generate}, a tool that generates a declaration file for JavaScript libraries uploaded to the NPM registry. It executes the library, gathers run-time information from the code examples written by the developers and generates the declaration file based on it. 244 declaration files were generated and compared against DefinitelyTyped, the standard public repository for declaration files. 33 files out of 244 had no differences.
+This work presents \lstinline{dts-generate}, a tool that generates
+TypeScript declaration files for JavaScript libraries uploaded to the NPM
+registry. It extracts code examples from the documentation written by
+the developer, executes the library driven by the examples, gathers
+run-time information, and generates a declaration file based on this
+information. To evaluate the tool, 244 declaration files were generated and 
+compared against the declaration file provided on DefinitelyTyped, the
+standard public repository for declaration files. 33 files out of 244 had no differences. 
 \end{abstract}
 
 \section{Introduction}
