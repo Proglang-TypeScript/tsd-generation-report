@@ -1,5 +1,5 @@
 SHELL=/bin/sh
-DOC=lipics-v2019-sample-article
+DOC=main
 
 .SUFFIXES:
 .SUFFIXES: .bib .pdf .tex
