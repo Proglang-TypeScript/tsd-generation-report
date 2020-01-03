@@ -130,7 +130,7 @@ declaration file and the JavaScript implementation lead to
 incorrect feedback from the TypeScript IDE and thus to incorrect uses
 of the underlying JavaScript library.
 
-This work presents \lstinline{dts-generate}, a tool that generates
+This work presents \texttt{dts-generate}, a tool that generates
 TypeScript declaration files for JavaScript libraries uploaded to the NPM
 registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
@@ -142,12 +142,31 @@ compared with the declaration file provided on DefinitelyTyped.
 \end{abstract}
 
 \section{Introduction}
-JavaScript has become the most popular language for writing web applications \cite{github-statistics}. It is also gaining popularity for back-end applications running in NodeJS. Its dynamic typing speeds up programming enabling developers to create simple pieces of code very fast, making JavaScript a very appealing programming language.
+\label{sec:introduction}
+JavaScript has become the most popular language for writing web
+applications \cite{github-statistics}. It is also gaining popularity
+for back-end applications running in NodeJS, a JavaScript-based
+server-side platform. JavaScript is appealing to developers because
+its forgiving dynamic typing enables 
+them to create simple pieces of code very quickly and proceed on a
+trial-and-error basis.
 
-JavaScript is being used for creating complex and large applications. However, JavaScript was not intended to be more than a scripting language. Maintaining and evolving large JavaScript codebases is notably challenging. Mistakes such as mistyped property names and misunderstood or unexpected type coercion cause developers to spend a significant amount of time in debugging sessions. A JavaScript code blog\footnote{https://wtfjs.com} compiles experiences from developers facing unexpected situations while programming in JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some of these unintuitive JavaScript behaviors.
+JavaScript was never intended to be more than a
+scripting language. Hence, it lacks features for maintaining and evolving large
+codebases.
+Presently, however, JavaScript is being used for creating large and complex
+applications. 
+Mistakes such as mistyped property
+names and misunderstood or unexpected type coercions cause developers
+to spend a significant amount of time in debugging. There is ample
+evidence for such mishaps. For example, a 
+JavaScript code blog\footnote{\url{https://wtfjs.com}} collects experiences
+from developers facing unexpected situations while programming in
+JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some
+of these unintuitive JavaScript behaviors. 
 
 \begin{lstlisting}[
-    caption={\textbf{Unexpected JavaScript behavior} - falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion.},
+    caption={\textbf{Unexpected JavaScript behavior} - falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
     language=JavaScript,
 	label=code:introduction-javascript-wtfs,
     float,
@@ -159,7 +178,6 @@ false == "    \n\r\t     "; // true
 false == []; // true
 0 == []; // true
 null == undefined; // true
-"01" < "00100"; // false
 [1] + 1; //'11'
 [2] == "2"; // true
 null + undefined + [1, 2, 3] // 'NaN1,2,3'
@@ -168,32 +186,134 @@ null + undefined + [1, 2, 3] // 'NaN1,2,3'
 typeof null; // object
 null instanceof Object; // false
 \end{lstlisting}
+% pjt: why unexpected?
+% "01" < "00100"; // false
 
-The overhead produced by such dynamic typing is not present in other languages that use build tools based on type information. The situation motivated the creation of TypeScript, a superset of JavaScript with typed annotations \cite{typescript}. It has become a widely used alternative among JavaScript developers, since it incorporates features that are helpful for developing and maintaining large applications \cite{DBLP:conf/icse/GaoBB17}. TypeScript enables the early detection of run-time errors detection and the integration of code intelligence tools like auto-completion in the IDEs.
+The cognitive load produced by such dynamic typing (which includes
+unchecked property names) is not present in other languages that use
+build tools based on type information. This insight motivated the
+creation of TypeScript, a superset of JavaScript with type
+annotations \cite{typescript}. It has become a widely used alternative
+among JavaScript developers, because it incorporates features that are
+helpful for developing and maintaining large applications
+\cite{DBLP:conf/icse/GaoBB17}. TypeScript enables the early detection
+of several kinds of run-time errors and the integration of code intelligence
+tools like auto-completion in an IDE.
 
-Existing JavaScript libraries can be used in a TypeScript project by adding a declaration file that contains a typed description of the library's API. Declaration files are stored in a repository called DefinitelyTyped that contains declaration files for more than 6000 JavaScript libraries \cite{definitely-typed-repository}. Unfortunately, declaration files need to be manually created and maintained, which is error prone and time consuming. TypeScript does not perform any run-time check on these declaration files. A discrepancy between the declaration file and its corresponding JavaScript library would lead to additional frustration and debugging sessions, since type checks and code-intelligence features would be inaccurate.
+Existing JavaScript libraries can be used in a TypeScript project by
+adding a declaration file that contains a description of the library's
+API in terms of types. Lots of declaration files for popular
+JavaScript libraries have been created in a community effort in the
+DefinitelyTyped repository~\cite{definitely-typed-repository}.
+At the time of writing this repository contains declaration files for
+more than 6000 JavaScript libraries. Unfortunately, most declaration
+files in this libraries have been manually created and maintained,
+which is error prone and time consuming. As TypeScript takes a
+declaration file at face value, discrepancies are not detected at
+compile time and the inaccurate code-intelligence features are misleading the
+programmer. Moreover, TypeScript does not perform any run-time 
+checking on types, either, so that a discrepancy  between the declaration file
+and its corresponding JavaScript library can lead to unexpected 
+behavior and crashes. Such behavior can lead to developer
+frustration, longish debugging sessions, and decreasing confidence in
+the tool chain.
 
-Some previous work tackled the problem of automatically searching for mismatches between a declaration file and implementation code \cite{DBLP:conf/oopsla/FeldthausM14}. TSTest adapted the feedback-directed random testing technique, mainly used for testing Java libraries, to detect discrepancies between a declaration file and a JavaScript library \cite{DBLP:journals/pacmpl/KristensenM17}. Tools like TSInfer and TSEvolve are designed for assisting the creation of new declaration files and supporting the evolution the declaration file when the corresponding JavaScript library gets modified \cite{DBLP:conf/fase/KristensenM17}, respectively. TypeScript itself developed \lstinline[language={}]{dts-gen}, a tool that generates a declaration file that is meant to be used only as a `starting point for writing a high-quality declaration file' \cite{dts-gen}.
+Some previous work tackled the problem of improving the quality of
+declaration files. Feldthaus et al
+\cite{DBLP:conf/oopsla/FeldthausM14} search automatically for
+mismatches between a declaration file and implementation code. TSTest
+\cite{DBLP:journals/pacmpl/KristensenM17}
+adapted feedback-directed random testing to detect discrepancies between a
+declaration file and a JavaScript library. Tools like TSInfer and
+TSEvolve~\cite{DBLP:conf/fase/KristensenM17} are designed for
+assisting the creation of new declaration 
+files and supporting the evolution the declaration file when the
+corresponding JavaScript library gets modified, respectively. They
+rely on an existing static analyzer for JavaScript \cite{TAJS}.
+TypeScript itself
+developed \texttt{dts-gen}, a tool that generates a
+declaration file that is meant to be used as a \emph{starting point
+for writing a high-quality declaration file} \cite{dts-gen}.
 
-We explore in this work the possibilities for improving the existing tools. We present the tool \lstinline[language={}]{dts-generate}. It is based on an architecture that supports the generation of declaration files for an existing JavaScript library published to the NPM registry. The tool will gather data flow and type information at run-time and generate a declaration file based on that information.
+In this work we present the tool \texttt{dts-generate}
+as a first step to explore the possibilities for
+generating useful declaration files without the heavy lifting of
+static analysis. \texttt{dts-generate} comes with a framework that
+supports the generation of declaration files for an existing
+JavaScript library published to the NPM registry. The tool gathers
+data flow and type information at run-time to generate a declaration
+file based on that information.
 
-The architecture supports the future incorporation of a Symbolic Execution Engine that expands the initial code base using the signatures in the declaration file. The iterative process of exploring new execution paths will refine the generated declaration file in each iteration.
+The novelty of our tool is twofold:
+\begin{enumerate}
+\item 
+  We do not rely on static analysis, which is hard to implement
+  soundly and precisely and which is prone to maintenance problems
+  when keeping up with JavaScript's yearly language updates.
+\item
+  Instead we extract example code from the programmer's library
+  documentation and rely on dynamic analysis to extract typed usage
+  patterns for the library from the example runs.
+\end{enumerate}
+% The architecture supports the future incorporation of a Symbolic
+% Execution Engine that expands the initial code base using the
+% signatures in the declaration file. The iterative process of exploring
+% new execution paths will refine the generated declaration file in each
+% iteration. 
 
-Finally, we generated declaration files for 244 JavaScript libraries and evaluated them against DefinitelyTyped.
+% Finally, we generated declaration files for 244 JavaScript libraries
+% and evaluated them against the DefinitelyTyped repository. 
 
 The contributions of this paper are as follows.
 \begin{itemize}
-    \item We introduce an architecture that supports generating TypeScript Declaration Files for a given JavaScript Library using run-time information. The architecture supports the future incorporation of a Symbolic Execution Engine that expands the initial code base using the signatures in the declaration file. The iterative process of exploring new execution paths will refine the generated declaration file in each iteration.
+% \item We introduce an architecture that supports generating TypeScript
+%   Declaration Files for a given JavaScript Library using run-time
+%   information. The architecture supports the future incorporation of a
+%   Symbolic Execution Engine that expands the initial code base using
+%   the signatures in the declaration file. The iterative process of
+%   exploring new execution paths will refine the generated declaration
+%   file in each iteration.
+\item A framework that extracts code examples from the
+  documentation of an NPM modules and collects run-time type
+  information from running these examples.
 
-    \item We present the tool \lstinline{dts-generate}, a command line application that generates a valid TypeScript Declaration File for a specific NPM package using run-time information.
+\item The tool \texttt{dts-generate}, a command line
+  application that generates a valid TypeScript declaration file for a
+  specific NPM package using run-time information.
 
-    \item Next, we deliver a test framework that supports generating a TypeScript Declaration File using \lstinline{dts-generate} for all JavaScript libraries in the DefinitelyTyped Repository. We present the results of running \lstinline{dts-generate} for 244 of these libraries.
+\item A comparator for TypeScript declaration files. This tool is
+  necessary for evaluating our framework and also useful to detect
+  incompatibilities when evolving JavaScript modules.
+\item An evaluation of our framework. We examined all 6029 entries in
+  the DefinitelyTyped repository and found 244 sufficiently
+  well-documented NPM libraries, on which we ran \texttt{dts-generate}
+  and compared the outcome with the respective declaration file from the
+  DefinitelyTyped repository. 
 
-    \item Finally, we present a TypeScript Declaration Files parser and comparator. Both tools were necessary for evaluating the results against DefinitelyTyped.
 \end{itemize}
 
 \section{Motivating Example}
-The NPM package \lstinline{route-parser} is a simple route parsing, matching, and reversing library for Javascript\footnote{https://www.npmjs.com/package/route-parser}. It has about 35000 weekly downloads and 221 NPM packages depend on it. If a developer is creating or extending a JavaScript library written in TypeScript that depends on \lstinline{route-parser}, the TypeScript compiler and IDEs will need a declaration file for that JS library in order to perform static checking and code completion, respectively. We use \lstinline{dts-generate} to automatically generate a TypeScript Declaration File for this library. The tool will download the npm package, run it, gather run-time information and generate a valid TypeScript Declaration File. \figref{fig:motivating-example-route-parser-vscode} shows the generated declaration file for package \lstinline{route-parser} using \lstinline{dts-generate}. The result is a valid declaration file that can be used in a TypeScript project. For example, it can be seen in \figref{fig:motivating-example-route-parser-vscode} that Visual Studio Code performs code completion properly. Finally, if \lstinline{route-parser} gets modified in a future, a new declaration file could be automatically generated using \lstinline{dts-generate}.
+The NPM package \texttt{route-parser} is a simple route parsing,
+matching, and reversing library for
+Javascript\footnote{https://www.npmjs.com/package/route-parser}. It
+has about 35000 weekly downloads and 221 NPM packages depend on it. If
+a developer creates or extends TypeScript code that depends on the
+\texttt{route-parser} library, the TypeScript
+compiler and IDE requires a declaration file for that library to
+perform static checking and code completion, respectively. We 
+use \texttt{dts-generate} to automatically generate a TypeScript
+declaration file for \texttt{route-parser}. The tool downloads the NPM 
+package, runs the examples extracted from its documentation, gathers
+run-time information, and generates a TypeScript declaration
+file. The result is a valid declaration file
+shown in \figref{fig:motivating-example-route-parser-vscode}  that 
+can be used in a TypeScript project. For example,  Visual Studio
+Code performs code completion properly
+(\figref{fig:motivating-example-route-parser-vscode}). If the
+\texttt{route-parser} package gets modified in a future, a new declaration
+file can be generated automatically using
+\texttt{dts-generate}. Our comparator tool can compare the new file
+for incompatibilities with the previous declaration file.
 
 \begin{figure}[tp]
   \centering
@@ -219,12 +339,12 @@ declare namespace Route {
     \includegraphics[width=0.7\linewidth]{motivating-example-route-parser-vscode.png}
   \end{subfigure}
 
-  \caption{\textbf{Declaration file for \lstinline{route-parser} generated with \lstinline{dts-generate}} - Constructor and methods are correctly identified. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
+  \caption{\textbf{Declaration file for \texttt{route-parser} generated with \texttt{dts-generate}} - Constructor and methods are correctly identified. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
   \label{fig:motivating-example-route-parser-vscode}
 \end{figure}
 
 \section{dts-generate - Generation of TypeScript Declaration Files}
-We introduce \lstinline{dts-generate}, a command line tool which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}. The tool is intended to be used on existing, published \lstinline{npm} packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
+We introduce \texttt{dts-generate}, a command line tool which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}. The tool is intended to be used on existing, published \texttt{npm} packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
 
 \begin{figure}[tp]
     \centering
@@ -241,10 +361,10 @@ A second independent block uses the run-time information to generate a TypeScrip
 
 The declaration file returned by the method is valid and fully functional, making it suitable for being used within the development process. It contains no errors and matches the structure of the JavaScript Library under analysis, so that the JavaScript code generated after compiling the TypeScript code runs without errors. The conducted experiments included tests that consisted on replacing a specific type definition from DefinitelyTyped \cite{definitely-typed-repository} with the one generated in the experiments: TypeScript compilation was successful, the generated JavaScript code ran without errors and code intelligence features performed by IDEs like code completion worked as expected.
 
-The command line interface was inspired in the \lstinline{dts-gen} \cite{dts-gen} package. It can be seen in \coderef{code:dts-generate-example} that invoking the package is very simple and the only required argument is the name of the module published to the npm registry.
+The command line interface was inspired in the \texttt{dts-gen} \cite{dts-gen} package. It can be seen in \coderef{code:dts-generate-example} that invoking the package is very simple and the only required argument is the name of the module published to the npm registry.
 
 \begin{lstlisting}[
-    caption={\textbf{dts-generate usage} - Example of how to generate a declaration file for module \lstinline{abs}.},
+    caption={\textbf{dts-generate usage} - Example of how to generate a declaration file for module \texttt{abs}.},
     language=bash,
 	label=code:dts-generate-example,
     float,
@@ -264,11 +384,11 @@ It was decided to extract the code examples that execute the JavaScript Library 
 
 Obtaining code examples for a specific NPM Package is achieved in three steps:
 \begin{itemize}
-  \item Obtain the repository url from the package: The command \lstinline{npm view <PACKAGE> repository.url} can be used for retrieving the url of the package's repository.
+  \item Obtain the repository url from the package: The command \texttt{npm view <PACKAGE> repository.url} can be used for retrieving the url of the package's repository.
 
   \item Retrieve the README file from the repository.
 
-  \item Extract the code examples from the README file: Readme files are written using Markdown\footnote{https://www.markdownguide.org}, a very common lightweight and simple markup language. It is very common to write code examples within code blocks indicating the programming language, so that it gets highlighted with the specific syntax. The Markdown identifiers for JavaScript are \lstinline{js} or \lstinline{javascript}. The code examples are finally retrieved by filtering the content within the corresponding code blocks.
+  \item Extract the code examples from the README file: Readme files are written using Markdown\footnote{https://www.markdownguide.org}, a very common lightweight and simple markup language. It is very common to write code examples within code blocks indicating the programming language, so that it gets highlighted with the specific syntax. The Markdown identifiers for JavaScript are \texttt{js} or \texttt{javascript}. The code examples are finally retrieved by filtering the content within the corresponding code blocks.
 \end{itemize}
 
 \subsection{Run-time Information Gathering}
@@ -289,7 +409,7 @@ The dynamic analysis framework used for gathering this kind of information is Ja
   \item Unary operations, like \lstinline{!} or \lstinline{typeof}.
 \end{itemize}
 
-The implementation stores these observations as entities called \lstinline{interactions}. They are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation. The run-time information is finally returned as a JSON file that can be used for later processing. The tool is written in JavaScript and runs in Node.js within a Docker container.
+The implementation stores these observations as entities called \texttt{interactions}. They are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation. The run-time information is finally returned as a JSON file that can be used for later processing. The tool is written in JavaScript and runs in Node.js within a Docker container.
 
 \subsection{TypeScript Declaration File Generation}
 \paragraph*{Overview}
@@ -318,7 +438,7 @@ Before comparison, declaration files need to be parsed so that both of them shar
 
 The parsing consists in creating a structure where declared \lstinline{interfaces}, \lstinline{functions}, \lstinline{classes} and \lstinline{namespaces} are stored separated. Function arguments are correctly described, identifying complex types like union types or callbacks. Optional parameters are also identified. For \lstinline{classes}, a distinction between the constructor and methods is made. Finally, syntax and semantic errors are also checked by the TypeScript Compiler API.
 
-The tool is called \lstinline{parse-dts} and is naturally written in TypeScript. It also runs in NodeJS within its corresponding Docker container.
+The tool is called \texttt{parse-dts} and is naturally written in TypeScript. It also runs in NodeJS within its corresponding Docker container.
 
 \paragraph*{Comparator}
 An independent tool will compare two parsed declaration files. As described in \figref{fig:evaluation-diagram}, the comparator will compare the generated declaration file against the corresponding file in the DefinitelyTyped repository.
@@ -420,16 +540,16 @@ Retrieving the code examples from the JavaScript libraries' repositories proved 
 The results obtained for each on of them are described in the following sections.
 
 \paragraph*{Repositories URL}
-The url of the repositories could be retrieved for only 4974 modules. More than 1000 modules do not have the repository entry in their corresponding \lstinline{package.json} files. Therefore, the \lstinline{npm view <module> repository.url} command returns an empty value. This is even happening for important modules like \lstinline{ace}.
+The url of the repositories could be retrieved for only 4974 modules. More than 1000 modules do not have the repository entry in their corresponding \texttt{package.json} files. Therefore, the \texttt{npm view <module> repository.url} command returns an empty value. This is even happening for important modules like \texttt{ace}.
 
 \paragraph*{Readme Files}
-700 modules simply do not have a readme file in their repositories. The implementation does contemplate, however, different naming conventions like \lstinline{readme.md} or \lstinline{README.md}.
+700 modules simply do not have a readme file in their repositories. The implementation does contemplate, however, different naming conventions like \texttt{readme.md} or \texttt{README.md}.
 
 \paragraph*{Code Examples Extraction}
-The 50\% loss is mainly explained because developers did not wrap their code around a block using the \lstinline{javascript} or \lstinline{js} tags. Counting with code examples for 2200 modules was considered to be enough for evaluating the generation of declaration files.
+The 50\% loss is mainly explained because developers did not wrap their code around a block using the \texttt{javascript} or \texttt{js} tags. Counting with code examples for 2200 modules was considered to be enough for evaluating the generation of declaration files.
 
 \paragraph*{Code Examples Execution}
-The 2260 extracted code examples were executed by installing the required packages and running the code as a \lstinline{node} application. Working and functional code examples could only be extracted for 1448 modules. 812 modules did not run correctly and were discarded. Some failing samples were analyzed and there were mainly two reasons for the failure:
+The 2260 extracted code examples were executed by installing the required packages and running the code as a \texttt{node} application. Working and functional code examples could only be extracted for 1448 modules. 812 modules did not run correctly and were discarded. Some failing samples were analyzed and there were mainly two reasons for the failure:
 \begin{enumerate}
 	\item The code example had been properly extracted but the code itself was not working. It was executing the library in an unsupported way, hence the error at run-time.
 	\item The extracted code example was not intended to be executed or it was not even valid JavaScript code.
@@ -439,7 +559,7 @@ The 2260 extracted code examples were executed by installing the required packag
 
 The following section exhibits some samples of the 244 generated declaration files. It shows some results for each of the implemented templates: \lstinline{module}, \lstinline{module-function} and \lstinline{module-class}.
 
-\figref{fig:experiments-results-module-function} shows the generated declaration files for simple modules like \lstinline{abs}, \lstinline{dirname-regex} and \lstinline{escape-html}. All of them were generated using the \lstinline{module-function} template. There are no differences between the generated files and the corresponding declaration files uploaded to DefinitelyTyped.
+\figref{fig:experiments-results-module-function} shows the generated declaration files for simple modules like \texttt{abs}, \texttt{dirname-regex} and \texttt{escape-html}. All of them were generated using the \texttt{module-function} template. There are no differences between the generated files and the corresponding declaration files uploaded to DefinitelyTyped.
 
 \begin{figure}[tp]
     \centering
@@ -500,10 +620,10 @@ export = escapeHTML;
         \label{fig:experiments-results-module-function}
       \end{subfigure}
 
-    \caption{\textbf{Module-function results} - Results are shown for modules \lstinline{abs}, \lstinline{dirname-regex}, \lstinline{escape-html}. On the left side the generated declaration file with \lstinline{dts-generate}. On the right side the corresponding file in the DefinitelyTyped repository. Functions are correctly detected and input types are accurately inferred. Both files are parsed for comparison, as explained in \secref{sec:dts-generate-evaluation}. Therefore, subtle differences in the syntax between both files are not important.}
+    \caption{\textbf{Module-function results} - Results are shown for modules \texttt{abs}, \texttt{dirname-regex}, \texttt{escape-html}. On the left side the generated declaration file with \lstinline{dts-generate}. On the right side the corresponding file in the DefinitelyTyped repository. Functions are correctly detected and input types are accurately inferred. Both files are parsed for comparison, as explained in \secref{sec:dts-generate-evaluation}. Therefore, subtle differences in the syntax between both files are not important.}
 \end{figure}
 
-Templates of type \lstinline{module-class} are shown for modules \lstinline{flake-idgen}, \lstinline{route-parser} and \lstinline{timer-machine} in \figref{fig:experiments-results-module-class-flake-idgen} and \figref{fig:experiments-results-module-class-timer-machine}, respectively. Properties of interfaces and class methods are correctly generated. Optional parameters are not detected, as it was not considered for the implementation. Finally, \lstinline{module} template is presented for \lstinline{is-uuid} module in \figref{fig:experiments-results-module-is-uuid}.
+Templates of type \lstinline{module-class} are shown for modules \texttt{flake-idgen}, \texttt{route-parser} and \texttt{timer-machine} in \figref{fig:experiments-results-module-class-flake-idgen} and \figref{fig:experiments-results-module-class-timer-machine}, respectively. Properties of interfaces and class methods are correctly generated. Optional parameters are not detected, as it was not considered for the implementation. Finally, \lstinline{module} template is presented for \texttt{is-uuid} module in \figref{fig:experiments-results-module-is-uuid}.
 
 \begin{figure}[tp]
     \centering
@@ -551,7 +671,7 @@ export = FlakeId;
       \caption{flake-idgen/index.d.ts - DefinitelyTyped}
     \end{subfigure}
 
-    \caption{\textbf{Module-class results | flake-idgen} - Parameters of interface \lstinline{ConstructorOptions} are correctly detected. Name of interface differs since it is automatically generated based on the name of the argument variable. Optional properties were not implemented, hence the \lstinline{undefined} type for some properties. Analogously, callback \lstinline{cb} is inferred as \lstinline{undefined}.}
+    \caption{\textbf{Module-class results | flake-idgen} - Parameters of interface \texttt{ConstructorOptions} are correctly detected. Name of interface differs since it is automatically generated based on the name of the argument variable. Optional properties were not implemented, hence the \lstinline{undefined} type for some properties. Analogously, callback \texttt{cb} is inferred as \lstinline{undefined}.}
     \label{fig:experiments-results-module-class-flake-idgen}
 \end{figure}
 
@@ -642,7 +762,7 @@ export function anyNonNil(value: string): boolean;
     \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
-It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was not correct. For example, for \lstinline{datadog-metrics}, some properties of an interface were included in the generated declaration file but they were not present in the one in DefinitelyTyped. However, as shown in \figref{fig:experiments-results-module-datadog-metrics}, the properties are indeed used in the source code and should be included.
+It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was not correct. For example, for \texttt{datadog-metrics}, some properties of an interface were included in the generated declaration file but they were not present in the one in DefinitelyTyped. However, as shown in \figref{fig:experiments-results-module-datadog-metrics}, the properties are indeed used in the source code and should be included.
 
 \begin{figure}[tp]
     \centering
@@ -706,7 +826,7 @@ function BufferedMetricsLogger(opts) {
         \label{fig:subfloat-datadog-logger}
       \end{subfigure}
 
-    \caption{\textbf{Missing properties | datadog-metrics} - Properties \lstinline{aggregator} and \lstinline{reporter} are not in the DefinitelyTyped version, but they appear in the generated declaration file. However, they are indeed used by the library, as exposed in lines 2 and 3 of the library's source code shown in \protect\subref{fig:subfloat-datadog-logger}.}
+    \caption{\textbf{Missing properties | datadog-metrics} - Properties \texttt{aggregator} and \texttt{reporter} are not in the DefinitelyTyped version, but they appear in the generated declaration file. However, they are indeed used by the library, as exposed in lines 2 and 3 of the library's source code shown in \protect\subref{fig:subfloat-datadog-logger}.}
     \label{fig:experiments-results-module-datadog-metrics}
 \end{figure}
 
@@ -762,13 +882,13 @@ As shown in \figref{fig:experiments-typescript-templates-distribution-definitely
 
 \section{Related Work}
 \paragraph*{Microsoft's dts-gen}
-Microsoft developed \lstinline[language={}]{dts-gen}, a tool that creates starter declaration files for JavaScript libraries \cite{dts-gen}. Its documentation states that the result is however intended to be only used a starting point. The outcome needs to be refined afterwards by the developers.
+Microsoft developed \texttt{dts-gen}, a tool that creates starter declaration files for JavaScript libraries \cite{dts-gen}. Its documentation states that the result is however intended to be only used a starting point. The outcome needs to be refined afterwards by the developers.
 
 The tool analyzes the shape of the objects at runtime after initialization without executing the library. This results in many variables being inferred as \lstinline[language={}]{any}. \coderef{code:related-work-dts-gen-example} shows an example for module \lstinline[language={}]{abs}.
 
 The solution presented in this work, however, is intended to generate declaration files that are ready to be uploaded to DefinitelyTyped without further manual intervention. Any amount of manual work that a developer needs to do on a declaration file after updating JavaScript code increases the risk for having discrepancies between the declaration file and the implementation.
 
-Formal aspects like applying the right template and using the correct syntax are perfectly covered by \lstinline[language={}]{dts-gen}.
+Formal aspects like applying the right template and using the correct syntax are perfectly covered by \texttt{dts-gen}.
 
 \begin{lstlisting}[
     language=bash,
@@ -809,7 +929,7 @@ We evaluated the generated declaration files comparing them to the declaration f
 In a final stage, declaration files need to be checked against the proper JavaScript implementation and TSTest has to be definitely taken into account.
 
 \section{Conclusion}
-We have presented \lstinline{dts-generate}, a tool for generating a TypeScript declaration file for a specific JavaScript library. The tool downloads code samples written by the developers from the library's repository. It uses these samples to execute the library and gather data flow and type information. The tool finally generates a TypeScript declaration file based on the information gathered at run-time.
+We have presented \texttt{dts-generate}, a tool for generating a TypeScript declaration file for a specific JavaScript library. The tool downloads code samples written by the developers from the library's repository. It uses these samples to execute the library and gather data flow and type information. The tool finally generates a TypeScript declaration file based on the information gathered at run-time.
 
 We developed an architecture that supports the automatic generation of declaration files for specific JavaScript libraries without additional manual tasks. The architecture contemplates a future incorporation of a Symbolic Execution Engine that refines the initial code base enabling the exploration of new execution paths. However not implemented in this work, its incorporation would result in small incremental modifications to the presented architecture as it is considered to only expand the existing code base.
 
