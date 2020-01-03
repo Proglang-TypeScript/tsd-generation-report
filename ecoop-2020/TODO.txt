@@ -1,0 +1,9 @@
+* evaluation
+  abstract: "33 files out of 244 had no differences"
+  But what about the rest?
+  I would expect that our results are sometimes more specific than DT and other times do not cover all cases.
+  Can the comparator be amended to better qualify the difference between the two declaration files?
+
+* the comparator
+  Such a tool should already exist as part of TSEvolve.
+  How is our implementation different from what they use to compare?
