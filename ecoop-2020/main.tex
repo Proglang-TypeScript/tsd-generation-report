@@ -12,6 +12,8 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 
+\input{macros}
+
 \definecolor{backgroundgray}{rgb}{.94,.94,.94}
 \definecolor{lightgray}{rgb}{.35,.35,.5}
 \definecolor{darkgray}{rgb}{.2, .2, .2}
@@ -131,7 +133,7 @@ incorrect feedback from the TypeScript IDE and thus to incorrect uses
 of the underlying JavaScript library.
 
 This work presents \texttt{dts-generate}, a tool that generates
-TypeScript declaration files for JavaScript libraries uploaded to the NPM
+TypeScript declaration files for JavaScript libraries uploaded to the \NPM{}
 registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
@@ -145,7 +147,7 @@ compared with the declaration file provided on DefinitelyTyped.
 \label{sec:introduction}
 JavaScript has become the most popular language for writing web
 applications \cite{github-statistics}. It is also gaining popularity
-for back-end applications running in NodeJS, a JavaScript-based
+for back-end applications running in \NodeJS{}, a JavaScript-based
 server-side platform. JavaScript is appealing to developers because
 its forgiving dynamic typing enables 
 them to create simple pieces of code very quickly and proceed on a
@@ -240,7 +242,7 @@ as a first step to explore the possibilities for
 generating useful declaration files without the heavy lifting of
 static analysis. \texttt{dts-generate} comes with a framework that
 supports the generation of declaration files for an existing
-JavaScript library published to the NPM registry. The tool gathers
+JavaScript library published to the \NPM{} registry. The tool gathers
 data flow and type information at run-time to generate a declaration
 file based on that information.
 
@@ -274,43 +276,44 @@ The contributions of this paper are as follows.
 %   exploring new execution paths will refine the generated declaration
 %   file in each iteration.
 \item A framework that extracts code examples from the
-  documentation of an NPM modules and collects run-time type
+  documentation of an \NPM{} package and collects run-time type
   information from running these examples.
 
 \item The tool \texttt{dts-generate}, a command line
   application that generates a valid TypeScript declaration file for a
-  specific NPM package using run-time information.
+  specific \NPM{} package using run-time information.
 
 \item A comparator for TypeScript declaration files. This tool is
   necessary for evaluating our framework and also useful to detect
   incompatibilities when evolving JavaScript modules.
 \item An evaluation of our framework. We examined all 6029 entries in
   the DefinitelyTyped repository and found 244 sufficiently
-  well-documented NPM libraries, on which we ran \texttt{dts-generate}
+  well-documented \NPM{} packages, on which we ran \texttt{dts-generate}
   and compared the outcome with the respective declaration file from the
   DefinitelyTyped repository. 
 
 \end{itemize}
 
 \section{Motivating Example}
-The NPM package \texttt{route-parser} is a simple route parsing,
+\label{sec:motivating-example}
+The \NPM{} package \texttt{route-parser} is a simple route parsing,
 matching, and reversing library for
 Javascript\footnote{https://www.npmjs.com/package/route-parser}. It
-has about 35000 weekly downloads and 221 NPM packages depend on it. If
+has about 35,000 weekly downloads and 221 \NPM{} packages depend on it. If
 a developer creates or extends TypeScript code that depends on the
 \texttt{route-parser} library, the TypeScript
 compiler and IDE requires a declaration file for that library to
 perform static checking and code completion, respectively. We 
 use \texttt{dts-generate} to automatically generate a TypeScript
-declaration file for \texttt{route-parser}. The tool downloads the NPM 
+declaration file for \texttt{route-parser}. The tool downloads the \NPM{} 
 package, runs the examples extracted from its documentation, gathers
 run-time information, and generates a TypeScript declaration
-file. The result is a valid declaration file
-shown in \figref{fig:motivating-example-route-parser-vscode}  that 
-can be used in a TypeScript project. For example,  Visual Studio
-Code performs code completion properly
+file. The result is 
+shown in \figref{fig:motivating-example-route-parser-vscode} and it is
+ready for use in a TypeScript project. For example,  Visual Studio's
+code completion runs properly with it
 (\figref{fig:motivating-example-route-parser-vscode}). If the
-\texttt{route-parser} package gets modified in a future, a new declaration
+\texttt{route-parser} package gets modified in the future, a new declaration
 file can be generated automatically using
 \texttt{dts-generate}. Our comparator tool can compare the new file
 for incompatibilities with the previous declaration file.
@@ -343,25 +346,62 @@ declare namespace Route {
   \label{fig:motivating-example-route-parser-vscode}
 \end{figure}
 
-\section{dts-generate - Generation of TypeScript Declaration Files}
-We introduce \texttt{dts-generate}, a command line tool which generates a valid TypeScript Declaration File for a specific JavaScript Library uploaded to the NPM Registry, as explained in \figref{fig:tsd_generation_method_block_diagram}. The tool is intended to be used on existing, published \texttt{npm} packages. The generated output TypeScript declaration file is a valid file which can be used for development and uploaded to the DefinitelyTyped Repository.
+In the next section, we examine each step in the generation process in
+detail and refer back to this example for concreteness.
+
+\section{The Generation of TypeScript Declaration Files}
+\label{sec:gener-typescr-decl}
+This section gives an overview of our approach to generating
+TypeScript declaration files from JavaScript libraries packaged in
+\NPM. \figref{fig:tsd_generation_method_block_diagram} gives a rough
+picture of the inner working of our tool \texttt{dts-generate}. The
+input is an \NPM{} package and the output is a TypeScript declaration
+file for the package if it is ``sufficiently documented'', which we
+substantiate in the next subsection.
+
+% We introduce \texttt{dts-generate}, a command line tool which
+% generates a valid TypeScript Declaration File for a specific
+% JavaScript Library uploaded to the \NPM{} Registry, as explained in
+% \figref{fig:tsd_generation_method_block_diagram}. The tool is intended
+% to be used on existing, published \NPM{} packages. The generated
+% output TypeScript declaration file is a valid file which can be used
+% for development and uploaded to the DefinitelyTyped Repository. 
 
 \begin{figure}[tp]
     \centering
     \includegraphics[width=1\linewidth]{dts-generate-block-diagram.pdf}
-    \caption[dts-generate - Architecture overview]{\textbf{dts-generate - Architecture overview} - Initial code base is retrieved from the npm package's repository. A valid TypeScript Declaration File is generated using run-time information. A Symbolic Execution Engine creates test cases based on the generated Declaration File and via a feedback loop enriches the code base until the stopping criteria is reached. The final TypeScript Declaration File gets returned. Feedback loop through the Symbolic Execution Engine was not implemented. It can be added in a future to the existing architecture, without modifying the working blocks.}
+    \caption[dts-generate - Architecture overview]{\textbf{dts-generate - Architecture overview} - Initial code base is retrieved from the \NPM{} package's repository. A valid TypeScript Declaration File is generated using run-time information. A Symbolic Execution Engine creates test cases based on the generated Declaration File and via a feedback loop enriches the code base until the stopping criteria is reached. The final TypeScript Declaration File gets returned. Feedback loop through the Symbolic Execution Engine was not implemented. It can be added in a future to the existing architecture, without modifying the working blocks.}
     \label{fig:tsd_generation_method_block_diagram}
   \end{figure}
 
-Code examples that execute the JavaScript Library are needed in order to extract the run-time information via code instrumentation. It is achieved by retrieving the examples provided in the README files of the repositories of the different libraries. This is generally the place where developers explicitly show how to use their code. It showed to be an appropriate and pragmatic way of extracting the developer's intention and providing an useful initial code base with meaningful examples, thus avoiding a possible cold start problem. 
+As \texttt{dts-generate} is based on run-time information, 
+exemplary code fragments that execute the JavaScript library are
+needed to obtain 
+significant run-time information from running the instrumented library
+code.
 
-The examples and the code base of the library are instrumented with Jalangi \cite{DBLP:conf/sigsoft/SenKBG13}\cite{DBLP:conf/sigsoft/SenKBG13a} to gather data flow information and type information at runtime. Jalangi is a dynamic analysis configurable framework that provides several analysis modules that were extended as needed to retrieve the required run-time information, which is then saved to an output JSON file.
 
-A second independent block uses the run-time information to generate a TypeScript Declaration File. It infers the overall structure of the JS Library, the interfaces and the types from the JSON file.
+The examples and the code base of the library are instrumented with
+Jalangi \cite{DBLP:conf/sigsoft/SenKBG13} to gather data flow
+information and type information at runtime. Jalangi is a configurable
+framework for dynamic analysis of JavaScript. It provides several
+analysis modules that were extended as needed to retrieve the required
+run-time information, which is then saved in a JSON file. 
 
-The declaration file returned by the method is valid and fully functional, making it suitable for being used within the development process. It contains no errors and matches the structure of the JavaScript Library under analysis, so that the JavaScript code generated after compiling the TypeScript code runs without errors. The conducted experiments included tests that consisted on replacing a specific type definition from DefinitelyTyped \cite{definitely-typed-repository} with the one generated in the experiments: TypeScript compilation was successful, the generated JavaScript code ran without errors and code intelligence features performed by IDEs like code completion worked as expected.
+A second independent block uses the run-time information to generate a
+TypeScript declaration file. It infers the overall structure of the JavaScript
+library, its interfaces, and the types from the run-time information. 
+The resulting declaration file is ready for use in the development
+process. Its content mimics the usage of the library in the example
+code fragments and matches the structure of the
+JavaScript library under analysis, so that the JavaScript code
+generated after compiling the TypeScript code runs without
+interface-related errors.
 
-The command line interface was inspired in the \texttt{dts-gen} \cite{dts-gen} package. It can be seen in \coderef{code:dts-generate-example} that invoking the package is very simple and the only required argument is the name of the module published to the npm registry.
+The command line interface is inspired by the \texttt{dts-gen} package
+\cite{dts-gen}. \coderef{code:dts-generate-example} shows
+that invoking the package is very simple and the only required
+argument is the name of the module published to the \NPM{} registry. 
 
 \begin{lstlisting}[
     caption={\textbf{dts-generate usage} - Example of how to generate a declaration file for module \texttt{abs}.},
@@ -378,42 +418,118 @@ declare function Abs(input: string): string;
 \end{lstlisting}
 
 \subsection{Initial Code Base}
-To extract run-time information of a JavaScript Library, it is necessary, by definition, to actually execute the code, since the analysis modules provided by Jalangi to gather information are only triggered if the instrumented code gets executed.
+\label{sec:initial-code-base}
 
-It was decided to extract the code examples that execute the JavaScript Library from the Readme files of the repository associated to the NPM Package. Readme files are usually used by developers for briefly describing what the code does, what problem it solves, how to install the application, how to build the code, etc. It is very common that developers provide code examples in the readme files to show how the code works and how to use it. This is specially true for NPM Packages, which are in general created to solve a specific problem of JavaScript development.
+To extract run-time information from a JavaScript library, it is
+necessary, by definition, to actually execute the code, because the
+analysis modules provided by Jalangi to gather information are only
+triggered if the instrumented code gets executed.
 
-Obtaining code examples for a specific NPM Package is achieved in three steps:
+There are several options to obtain code fragments that drive the
+library code:
+\begin{enumerate}
+\item\label{item:1} execute code that imports the library;
+\item\label{item:2} execute the test cases that come with the library;
+\item\label{item:3} execute code fragments extracted from the library documentation.
+\end{enumerate}
+
+Option~\ref{item:1} does not solve our problem, it just delegates it
+to the importing library, which also needs code to drive it. Moreover,
+it is costly to download and instrument another package.
+
+We considered option~\ref{item:2} under the assumption that most
+libraries would come with test cases. However, there is no standard
+for testing JavaScript code so that test cases were difficult to reap
+from the \NPM{} packages: they used different directory structures,
+different (or no) testing tools, or some packages did not have tests
+at all.
+
+In the end, option~\ref{item:3} was the most viable even though there
+is no standard for documentation, either. However, almost all repositories
+contain README files where the library authors briefly describe what
+the code does, which problem it solves, how to install the
+application, how to build the code, etc. It is very common that
+developers provide code examples in the readme files to show how the
+library works and how to use it. This observation holds in particular
+for \NPM{} packages, which are generally created to solve a specific
+problem of JavaScript development. 
+
+
+Obtaining code examples for a specific \NPM{} package is done in three steps.
 \begin{itemize}
-  \item Obtain the repository url from the package: The command \texttt{npm view <PACKAGE> repository.url} can be used for retrieving the url of the package's repository.
+\item Obtain the repository url from the package: The command
+  \texttt{npm view <PACKAGE> repository.url} can be used for
+  retrieving the url of the package's repository. 
 
-  \item Retrieve the README file from the repository.
+\item Retrieve the README file from the repository.
 
-  \item Extract the code examples from the README file: Readme files are written using Markdown\footnote{https://www.markdownguide.org}, a very common lightweight and simple markup language. It is very common to write code examples within code blocks indicating the programming language, so that it gets highlighted with the specific syntax. The Markdown identifiers for JavaScript are \texttt{js} or \texttt{javascript}. The code examples are finally retrieved by filtering the content within the corresponding code blocks.
+\item Extract the code examples from the README file: README files are
+  written using Markdown\footnote{\url{https://www.markdownguide.org}}, a
+  popular markup language. In a README file, it is customary to write
+  code examples within code blocks labeled with the programming
+  language, so that syntax highlighting is done correctly. Hence, we
+  retrieve the code examples from code blocks labeled \texttt{js} or
+  \texttt{javascript}, which both stand for JavaScript in
+  Markdown.
 \end{itemize}
+
+For example, in the case of \texttt{route-parser} ...
+
+Obtaining the code fragments from the examples provided in the
+README files of the repository proved to be an
+appropriate and pragmatic way of extracting the developer's
+intention and providing an useful initial code base with meaningful
+examples, thus avoiding possible cold start problems.
+
+
 
 \subsection{Run-time Information Gathering}
-The Runtime Information block described in \figref{fig:tsd_generation_method_block_diagram} will gather information such as:
+The Runtime Information block described in
+\figref{fig:tsd_generation_method_block_diagram} gathers
+information such as: 
 
 \begin{itemize}
-  \item Function \lstinline{f} got invoked with parameters \lstinline{a} and \lstinline{b} with types \lstinline{string} and \lstinline{number}.
-  \item Property or method \lstinline{foo} of parameter \lstinline{a} of function \lstinline{f} was accessed within the function.
-  \item Parameter \lstinline{a} of function \lstinline{f} was used as operand for operator \lstinline{==}.
+  \item Function \lstinline{f} was invoked where parameter
+    \lstinline{a} held a value of type \lstinline{string} and
+    \lstinline{b} a value of type \lstinline{number}. 
+  \item Property \lstinline{foo} of parameter \lstinline{a} of
+    function \lstinline{f} was accessed within the function. 
+  \item Parameter \lstinline{a} of function \lstinline{f} was used as
+    operand for operator \lstinline{==}. 
 \end{itemize}
 
-The dynamic analysis framework used for gathering this kind of information is Jalangi. The configurable analysis modules enable programming custom callbacks that get triggered with virtually any JavaScript event. The events that are observed are:
+The dynamic analysis framework used for gathering this kind of
+information is Jalangi. The configurable analysis modules enable
+programming custom callbacks that get triggered with virtually any
+JavaScript event. Our instrumentation observes the following events: 
 \begin{itemize}
-  \item Binary operations, like \lstinline{==}, \lstinline{+} or \lstinline{===}.
+  \item Binary operations, like \lstinline{==}, \lstinline{+} or
+    \lstinline{===}.  
   \item Variable declaration.
   \item Function, method, or constructor invocation.
   \item Access to an object's property.
   \item Unary operations, like \lstinline{!} or \lstinline{typeof}.
 \end{itemize}
 
-The implementation stores these observations as entities called \texttt{interactions}. They are used for translating, modifying and aggregating Jalangi's raw event information in order to get an application specific data representation. The run-time information is finally returned as a JSON file that can be used for later processing. The tool is written in JavaScript and runs in Node.js within a Docker container.
+The implementation stores these observations as entities called
+\texttt{interactions}. They are used for translating, modifying, and
+aggregating Jalangi's raw event information to get an application
+specific data representation. The run-time information is saved as a
+JSON file that can be used for later processing. The tool is written
+in JavaScript and runs in \NodeJS{} in a Docker container. 
 
 \subsection{TypeScript Declaration File Generation}
+\label{sec:typescr-decl-file}
 \paragraph*{Overview}
-The actual generation of the declaration file is the next step in the pipeline after gathering the run-time information, as shown in \figref{fig:tsd_generation_method_block_diagram}. It is a lightweight, simple and fast application, which does not interact with the actual JavaScript module at run-time. Instead, it uses the JSON output file containing the run-time information and generates a TypeScript declaration file which is use ready to be used within a TypeScript project. The tool itself is written in TypeScript and runs within a Docker container in NodeJS. 
+The actual generation of the declaration file is the next step in the
+pipeline after gathering the run-time information, as shown in
+\figref{fig:tsd_generation_method_block_diagram}. It is a lightweight,
+simple and fast application, which does not interact with the actual
+JavaScript module at run-time. Instead, it uses the JSON output file
+containing the run-time information and generates a TypeScript
+declaration file which is use ready to be used in a TypeScript
+project. The tool itself is written in TypeScript and runs in a
+Docker container in \NodeJS.  
 
 \paragraph*{Templates}
 TypeScript provides templates for writing declaration files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/templates.html} and each template corresponds to a different way of exporting a JavaScript module. The tool uses different fields from the run-time information to detect how the module is being used in order to choose the right templates accordingly. The implemented templates are \lstinline{module}, \lstinline{module-class} and \lstinline{module-function}.
@@ -421,9 +537,9 @@ TypeScript provides templates for writing declaration files\footnote{https://www
 \paragraph*{Interfaces}
 Finally, interfaces are created by exploring \lstinline{getField} and \lstinline{methodCall} interactions from the run-time information. The code will gather the interactions for a specific argument and build the interface by incrementally adding new properties. Interactions within the \lstinline{followingInteractions} field are recursively traversed, building a new interface in each recursion level.
 
-\subsection{Evaluation}
+\section{Evaluation}
 \label{sec:dts-generate-evaluation}
-After generating a declaration file for a published NPM module, it is necessary to evaluate the quality of it. It was decided to compare the generated declaration file against the one uploaded to the DefinitelyTyped repository for the same module, as shown in \figref{fig:evaluation-diagram}.
+After generating a declaration file for a published \NPM{} package, it is necessary to evaluate the quality of it. It was decided to compare the generated declaration file against the one uploaded to the DefinitelyTyped repository for the same module, as shown in \figref{fig:evaluation-diagram}.
 
 \begin{figure}[tp]
     \begin{centering}
@@ -436,9 +552,9 @@ After generating a declaration file for a published NPM module, it is necessary 
 \paragraph*{Parsing}
 Before comparison, declaration files need to be parsed so that both of them share the same structure. It was achieved by using the TypeScript Compiler API, a library developed by Microsoft that allows to traverse the Abstract Syntax Tree in an easy and intuitive way \cite{typescript-compiler-api}.
 
-The parsing consists in creating a structure where declared \lstinline{interfaces}, \lstinline{functions}, \lstinline{classes} and \lstinline{namespaces} are stored separated. Function arguments are correctly described, identifying complex types like union types or callbacks. Optional parameters are also identified. For \lstinline{classes}, a distinction between the constructor and methods is made. Finally, syntax and semantic errors are also checked by the TypeScript Compiler API.
+The parsing consists in creating a structure where declared \lstinline{interfaces}, \lstinline{functions}, \lstinline{classes} and \lstinline{namespaces} are stored separately. Function arguments are correctly described, identifying complex types like union types or callbacks. Optional parameters are also identified. For \lstinline{classes}, a distinction between the constructor and methods is made. Finally, syntax and semantic errors are also checked by the TypeScript Compiler API.
 
-The tool is called \texttt{parse-dts} and is naturally written in TypeScript. It also runs in NodeJS within its corresponding Docker container.
+The tool is called \texttt{parse-dts} and is naturally written in TypeScript. It also runs in \NodeJS{} in its corresponding Docker container.
 
 \paragraph*{Comparator}
 An independent tool will compare two parsed declaration files. As described in \figref{fig:evaluation-diagram}, the comparator will compare the generated declaration file against the corresponding file in the DefinitelyTyped repository.
@@ -455,7 +571,18 @@ The following criteria were applied:
 \end{itemize}
 
 \section{Results}
-Declaration files were generated for existing modules uploaded to the NPM registry. The DefinitelyTyped repository was used as a benchmark. Each one of the generated files was compared against the corresponding declaration file already uploaded to the repository.
+\label{sec:results}
+
+\begin{quotation}
+  The conducted experiments included tests that consisted of replacing
+  a specific type definition from DefinitelyTyped
+  \cite{definitely-typed-repository} with the one generated in the
+  experiments: TypeScript compilation was successful, the generated
+  JavaScript code ran without errors and code intelligence features
+  performed by IDEs like code completion worked as expected.
+\end{quotation}
+
+Declaration files were generated for existing modules uploaded to the \NPM{} registry. The DefinitelyTyped repository was used as a benchmark. Each one of the generated files was compared against the corresponding declaration file already uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated for 244 modules out of 6029 modules. Samples of the generated declaration files for templates \lstinline{module}, \lstinline{module-class} and \lstinline{module-function} are presented in \secref{sec:experiments-declaration-files-generation}.
 
@@ -533,7 +660,7 @@ Retrieving the code examples from the JavaScript libraries' repositories proved 
 \begin{itemize}
 	\item Extracting repositories url.
 	\item Extracting readme files.
-	\item Extracting code examples within readme files.
+	\item Extracting code examples from README files.
 	\item Executing code examples and discarding failing ones.
 \end{itemize}
 
@@ -549,7 +676,7 @@ The url of the repositories could be retrieved for only 4974 modules. More than 
 The 50\% loss is mainly explained because developers did not wrap their code around a block using the \texttt{javascript} or \texttt{js} tags. Counting with code examples for 2200 modules was considered to be enough for evaluating the generation of declaration files.
 
 \paragraph*{Code Examples Execution}
-The 2260 extracted code examples were executed by installing the required packages and running the code as a \texttt{node} application. Working and functional code examples could only be extracted for 1448 modules. 812 modules did not run correctly and were discarded. Some failing samples were analyzed and there were mainly two reasons for the failure:
+The 2260 extracted code examples were executed by installing the required packages and running the code as a \NodeJS{} application. Working and functional code examples could only be extracted for 1448 modules. 812 modules did not run correctly and were discarded. Some failing samples were analyzed and there were mainly two reasons for the failure:
 \begin{enumerate}
 	\item The code example had been properly extracted but the code itself was not working. It was executing the library in an unsupported way, hence the error at run-time.
 	\item The extracted code example was not intended to be executed or it was not even valid JavaScript code.
@@ -881,6 +1008,7 @@ As shown in \figref{fig:experiments-typescript-templates-distribution-definitely
 \end{figure}
 
 \section{Related Work}
+\label{sec:related-work}
 \paragraph*{Microsoft's dts-gen}
 Microsoft developed \texttt{dts-gen}, a tool that creates starter declaration files for JavaScript libraries \cite{dts-gen}. Its documentation states that the result is however intended to be only used a starting point. The outcome needs to be refined afterwards by the developers.
 
@@ -929,6 +1057,7 @@ We evaluated the generated declaration files comparing them to the declaration f
 In a final stage, declaration files need to be checked against the proper JavaScript implementation and TSTest has to be definitely taken into account.
 
 \section{Conclusion}
+\label{sec:conclusion}
 We have presented \texttt{dts-generate}, a tool for generating a TypeScript declaration file for a specific JavaScript library. The tool downloads code samples written by the developers from the library's repository. It uses these samples to execute the library and gather data flow and type information. The tool finally generates a TypeScript declaration file based on the information gathered at run-time.
 
 We developed an architecture that supports the automatic generation of declaration files for specific JavaScript libraries without additional manual tasks. The architecture contemplates a future incorporation of a Symbolic Execution Engine that refines the initial code base enabling the exploration of new execution paths. However not implemented in this work, its incorporation would result in small incremental modifications to the presented architecture as it is considered to only expand the existing code base.
