@@ -7,3 +7,33 @@
 * the comparator
   Such a tool should already exist as part of TSEvolve.
   How is our implementation different from what they use to compare?
+
+* section 3
+  it would be good to refer back to the route-parser example
+  from section 2 and give some concrete information of how things work
+  in this example (e.g., what does the README look like).
+  Why do you switch to abs in section 3?
+
+* the different alternatives for obtaining code fragments need to be
+  discussed. I made a start of that in section 3, but there's more to
+  say and you may have some more data from your investigation.
+
+* a similar issue arises in several places (e.g. the Evaluation
+  section). it is not sufficient to say "it was decided to proceed
+  like this", but alternatives considered need to be discussed.
+
+* The explanation of the information gathered needs to be more
+  systematic. It would also be good to say which information is
+  collected for which purpose.
+
+* It would also make sense to explain at some point the (possible)
+  structure(s) of a TypeScript declaration file. I think this should
+  be done before section 3, so that the reader can understand the
+  remark about "the structure of the declaration file matches the
+  structure of the library"
+
+* we also need to describe the range of output declaration files so
+  that the reader can judge the (im)precision of the approach. We can
+  still argue that we are as precise as DT (if we have sufficient
+  evidence for that).
+  
