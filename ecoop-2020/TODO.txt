@@ -8,6 +8,15 @@
   Such a tool should already exist as part of TSEvolve.
   How is our implementation different from what they use to compare?
 
+* We need a version of figure 2 without the feedback loop. We (may)
+  use the figure with the loop later in the game when discussing
+  unimplemented extensions. To this end, it may be useful to have a
+  concrete example how the loop would refine a type signature.
+
+  Generally, it would be good to complement the discussion of the
+  results with a description of extra examples needed to obtain the
+  "rest" of the signature.
+
 * section 3
   it would be good to refer back to the route-parser example
   from section 2 and give some concrete information of how things work
