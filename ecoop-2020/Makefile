@@ -8,15 +8,15 @@ DOC=main
 run: $(DOC).pdf
 
 $(DOC).pdf: $(DOC).bbl $(DOC).tex
-	pdflatex $(DOC).tex -draftmode
-	pdflatex $(DOC).tex 
+	pdflatex $(DOC) -draftmode
+	pdflatex $(DOC) 
 
 $(DOC).bbl: $(DOC).aux
-	bibtex $(DOC).aux
+	bibtex $(DOC)
 
 $(DOC).aux: $(DOC).bib
-	pdflatex $(DOC).tex -draftmode
-	pdflatex $(DOC).tex -draftmode
+	pdflatex $(DOC) -draftmode
+	pdflatex $(DOC) -draftmode
 
 clean:
-	rm -rf *.aux *.lof *.log *.lot *.toc *.bbl *.blg $(DOC).pdf
+	rm -rf *.aux *.lof *.log *.lot *.toc *.bbl *.blg *.vtc *.out $(DOC).pdf
