@@ -1,29 +1,33 @@
-* evaluation
+* evaluation [needs hacking]
   abstract: "33 files out of 244 had no differences"
   But what about the rest?
   I would expect that our results are sometimes more specific than DT and other times do not cover all cases.
   Can the comparator be amended to better qualify the difference between the two declaration files?
 
-* the comparator
+* the comparator [P]
   Such a tool should already exist as part of TSEvolve.
   How is our implementation different from what they use to compare?
 
-* We need a version of figure 2 without the feedback loop. We (may)
+* figure 2 [F]
+  We need a version of figure 2 without the feedback loop. We (may)
   use the figure with the loop later in the game when discussing
   unimplemented extensions. To this end, it may be useful to have a
   concrete example how the loop would refine a type signature.
 
+* identify a module to do this: [?}
   Generally, it would be good to complement the discussion of the
   results with a description of extra examples needed to obtain the
   "rest" of the signature.
+  "if the developer had provided these examples, then we would have
+  obtained the same (or better) files as stored in DT"
 
-* section 3
+* section 3 [F}
   it would be good to refer back to the route-parser example
   from section 2 and give some concrete information of how things work
   in this example (e.g., what does the README look like).
   Why do you switch to abs in section 3?
 
-* the different alternatives for obtaining code fragments need to be
+* [F] the different alternatives for obtaining code fragments need to be
   discussed. I made a start of that in section 3, but there's more to
   say and you may have some more data from your investigation.
 
@@ -31,11 +35,11 @@
   section). it is not sufficient to say "it was decided to proceed
   like this", but alternatives considered need to be discussed.
 
-* The explanation of the information gathered needs to be more
+* [F} The explanation of the information gathered needs to be more
   systematic. It would also be good to say which information is
   collected for which purpose.
 
-* It would also make sense to explain at some point the (possible)
+* [F} It would also make sense to explain at some point the (possible)
   structure(s) of a TypeScript declaration file. I think this should
   be done before section 3, so that the reader can understand the
   remark about "the structure of the declaration file matches the
