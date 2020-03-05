@@ -26,23 +26,24 @@
     }
 
     Greeter.prototype.log = function (logSetting) {
-	if (logSetting.hasOwnProperty('verbose')) {
-	    this.verbose = logSetting.verbose;
-	}
-    }
+        if (logSetting.hasOwnProperty('verbose')) {
+            this.verbose = logSetting.verbose;
+        }
+    };
 
     Greeter.prototype.alert = function (alertSetting) {
-	var modal = alertSetting.modal;
-	var title = this.greeting;
-	var color = this.color;
-	if (alertSetting.hasOwnProperty ('title')) {
-	    title = alertSetting.title;
-	}
-	if (alertSetting.hasOwnProperty ('color')) {
-	    color = alertSetting.color;
-	}
-	var sep = modal ? " || " : " -- ";
-	return color + sep + title + sep;
+        var modal = alertSetting.modal;
+        var title = this.greeting;
+        var color = this.color;
+        if (alertSetting.hasOwnProperty ('title')) {
+            title = alertSetting.title;
+        }
+        if (alertSetting.hasOwnProperty ('color')) {
+            color = alertSetting.color;
+        }
+
+        var sep = modal ? " || " : " -- ";
+        console.log(color + sep + title + sep);
     }
     
     // Just return a value to define the module export.

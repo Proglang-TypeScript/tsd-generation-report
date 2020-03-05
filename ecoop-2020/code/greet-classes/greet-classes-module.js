@@ -20,11 +20,11 @@
 	if (!(this instanceof Greeter)) {
 	    return new Greeter(message);
 	}
-	this.greeting = message;
+	    this.greeting = message;
     }
 
     Greeter.prototype.showGreeting = function () {
-	alert(this._message);
+	    console.log(this.greeting);
     }
     
     // Just return a value to define the module export.
