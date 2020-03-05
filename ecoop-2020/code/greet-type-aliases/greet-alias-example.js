@@ -1,10 +1,10 @@
-var Greeter = import ("greet-alias-module");
-var greet = Greeter.greet;
+const Greet = require("./greet-alias-module");
+const greet = Greet.greet;
 
 function getGreeting() {
     return "howdy";
 }
-class MyGreeter extends Greeter { }
+class MyGreeter extends Greet { }
 
 greet("hello");
 greet(getGreeting);

@@ -1,4 +1,4 @@
-var Greeter = import ("greet-organizing-module");
+var Greeter = require("./greet-organizing-module");
 
 const g = new Greeter("Hello");
 g.log({ verbose: true });

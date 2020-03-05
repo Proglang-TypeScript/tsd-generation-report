@@ -1,4 +1,4 @@
-var greetLib = import ("greet-settings-module");
+const greet = require("./greet-settings-module");
 
 // from TypeScript documentation
 greet({

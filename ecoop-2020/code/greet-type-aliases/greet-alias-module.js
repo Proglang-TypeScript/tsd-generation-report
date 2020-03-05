@@ -16,19 +16,22 @@
     // Just return a value to define the module export.
     // This example returns an object, but the module
     // can return a function as the exported value.
-    return {
-	greet = function (init) {
-	    if (typeof init === 'string') {
-		return "<-- " + init + " -->"; 
-	    }
-	    if (typeof init === 'function') {
-		return "<-- " + init() + " -->"; 
-	    }
-	    if (init instanceof Greet) {
-		return "<-- " + init.greeting + " -->"; 
-	    }
-	    return;
-	},
-	greeting = "wise guys";
+    function Greet() {
+        this.greeting = "wise guys";
     };
+
+    Greet.greet = function (init) {
+        if (typeof init === 'string') {
+            console.log("<-- " + init + " -->");
+        }
+        if (typeof init === 'function') {
+            console.log("<-- " + init() + " -->");
+        }
+        if (init instanceof Greet) {
+            console.log("<-- " + init.greeting + " -->");
+        }
+        return;
+    };
+
+    return Greet;
 }));
