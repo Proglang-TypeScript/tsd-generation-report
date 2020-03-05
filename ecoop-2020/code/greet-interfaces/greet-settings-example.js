@@ -1,4 +1,4 @@
-const greet = require("./greet-settings-module");
+var greet = require("./greet-settings-module");
 
 // from TypeScript documentation
 greet({

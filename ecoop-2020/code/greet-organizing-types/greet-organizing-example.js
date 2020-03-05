@@ -1,5 +1,5 @@
 var Greeter = require("./greet-organizing-module");
 
-const g = new Greeter("Hello");
+var g = new Greeter("Hello");
 g.log({ verbose: true });
 g.alert({ modal: false, title: "Current Greeting" });
