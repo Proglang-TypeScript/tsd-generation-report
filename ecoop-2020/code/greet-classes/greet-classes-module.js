@@ -17,10 +17,10 @@
 }(typeof self !== 'undefined' ? self : this, function () {
 
     function Greeter(message) {
-	if (!(this instanceof Greeter)) {
-	    return new Greeter(message);
-	}
-	    this.greeting = message;
+        if (!(this instanceof Greeter)) {
+            return new Greeter(message);
+        }
+        this.greeting = message;
     }
 
     Greeter.prototype.showGreeting = function () {
