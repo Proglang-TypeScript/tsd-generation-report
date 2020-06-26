@@ -137,10 +137,9 @@ TypeScript declaration files for JavaScript libraries uploaded to the \NPM{}
 registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
-information. To evaluate the tool, 244 declaration files were generated and 
-compared with the declaration file provided on DefinitelyTyped.
-33 files out of 244 had no differences.
-% but what about the remaining generated files
+information. To evaluate the tool, 244 declaration files were generated and 82 were
+compared with the corresponding declaration file provided on DefinitelyTyped. 72 files presented positive results, having no differences at all or differences that can be solved by modifying the code examples accordingly.
+
 \end{abstract}
 
 \section{Introduction}
@@ -168,7 +167,7 @@ JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some
 of these unintuitive JavaScript behaviors. 
 
 \begin{lstlisting}[
-    caption={\textbf{Unexpected JavaScript behavior} - falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
+    caption={\textbf{Unintuitive JavaScript behavior} - falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
     language=JavaScript,
 	label=code:introduction-javascript-wtfs,
     float,
@@ -187,9 +186,9 @@ null + undefined + [1, 2, 3] // 'NaN1,2,3'
 [1, 15, 20, 100].sort() // [ 1, 100, 15, 20 ]
 typeof null; // object
 null instanceof Object; // false
+"01" < "00100"; // false
 \end{lstlisting}
 % pjt: why unexpected?
-% "01" < "00100"; // false
 
 The cognitive load produced by such dynamic typing (which includes
 unchecked property names) is not present in other languages that use
@@ -296,24 +295,22 @@ The contributions of this paper are as follows.
 
 \section{Motivating Example}
 \label{sec:motivating-example}
-The \NPM{} package \texttt{route-parser} is a simple route parsing,
-matching, and reversing library for
-Javascript\footnote{https://www.npmjs.com/package/route-parser}. It
-has about 35,000 weekly downloads and 221 \NPM{} packages depend on it. If
+The \NPM{} package \texttt{glob-to-regexp} is a simple JavaScript library, which turns a glob expression into a regular expression\footnote{https://www.npmjs.com/package/glob-to-regexp}. It
+has about 6,500,000 weekly downloads and 181 \NPM{} packages depend on it. If
 a developer creates or extends TypeScript code that depends on the
-\texttt{route-parser} library, the TypeScript
+\texttt{glob-to-regexp} library, the TypeScript
 compiler and IDE requires a declaration file for that library to
 perform static checking and code completion, respectively. We 
 use \texttt{dts-generate} to automatically generate a TypeScript
-declaration file for \texttt{route-parser}. The tool downloads the \NPM{} 
+declaration file for \texttt{glob-to-regexp}. The tool downloads the \NPM{} 
 package, runs the examples extracted from its documentation, gathers
 run-time information, and generates a TypeScript declaration
 file. The result is 
-shown in \figref{fig:motivating-example-route-parser-vscode} and it is
+shown in \figref{fig:motivating-example-glob-to-regexp-vscode} and it is
 ready for use in a TypeScript project. For example,  Visual Studio's
 code completion runs properly with it
-(\figref{fig:motivating-example-route-parser-vscode}). If the
-\texttt{route-parser} package gets modified in the future, a new declaration
+(\figref{fig:motivating-example-glob-to-regexp-vscode}). If the
+\texttt{glob-to-regexp} package gets modified in the future, a new declaration
 file can be generated automatically using
 \texttt{dts-generate}. Our comparator tool can compare the new file
 for incompatibilities with the previous declaration file.
@@ -322,15 +319,17 @@ for incompatibilities with the previous declaration file.
   \centering
   \begin{subfigure}{0.70\linewidth}
     \begin{lstlisting}[language=TypeScript]
-export = Route;
+export = GlobToRegexp;
 
-declare class Route {
-  constructor(spec: string);
-  match(path: string): object;
-  reverse(params: object): string;
-}
+declare function GlobToRegexp(glob: string, opts: undefined): RegExp;
+declare function GlobToRegexp(glob: string, opts: GlobToRegexp.I__opts): RegExp;
+declare namespace GlobToRegexp {
+  export interface I__opts {
+    'extended': undefined | boolean;
+    'globstar': undefined | boolean;
+    'flags': undefined | string;
+  }
 
-declare namespace Route {
 }
     \end{lstlisting}
   \end{subfigure}
@@ -339,11 +338,11 @@ declare namespace Route {
 
   \begin{subfigure}{1.\linewidth}
     \centering
-    \includegraphics[width=0.7\linewidth]{motivating-example-route-parser-vscode.png}
+    \includegraphics[width=0.8\linewidth]{motivating-example-glob-to-regexp-vscode.png}
   \end{subfigure}
 
-  \caption{\textbf{Declaration file for \texttt{route-parser} generated with \texttt{dts-generate}} - Constructor and methods are correctly identified. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
-  \label{fig:motivating-example-route-parser-vscode}
+  \caption{\textbf{Declaration file for \texttt{glob-to-regexp} generated with \texttt{dts-generate}} - Interfaces is correctly detected. Optional parameters are explicitly declared as \texttt{undefined}. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
+  \label{fig:motivating-example-glob-to-regexp-vscode}
 \end{figure}
 
 After filling in some background information on declaration files,
@@ -355,13 +354,9 @@ concreteness.
 \label{sec:typescr-decl-files}
 
 The declaration file shown in
-\figref{fig:motivating-example-route-parser-vscode} describes a
-package with a single exported class \lstinline{Route}. The
-description of the class comprises the type signature of the
-constructor (line~4) and the methods \lstinline{match} and
-\lstinline{reverse} (lines~5 and~6).
+\figref{fig:motivating-example-glob-to-regexp-vscode} describes a
+package with a single exported function. The first parameter is of type \texttt{string} and the second one is an optional interface. TypeScript namespaces are used for organizing types declared in a declaration file and avoiding name collisions with other types \cite{typescript-namespaces}. For example, the interface \texttt{I\_\_opts} declared in \figref{fig:motivating-example-glob-to-regexp-vscode} is used as \lstinline[language=TypeScript]{globToRegexp.I__opts}, since it is declared within a namespace.
 
-!!!TODO: explain meaning of namespace.
 
 This file is an instance of one of the standard templates for writing
 declaration
@@ -377,25 +372,160 @@ particular organization of the underlying JavaScript library:
 \item[module-function] exactly one exported functions.
 \end{description}
 
-% $ ./dts-generate abs
-% $ cat output/abs/index.d.ts 
 \begin{lstlisting}[
     caption={Example for template \textbf{module-function}},
-    language=TypeScript,
+    language=bash,
 	label=code:dts-generate-example,
     float,
     abovecaptionskip=-\medskipamount
 ]
+$ ./dts-generate abs
+$ cat output/abs/index.d.ts 
 export = Abs;
 
 declare function Abs(input: string): string;
 \end{lstlisting}
-!!!TODO: example for simple \textbf{module}
 
-The \texttt{route-parser} library is an instance of a
-\textbf{module-class}. The \texttt{abs} library provides a single
-function \lstinline{Abs} so it uses template \textbf{module-function}
-as shown in \ref{code:dts-generate-example}. 
+TypeScript provides a guide on how to write high quality declaration files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. They explain the main concepts through examples. We extracted one example for each template and generated used \texttt{dts-generate} to generate a corresponding declaration file, as presented in \figref{fig:typescript-templates-by-example}. The \texttt{glob-to-regexp} library is an instance of a \textbf{module-function}. It is worth mentioning that templates are a way of describing how a JavaScript library is intended to be used. Although highly unlikely, it is possible to create a library that can be represented with a different template depending on how it is used, as shown in \figref{fig:multi-purpose-module-example}. Run-time analysis proves useful in this case, since it is not sufficient to statically analyze the exported module.
+
+\begin{figure}[tp]
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript]
+var greet = require("./greet-settings-module");
+
+greet({
+  greeting: "hello world",
+  duration: 4000
+});
+
+greet({
+  greeting: "hello world",
+  color: "#00ff00"
+});
+    \end{lstlisting}
+    \caption{TypeScript example for \texttt{module-function} template}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export = GreetSettingsModule;
+
+declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings): void;
+declare namespace GreetSettingsModule {
+  export interface I__settings {
+    'greeting': string;
+    'duration': number | undefined;
+    'color': undefined | string;
+  }
+
+}
+    \end{lstlisting}
+    \caption{Declaration file for \texttt{module-function} template}
+  \end{subfigure}
+
+  \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript]
+var myLib = require("./greet-module");
+
+var result = myLib.makeGreeting("hello, world");
+console.log("The computed greeting is: " + result);
+
+var goodbye = myLib.makeGoodBye();
+console.log("The computed goodbye is: " + goodbye);    
+      \end{lstlisting}
+      \caption{Example for \texttt{module}}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+export function makeGreeting(str: string): string;
+export function makeGoodBye(): string;        
+      \end{lstlisting}
+      \caption{Declaration file for \texttt{module} template}
+    \end{subfigure}
+
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript]
+var Greeter = require("./greet-classes-module.js");
+
+var myGreeter = new Greeter("hello, world");
+myGreeter.greeting = "howdy";
+myGreeter.showGreeting();
+      \end{lstlisting}
+      \caption{Example for \texttt{module-class}}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+export = Greeter;
+
+declare class Greeter {
+  constructor(message: string);
+  showGreeting(): void;
+}
+
+declare namespace Greeter {
+}
+      \end{lstlisting}
+      \caption{Declaration file for \texttt{module-class} template}
+    \end{subfigure}
+
+  \caption{Results for \textbf{module-function} template}
+  \label{fig:typescript-templates-by-example}
+\end{figure}
+
+\begin{figure}[tp]
+  \centering
+  \begin{subfigure}{0.80\linewidth}
+      \begin{lstlisting}[language=JavaScript]
+var multiPurposeModule = require('./multi-purpose-module');
+
+// module-function
+console.log(multiPurposeModule("John", "Doe"));
+// John Doe
+
+
+// module-class
+var m = new multiPurposeModule("Jane", "Doe");
+console.log(m.firstName + " - " + m.lastName);
+// Jane - Doe
+
+console.log(m.sayHello());
+// Hello, my name is Jane Doe
+
+// module
+console.log(multiPurposeModule.anotherFunction());
+// I am another function! 
+      \end{lstlisting}
+      \caption{index.js}
+    \end{subfigure}
+
+    \begin{subfigure}{0.80\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+var multiPurposeModule = function(firstName, lastName) {
+  this.firstName = firstName;
+  this.lastName = lastName;
+
+  return firstName + " " + lastName;
+};
+
+multiPurposeModule.prototype.sayHello = function() {
+  return "Hello, my name is " + this.firstName + " " + this.lastName;
+};
+
+multiPurposeModule.anotherFunction = function() {
+  return "I am another function!";
+};
+
+module.exports = multiPurposeModule;   
+      \end{lstlisting}
+      \caption{multi-purpose-module/index.js}
+    \end{subfigure}
+  \caption{Example module that implements all three templates simultaneously}
+  \label{fig:multi-purpose-module-example}
+\end{figure}
+
 
 \section{The Generation of TypeScript Declaration Files}
 \label{sec:gener-typescr-decl}
@@ -477,7 +607,7 @@ libraries would come with test cases. However, there is no standard
 for testing JavaScript code so that test cases were difficult to reap
 from the \NPM{} packages: they use different directory structures,
 employ differing (or no) testing tools, or do not have tests
-at all.
+at all. Moreover, developers try to cover edge cases or even not allowed values in their tests. Such tests are not really useful for describing a library from the consumer's point of view. For example, a developer might write a test invoking a function with \texttt{null} just to validate that it throws an error in such scenario.
 
 In the end, option~\ref{item:3} was the most viable even though there
 is no standard for documentation, either. However, almost all repositories
@@ -487,7 +617,7 @@ application, how to build the code, etc. It is very common that
 developers provide code examples in the README files to show how the
 library works and how to use it. This observation holds in particular
 for \NPM{} packages, which are generally created to solve a specific
-problem of JavaScript development. 
+problem of JavaScript development. These code fragments do not present the problem of option~\ref{item:2} since they are meant to be used by developers using the package.
 
 
 Obtaining code examples for a specific \NPM{} package is done in three steps.
@@ -508,15 +638,40 @@ Obtaining code examples for a specific \NPM{} package is done in three steps.
   Markdown.
 \end{itemize}
 
-For example, in the case of \texttt{route-parser} ...
+The extracted example for the case of \texttt{glob-to-regexp} is shown in \coderef{code:code-example-extracted-motivating-example}.
+
+\begin{lstlisting}[
+  caption={Extracted example for \texttt{glob-to-regexp}},
+  language=JavaScript,
+label=code:code-example-extracted-motivating-example,
+  float,
+  abovecaptionskip=-\medskipamount
+]
+var globToRegExp = require('glob-to-regexp');
+var re = globToRegExp("p*uck");
+re.test("pot luck"); // true
+re.test("pluck"); // true
+re.test("puck"); // true
+
+re = globToRegExp("*.min.js");
+re.test("http://example.com/jquery.min.js"); // true
+re.test("http://example.com/jquery.min.js.map"); // false
+
+re = globToRegExp("*/www/*.js");
+re.test("http://example.com/www/app.js"); // true
+re.test("http://example.com/www/lib/factory-proxy-model-observer.js"); // true
+
+// Extended globs
+re = globToRegExp("*/www/{*.js,*.html}", { extended: true });
+re.test("http://example.com/www/app.js"); // true
+re.test("http://example.com/www/index.html"); // true
+\end{lstlisting}
 
 Obtaining the code fragments from the examples provided in the
 README files of the repository proved to be an
 appropriate and pragmatic way of extracting the developer's
 intention and providing a useful initial code base with meaningful
 examples, thus avoiding possible cold start problems.
-
-
 
 \subsection{Run-time Information Gathering}
 The Runtime Information block described in
@@ -549,9 +704,13 @@ JavaScript event. Our instrumentation observes the following events:
 The implementation stores these observations as entities called
 \texttt{interactions}. They are used for translating, modifying, and
 aggregating Jalangi's raw event information to get an application
-specific data representation. The run-time information is saved as a
-JSON file that can be used for later processing. The tool is written
-in JavaScript and runs in \NodeJS{} in a Docker container. 
+specific data representation. Each function invocation is stored as a \texttt{FunctionContainer} which contains an \texttt{ArgumentContainer} for each argument. Each \texttt{ArgumentContainer} contains the name and index of the argument and a collection of \texttt{interactions}. The interaction \texttt{getField} gets triggered whenever a property of an object gets accessed and it tracks the name of the accessed field. The invocation of an object's method is tracked with the \texttt{methodCall} interaction. The \texttt{usedAsArgument} interaction gets triggered when an argument is used in the invocation of a function. The \texttt{followingInteractions} property is used for inferring nested interfaces. It is an array that recursively records \texttt{interactions} on the return value of \texttt{getField} or \texttt{methodCall}.
+
+We wrap each function's argument around a wrapper object, which enables to store meta-information and greatly simplifies the mapping of an observation with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We then use the original values for critical operators such as \texttt{===} or \texttt{typeof}, for which wrapper objects will definitely modify the behavior of the code.
+
+The property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly exported by the module, the property \texttt{isExported} will be set to \texttt{true} when it is invoked. If a function of an exported object is invoked, \texttt{isExported} will be \texttt{false} and \texttt{requiredModule} will contain the name of the required module.
+
+The run-time information is saved as a JSON file that can be used for later processing. The tool is written in JavaScript and runs in \NodeJS{} in a Docker container. 
 
 \subsection{TypeScript Declaration File Generation}
 \label{sec:typescr-decl-file}
@@ -565,13 +724,112 @@ information gathered in the previous step.
 % The tool itself is written in TypeScript and runs in a
 % Docker container in \NodeJS.  
 
+Instead of analyzing the shape of the exported module, we inspect how the module is used to choose between the templates. We analyze the properties \texttt{isExported}, \texttt{requiredModule} and \texttt{isConstructor} from the run-time JSON to distinguish between \texttt{module-class} and \texttt{module-function}. If a function is invoked and it is imported from the module we are analyzing we infer the template \texttt{module-class} or \texttt{module-function}. We choose \texttt{module-class} if the function is used as a constructor. If not, we choose \texttt{module-function}. Otherwise, we infer the \texttt{module} template. \figref{fig:dts-generate-choose-templates} exposes this logic using the example provided in \figref{fig:multi-purpose-module-example}.
 
-!!!TODO too vague: more information --- how do you choose between the templates?
+\begin{figure}[tp]
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript]
+var multiPurposeModule = require('./multi-purpose-module');
 
-We use different fields (which?) from the run-time information to detect
-how the module is used to choose the most suitable template. The implemented
-templates are \textbf{module}, \textbf{module-class} and
-\textbf{module-function}.  
+multiPurposeModule("John", "Doe");
+// John Doe
+    \end{lstlisting}
+    \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-function}}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export = MultiPurposeModule;
+
+declare function MultiPurposeModule(firstName: string, lastName: string): string;
+    \end{lstlisting}
+    \caption{Generated declaration file with \texttt{module-function} template}
+  \end{subfigure}
+
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript]
+var multiPurposeModule = require('./multi-purpose-module');
+
+var m = new multiPurposeModule("Jane", "Doe");
+var fullName = m.firstName + " - " + m.lastName;
+// Jane - Doe
+
+m.sayHello();
+// Hello, my name is Jane Doe
+    \end{lstlisting}
+    \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-class}}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+export = MultiPurposeModule;
+
+declare class MultiPurposeModule {
+  constructor(firstName: string, lastName: string);
+  sayHello(): string;
+}
+
+declare namespace MultiPurposeModule {
+}
+      \end{lstlisting}
+      \caption{Generated declaration file with \texttt{module-class} template}
+    \end{subfigure}
+
+
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript]
+var multiPurposeModule = require('./multi-purpose-module');
+
+multiPurposeModule.anotherFunction();
+// I am another function!
+      \end{lstlisting}
+      \caption{Example module \texttt{multi-purpose-module} used as \texttt{module}}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+export function anotherFunction(): string;
+      \end{lstlisting}
+      \caption{Generated declaration file with \texttt{module} template}
+    \end{subfigure}
+
+  \caption{Different ways of using example module presented in \figref{fig:multi-purpose-module-example}. \texttt{dts-generate} generates infers the correct template for each case. The JavaScript implementation of the module remained unmodified for each example.}
+  \label{fig:dts-generate-choose-templates}
+\end{figure}
+
+
+\begin{figure}[tp]
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export function v1(str: string): boolean;
+export function v2(str: string): boolean;
+export function v3(str: string): boolean;
+export function v4(str: string): boolean;
+export function v5(str: string): boolean;
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - Generated}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export function v1(value: string): boolean;
+export function v2(value: string): boolean;
+export function v3(value: string): boolean;
+export function v4(value: string): boolean;
+export function v5(value: string): boolean;
+export function nil(value: string): boolean;
+export function anyNonNil(value: string): boolean;
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - DefinitelyTyped}
+  \end{subfigure}
+
+  \caption{Results for \textbf{module}  module \texttt{is-uuid}}
+  \label{fig:experiments-results-module-is-uuid}
+\end{figure}
+
+We implemented only basic TypeScript features and we focused our effort in building and end-to-end solution that generates valid and useful declaration files. Only the basic types \texttt{string}, \texttt{number}, \texttt{boolean} and its union were considered both for function parameters and interface properties. Common types such as \texttt{any}, arrays, function callbacks, tuples, intersections and features such as generics, index signatures were not implemented. Each declaration file was tagged with \texttt{dts-parse} and those containing unimplemented features were ignored. We add the \texttt{undefined} type for describing an optional parameter instead of adding the corresponding token \texttt{?}, which is also done by TypeScript in strict null checking mode\cite{typescript-optional-parameters-and-properties}.
 
 
 % \paragraph*{Interfaces}
@@ -582,25 +840,22 @@ interface by incrementally adding new properties. Interactions within
 the \texttt{followingInteractions} field are recursively traversed,
 building a new interface in each recursion level.
 
-!!!TODO: insufficient explanation of \texttt{followingInteractions}
---- needs to be mentioned in the previous step
-
 \section{Evaluation}
 \label{sec:dts-generate-evaluation}
 After generating a declaration file for an \NPM{} package, we need to
-evaluate its quality. To this end, we compare the generated
-declaration file against the one uploaded to the DefinitelyTyped
-repository for the same module, as shown in
-\figref{fig:evaluation-diagram}. While this approach does not provide
-an absolute measure of quality, it gives us at least an indication of
-the pragmatics of \texttt{dts-generate}: The files on DefinitelyTyped
+evaluate its quality. To this end, we created two tools:
+\begin{itemize}
+  \item \texttt{dts-parse}: A TypeScript declaration files parser, which transforms the file into a JSON file with a defined structure.
+  \item \texttt{dts-compare}: A tool that uses \texttt{dts-parse} and compares two TypeScript declaration files computing differences by applying several criteria.
+\end{itemize}
+
+We applied \texttt{dts-compare} to compare the generated declaration file against the one uploaded to the DefinitelyTyped repository for the same module, as shown in \figref{fig:evaluation-diagram}. While this approach does not provide an absolute measure of quality, it gives us at least an indication of the pragmatics of \texttt{dts-generate}: The files on DefinitelyTyped
 are perceived to be useful by the community. If the accuracy of the
 generated files is comparable with the accuracy of the files on
 DefinitelyTyped, then \texttt{dts-generate} is a viable alternative to
 manually creating a definition file.
 
-!!!TODO: check how many files on DT are just generated by
-\texttt{dts-gen} (e.g., the TypeScript tool)
+%!!!TODO: check how many files on DT are just generated by \texttt{dts-gen} (e.g., the TypeScript tool)
  
 \begin{figure}[tp]
     \begin{centering}
@@ -610,69 +865,90 @@ manually creating a definition file.
     \end{centering}
 \end{figure}
 
-To this end, we need a means of comparing two declaration files. Of
+\subsection{dts-parse}
+We need a means of comparing two declaration files. Of
 course, we are not interested in a textual comparison, but in a
-comparison of the structures described by the files. Technically, our
-comparison of two structures A and B yields one of five outcomes:
-\begin{itemize}
-\item A and B are equivalent;
-\item A is more general than B;
-\item B is more general than A;
-\item A and B have a common generalization (i.e., they are
-  compatible);
-\item none of the above holds (i.e., A and B are incompatible).
-\end{itemize}
+comparison of the structures described by the files.
 
-The first step is to parse declaration files, which can be
-achieved by using the TypeScript Compiler API, a library traverse the
+The first step is to parse the declaration files, which can be
+achieved by using the TypeScript Compiler API, a library which traverse the
 Abstract Syntax Tree of a TypeScript program
 \cite{typescript-compiler-api}. 
 The step also performs a sanity check of the generated declaration
 files as it rejects files with syntactic or semantics errors.
-The output of the parser is a structure where declared
+The output of \texttt{dts-parse} is a structure where declared
 {interfaces}, {functions}, {classes} and
 {namespaces} are stored separately. Function arguments are
 correctly described, identifying complex types like union types or
 callbacks. Optional parameters are also identified. For
 {classes}, a distinction between the constructor and methods
-is made. 
+is made. Declaration files are tagged according to their features, which is useful for identifying and filtering out declaration files containing unimplemented features.
 
-% The tool is called \texttt{parse-dts} and is naturally written in
-% TypeScript. It also runs in \NodeJS{} in its corresponding Docker
-% container.
+\texttt{dts-parse} is itself written in TypeScript. It receives the file as input parameter and returns a JSON, as shown in \coderef{code:dts-parse-example}.
 
-It remains to compare the parsed representations of two declaration
-files.
-% It was discovered that the implementation was easier when
-% focusing on each template independently.
-As an example, we discuss the implementation of comparison for
-the \textbf{module-function} template.
+\begin{lstlisting}[
+  caption={Example for \texttt{dts-parse} executed on module \texttt{glob-to-regexp} and combined with \texttt{jq} to browse through the returned JSON},
+  language=bash,
+label=code:dts-parse-example,
+  float,
+  abovecaptionskip=-\medskipamount
+]
+$ dts-parse -i glob-to-regexp/index.d.ts | jq '.parsing.functions[0].name'
+"GlobToRegexp"
+\end{lstlisting}
 
-The following criteria were applied:
+\subsection{dts-compare}
+\label{sec:dts-compare}
+The tool is written in TypeScript and receives 2 declaration files as an input and returns a JSON containing the result of the comparison, as shown in \coderef{code:dts-compare-example}. Following the naming convention of any standard Unit Testing framework, the input files are flagged as \lstinline{expected} or \lstinline{actual}. We assigned the \lstinline{expected} flag to the DefinitelyTyped declaration file.
+
+\begin{lstlisting}[
+  caption={Example for \texttt{dts-compare} executed on declaration files without differences},
+  language=bash,
+label=code:dts-compare-example,
+  float,
+  abovecaptionskip=-\medskipamount
+]
+$ dts-compare -e expected.d.ts -a actual.d.ts --module-name "my-module"
+{
+    "module": "my-module",
+    "template": "module",
+    "differences": [],
+    "tags": []
+}
+\end{lstlisting}
+
+\texttt{dts-compare} applies \texttt{dts-parse} internally to both files to get a common structure eligible for comparison. The result of the comparison is an array of an abstract entity called \texttt{Difference}. We extracted code examples written by developers to execute the code and gather run-time information. The quality of the generated declaration file is heavily dependent on the code examples. For example, if a property of an interface does not get accessed due to a code example not exploring a particular execution path, that property will not exist in the generated declaration file. Consequently, in order to isolate the impact of incomplete code examples on our quality analysis we identified each difference as follows:
 \begin{itemize}
-\item Number of declared functions: Checks the number of declared
-  and exported functions for each of both declaration files. 
-\item Name of declared functions: Checks whether both of the
-  declaration files declared a function with the same name. 
-\item Number of parameters: Checks the number of parameters of the
-  declared functions. This is checked for optional and non-optional
-  parameters.
-  
-  !!!TODO: what about parameter names? what about object
-  types/interface types of parameters?
-\item Interfaces: Checks the number of declared interfaces and the
-  fields within those interfaces. 
-\item Errors: Indicates whether there are errors in the declaration files.
+  \item \texttt{solvable}: Differences that can be solved by expanding the code examples. For example, invoking a function with different parameters so that a missing interface property gets accessed.
+  \item \texttt{unsolvable}: Differences that can not be solved are marked as \texttt{unsolvable}. These differences are implementation errors of \texttt{dts-generate}.
 \end{itemize}
 
-!!!TODO: too informal. we need to define an ordering on interfaces etc.
-  
+The concrete evaluated differences are as follows:
+\begin{itemize}
+  \item \texttt{TemplateDifference}: A difference between the formal TypeScript templates. For example, if the file in DefinitelyTyped is written with \texttt{module} and we generated a file using \texttt{module-function}. The comparison stops if the templates differ.
+  \item \texttt{ExportAssignmentDifference}: An equality check between the export assignments of both files, that is in the expression \lstinline{export = XXX}.
+  \item \texttt{FunctionMissingDifference}: A function is present in the DefinitelyTyped file but not in the generated one. This applies to functions and methods of classes and interfaces.
+  \item \texttt{FunctionMissingDifference}: A function is present in the generated declaration file but not in DefinitelyTyped.
+  \item \texttt{FunctionOverloadingDifference}: The number of declarations for the same functions is different. This is particularly common when developers declare a function multiple times with different single types instead of using union types.
+  \item \texttt{ParameterMissingDifference}: A parameter of a function or a property of an interface is not present in the generated file.
+  \item \texttt{ParameterExtraDifference}: A parameter of a function or a property of an interface is present in the generated file but not in the DefinitelyTyped file.
+  \item \texttt{ParameterTypeDifference}: A parameter of a function or a property of an interface is generated with a different type than in the DefinitelyTyped file. Here we differentiate between \texttt{SolvableDifference} and \texttt{UnsolvableDifference}.
+  \begin{itemize}
+    \item \texttt{SolvableDifference}: A type difference that can be solved by writing better code examples. This includes a basic type that is converted to a union type, a function overloading or a parameter or property that is marked as optional.
+    \item \texttt{UnsolvableDifference}: Anything not considered as \texttt{SolvableDifference}.
+  \end{itemize}
+\end{itemize}
+
+Type aliases are invisible to \texttt{dts-compare} as only final types were considered: the declaration \lstinline{type T = string | number; declare function F(a: T);} is equivalent to \lstinline{declare function F(a: string | number);}. The same concept applies for literal interfaces. \texttt{dts-compare} does not contemplate differences in function return types, since interface inference of function return types is not covered in this version of \texttt{dts-generate}.
 
 \section{Results}
 \label{sec:results}
-
-!!!TODO: first we need to say, what we want to achieve with the
-experimental evaluation
+We analyzed the obtained results focusing on the following aspects:
+\begin{itemize}
+  \item The quality of the inferred types, interfaces and module structure using runtime information.
+  \item The benefits of using code examples provided by developers as a first approximation to execute the libraries and avoid a cold start problem.
+  \item The usability of the generated declaration file and whether \texttt{dts-generate} can be used in a proper development environment.
+\end{itemize}
 
 \begin{quotation}
   The conducted experiments included tests that consisted of replacing
@@ -686,10 +962,10 @@ experimental evaluation
 Declaration files were generated for existing modules uploaded to the
 \NPM{} registry. The DefinitelyTyped repository was used as a
 benchmark. Each one of the generated files was compared against the
-corresponding declaration file already uploaded to the repository. 
+corresponding declaration file already uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration
-file was generated for 244 modules out of 6029 modules. Samples of the
+file was generated for 244 modules out of 6029 modules and we identified 80 modules that have only the features implemented by \texttt{dts-generate}. We obtained positive results for 69 of them. A detailed explanation of the overall quality of the generated files is provided in \secref{sec:experiments-evaluation}. Samples of the
 generated declaration files for templates \textbf{module},
 \textbf{module-class} and \textbf{module-function} are presented in
 \secref{sec:experiments-declaration-files-generation}. 
@@ -815,8 +1091,11 @@ two reasons for the failure:
   and/or it was not even valid JavaScript code. 
 \end{itemize}
 
-!!!TODO: the remaining two stages ``run-time information'' and
-``generated declaration files'' need to be explained
+\paragraph*{Run-time Information}
+Run-time information was extracted for only 442 out of 1448 modules with working code examples. As explained, in order to extract the run-time information, the behavior of the code under analysis was explicitly modified by wrapping the arguments around Wrapper Objects. Furthermore, Jalangi’s instrumentation itself caused some executions to fail, since the modules contained JavaScript features that are not supported by Jalangi. As a result, run-time information could not be extracted for 1006 modules. An instrumentation without user defined analysis modules was not applied, so it was not possible to determine which modules were failing only because of Jalangi’s own limitations.
+
+\paragraph*{Generated Declaration Files}
+A declaration file was generated for 244 out of 442 modules. Despite the correct execution of instrumented code examples, 198 modules did not contain suitable run-time information for generating a declaration file. The extracted code examples for these modules did not execute the library itself and therefore the collected run-time information was not useful for generating a declaration file.
 
 \subsection{Declaration Files Generation}
 \label{sec:experiments-declaration-files-generation}
@@ -829,20 +1108,13 @@ templates: \textbf{module}, \textbf{module-function} and
 \figref{fig:experiments-results-module-function} shows the generated
 declaration files for simple modules like \texttt{abs},
 \texttt{dirname-regex}, and \texttt{escape-html}. All of them were
-generated using the \textbf{module-function} template. There are no
-differences between the generated files and the corresponding
-declaration files on DefinitelyTyped. 
-
-The left side of the figure shows the generated declaration file with
+generated using the \textbf{module-function} template. Left side of the figure shows the generated declaration file with
 \lstinline{dts-generate}, the right side shows the corresponding file
-in the DefinitelyTyped repository. Functions are correctly detected; input
-and output types are accurately inferred.
+in the DefinitelyTyped repository. There are no relevant
+differences between the files. Functions are correctly detected; input and output types are accurately inferred.
 
-!!!TODO: explain, what about
-\begin{itemize}
-\item uppercase/lowercase in dirname-regex?
-\item extra namespace in escape-html?
-\end{itemize}
+
+Differences in the export assignment by modules \texttt{dirname-regex} and \texttt{escape-html} is not problematic since the exported module can receive a custom name given by the developer. \texttt{dts-generate} automatically generates the export assignment by transforming the module name into camel case form, following TypeScript guidelines. The parameter names are extracted from the variable names of the JavaScript code. The JavaScript concrete implementation of module \texttt{escape-html} declares the first parameter of the exported function with the name \texttt{string} and not \texttt{text}, as specified in DefinitelyTyped. A difference in the names of the function parameters will anyway not affect the code compilation in any way. Furthermore, the omitted namespace in module \texttt{escape-html} is irrelevant. It is actually not required, since there is nothing declared within the namespace.
  
 \begin{figure}[tp]
     \centering
@@ -904,144 +1176,8 @@ export = escapeHTML;
 
     \caption{Results for \textbf{module-function} template}
     \label{fig:experiments-results-module-function}
-  \end{figure}
+\end{figure}
   
-
-Templates of type \textbf{module-class} are shown for modules
-\texttt{flake-idgen}, \texttt{route-parser}, and \texttt{timer-machine}
-in \figref{fig:experiments-results-module-class-flake-idgen} and
-\figref{fig:experiments-results-module-class-timer-machine},
-respectively. Properties of interfaces and class methods are correctly
-generated. Optional parameters are not detected, as it was not
-considered for the implementation.
-
-For \texttt{flake-idgen},  the parameters of interface
-\texttt{ConstructorOptions} are correctly detected. The name of the
-interface differs because it is automatically generated based on the
-name of the argument variable. Optional properties were not
-implemented, which explains the type \lstinline{undefined} for some
-properties. Analogously, the callback \texttt{cb} is inferred as
-\lstinline{undefined}.
-
-!!!TODO:
-\begin{itemize}
-\item why is the callback undefined? is it due to the example? (what does it
-  look like?) why is it called \texttt{cb}?
-\item the export / class is named differently; doesn't that matter?
-\end{itemize}
-
-For \texttt{timer-machine},  the parameter \lstinline{started} is
-inferred as \lstinline{undefined} instead of marking it as
-optional. Methods that were not executed cannot appear in the
-generated declaration file. For that reason, a type corresponding to
-\lstinline{TimerEvent} is not generated, either.
-
-\begin{figure}[tp]
-    \centering
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export = FlakeIdgen;
-
-declare class FlakeIdgen {
-    constructor(options: FlakeIdgen.I__options);
-    next(cb: undefined): Buffer;
-}
-
-declare namespace FlakeIdgen {
-    export interface I__options {
-        'id': undefined;
-        'datacenter': number;
-        'worker': number;
-        'epoch': undefined;
-        'seqMask': undefined;
-    }
-}
-      \end{lstlisting}
-      \caption{flake-idgen/index.d.ts - Generated}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-interface ConstructorOptions {
-    datacenter?: number;
-    worker?: number;
-    id?: number;
-    epoch?: number;
-    seqMask?: number;
-}
-
-declare namespace FlakeId { }
-
-declare class FlakeId {
-    constructor(options?: ConstructorOptions);
-    next(callback?: (err: Error, id: Buffer) => void): Buffer;
-}
-
-export = FlakeId;        
-      \end{lstlisting}
-      \caption{flake-idgen/index.d.ts - DefinitelyTyped}
-    \end{subfigure}
-
-    \caption{Results for \textbf{module-class} module \texttt{flake-idgen}}
-    \label{fig:experiments-results-module-class-flake-idgen}
-\end{figure}
-
-\begin{figure}[tp]
-    \centering
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export = Timer;
-
-declare class Timer {
-    constructor(start: undefined);
-    start(): boolean;
-    isStopped(): boolean;
-    emit(): boolean;
-    stop(): boolean;
-    isStarted(): boolean;
-    timeFromStart(): number;
-    time(): number;
-}
-
-declare namespace Timer {
-}
-      \end{lstlisting}
-      \caption{timer-machine/index.d.ts - Generated}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export as namespace Timer;
-export = Timer;
-
-declare namespace Timer {
-    type TimerEvent = "start" | "stop" | "time";
-}
-
-declare class Timer {
-    static get(reference: string): Timer;
-    static destroy(reference: string): Timer;
-
-    constructor(started?: boolean);
-
-    isStarted(): boolean;
-    isStopped(): boolean;
-    start(): void;
-    timeFromStart(): number;
-    stop(): void;
-    time(): number;
-    toggle(): void;
-    emitTime(): void;
-    valueOf(): number;
-    on(event: Timer.TimerEvent, callback?: () => void): void;
-}
-      \end{lstlisting}
-      \caption{timer-machine/index.d.ts - DefinitelyTyped}
-    \end{subfigure}
-
-    \caption{Results for \textbf{module-class} module \texttt{timer-machine}}
-    \label{fig:experiments-results-module-class-timer-machine}
-\end{figure}
 
 \begin{figure}[tp]
     \centering
@@ -1073,159 +1209,172 @@ export function anyNonNil(value: string): boolean;
     \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
-Finally, a sample for the \textbf{module} template
+A sample for the \textbf{module} template
 for the \texttt{is-uuid} module is shown in
 \figref{fig:experiments-results-module-is-uuid}.
 Again, methods that were not executed by the extracted examples are
 not included in the declaration file. 
 
+Finally, we could not generate a correct declaration file with the template \texttt{module-class}. All the modules corresponding to this template had at least one of the unimplemented TypeScript features.
 
 It is worth mentioning that for some libraries the declaration file in
 DefinitelyTyped was not correct. For example, for the module
-\texttt{datadog-metrics}, some properties of an interface were
-included in the generated declaration file but they were not present
-in the declaration presented in DefinitelyTyped. However, as shown in
-\figref{fig:experiments-results-module-datadog-metrics}, the
-properties \texttt{aggregator} and \texttt{reporter} are not present
-in the DefinitelyTyped version, but they appear in the generated
-declaration file. However, they are indeed used by the library, as
-exposed in lines~2 and~3 of the library's source code shown in
-\figref{fig:subfloat-datadog-logger}. 
+\texttt{glob-base}, the parameter \texttt{basePath} is declared as optional in DefinitelyTyped. However, when invoking the function without that parameter an Error is thrown at runtime. The file generated by \texttt{dts-generate} will never mark the parameter as optional, as shown in \figref{fig:experiments-results-module-glob-base}. Function return types interfaces are not inferred by \texttt{dts-generate}. Parameter name is also inferred as \texttt{pattern} instead of \texttt{basePath}, since the JavaScript implementation declares the parameter as \texttt{pattern}, as shown in \figref{fig:subfloat-globbase-js-implementation}. We even discovered errors in the selected template in DefinitelyTyped. The module \texttt{smart-truncate} in DefinitelyTyped uses the \texttt{module} template, but \texttt{dts-generate} generates a file using the \texttt{module-function} template. We see in \coderef{code:experiments-results-module-smart-truncate} that the module is indeed exported as a function, as inferred by \texttt{dts-generate}.
+
 \begin{figure}[tp]
     \centering
     \begin{subfigure}{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript]
-export interface I__opts {
-    'aggregator': undefined;
-    'defaultTags': Array<any>;
-    'reporter': undefined;
-    'apiKey': string;
-    'appKey': undefined;
-    'agent': undefined;
-    'host': string;
-    'prefix': string;
-    'flushIntervalSeconds': number;
-}
+export = GlobBase;
 
-export class BufferedMetricsLogger {
-    constructor(opts: I__opts);
-    // ...
-}
+declare function GlobBase(pattern: string): object;
       \end{lstlisting}
-      \caption{datadog-metrics/index.d.ts - Generated}
+      \caption{glob-base/index.d.ts - Generated}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript]
-export interface LoggerOptions {
-    apiKey?: string;
-    appKey?: string;
-    defaultTags?: string[];
-    flushIntervalSeconds?: number;
-    host?: string;
-    prefix?: string;
+declare function globbase(basePath?: string): globbase.GlobBaseResult;
+
+declare namespace globbase {
+    interface GlobBaseResult {
+        base: string;
+        isGlob: boolean;
+        glob: string;
+    }
 }
 
-export class BufferedMetricsLogger {
-    constructor(
-        options: LoggerOptions
-    );
-    // ...
-}
+export = globbase;
       \end{lstlisting}
-      \caption{datadog-metrics/index.d.ts - DefinitelyTyped}
+      \caption{glob-base/index.d.ts - DefinitelyTyped}
     \end{subfigure}
 
-    \begin{subfigure}{0.80\linewidth}
-        \begin{lstlisting}[language=TypeScript]
-function BufferedMetricsLogger(opts) {
-    this.aggregator = opts.aggregator || new Aggregator(opts.defaultTags);
-    this.reporter = opts.reporter || new DataDogReporter(opts.apiKey, opts.appKey, opts.agent);
-    this.host = opts.host;
-    this.prefix = opts.prefix || '';
-    this.flushIntervalSeconds = opts.flushIntervalSeconds;
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript]
+var globBase = require('glob-base');
 
-    // ...
-    // ...
-}
-        \end{lstlisting}
-        \caption{datadog-metrics/logger.js}
-        \label{fig:subfloat-datadog-logger}
-      \end{subfigure}
+globBase();
 
-    \caption{Missing properties for module \texttt{datadog-metrics}}
-    \label{fig:experiments-results-module-datadog-metrics}
+// Throws: TypeError: glob-base expects a string.
+      \end{lstlisting}
+      \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript]
+'use strict';
+
+// ...
+
+module.exports = function globBase(pattern) {
+  if (typeof pattern !== 'string') {
+    throw new TypeError('glob-base expects a string.');
+  }
+
+  // ...
+} 
+      \end{lstlisting}
+      \caption{glob-base/index.js - Fraction of JS implementation that throws an Error when input parameter is not a string}
+      \label{fig:subfloat-globbase-js-implementation}
+    \end{subfigure}
+
+    \caption{Incorrect optional parameter for module \texttt{glob-base}}
+    \label{fig:experiments-results-module-glob-base}
 \end{figure}
+
+\begin{lstlisting}[
+  caption={Code example for \texttt{smart-truncate} module exporting a function},
+label=code:experiments-results-module-smart-truncate,
+  language=JavaScript
+]
+var smartTruncate = require('smart-truncate');
+
+var string = 'To iterate is human, to recurse divine.';
+
+// Append an ellipsis at the end of the truncated string.
+var truncated = smartTruncate(string, 15);
+\end{lstlisting}
 
 \subsection{Evaluation}
+\label{sec:experiments-evaluation}
+We analyzed only 82 of the 244 generated files. The remaining 162 files contained at least one of the unimplemented TypeScript features and were therefore not considered. These features were identified by \texttt{dts-parse} as tags.
 
-!!!TODO: explain what's going on in this subsection
-
-!!!TODO: what's the baseline for the percentages in the paragraph, the
-244 modules considered or all of DT? Ah, you say that in the figure;
-but then the figure is comparing apples with pears (percentages for
-different baselines!).
-
-As shown in
-\figref{fig:experiments-typescript-templates-distribution-definitely-typed},
-20\% of the declaration files in DefinitelyTyped are written using the
-\textbf{module-function}. However, 57\% of the 244 generated
-declaration files are written with the \textbf{module-function}
-template. Additionally, the complexity of evaluating declaration files
-written with the \textbf{module-function} is considerably lower than
-for other templates. The evaluation for templates
-\textbf{module-class} and \textbf{module} was not implemented. 
-
-33 out of 116 evaluated modules have no difference with their
-corresponding declaration file in DefinitelyTyped.
-
-!!!TODO: that's a bit lame as a result. See above for a more
-meaningful output.
+As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a direct influence on the quality of the generated declaration file. We introduced the concept of \texttt{solvable} and \texttt{unsolvable} differences in \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were considered as positive results. We identified 72 such modules. We completed the examples manually for 10 of those modules, making them equivalent to the DefinitelyTyped files, as shown in \figref{fig:experiments-results-manually-completed-examples}. Expected differences are present: optional parameters are declared both with the actual and \texttt{undefined} type and the union type is handled through multiple overloads.
 
 \begin{figure}[tp]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			ybar,
-            width=0.7\textwidth,
-            scale=0.8,
-			ybar=0pt,
-			ymax=100,
-			enlargelimits=0.15,
-			bar width=0.04\textwidth,
-			legend columns=1,
-			legend cell align={left},
-			legend style={
-                at={(0.6,0.95)},
-                anchor=north,
-                nodes={scale=0.8, transform shape}
-            },
-			symbolic x coords={module-class,module-function,module},
-			xtick=data,
-			ylabel=Percentage,
-			nodes near coords, 
-			nodes near coords align={vertical}
-		]
-		\addplot coordinates {
-			(module-class, 8)
-			(module-function, 20)
-			(module, 72)
-		};
+  \centering
+  \begin{subfigure}{0.80\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+declare namespace gh {
+  interface Options {
+      enterprise?: boolean;
+  }
+  interface Result {
+      user: string;
+      repo: string;
+      branch: string;
+      https_url: string;
+      tarball_url: string;
+      clone_url: string;
+      travis_url: string;
+      api_url: string;
+      zip_url: string;
+  }
+}
 
-		\addplot coordinates {
-			(module-class, 12)
-			(module-function, 57)
-			(module, 31)
-		};
-		\legend{DefinitelyTyped (Total: 6029), Generated (Total: 244)}
-		\end{axis}
-	\end{tikzpicture}
+declare function gh(url: string | {url: string}, options?: gh.Options): gh.Result | null;
 
-	\caption[TypeScript templates distribution | Generated \& DefinitelyTyped]{\textbf{TypeScript templates distribution | Generated \& DefinitelyTyped} - Out of a total of 6029, 72\% of the modules uploaded to the DefinitelyTyped repository use the \textbf{module} template and only 20\% use the \textbf{module-function} one. However, 57\% of the 244 generated declaration files use the \textbf{module-function} template.
-	}
+export = gh;    
+    \end{lstlisting}
+    \caption{github-url-to-object/index.d.ts - DefinitelyTyped}
+  \end{subfigure}
 
-	\label{fig:experiments-typescript-templates-distribution-definitely-typed}
+  \begin{subfigure}{0.80\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export = GithubUrlToObject;
+
+declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: undefined): object;
+declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: GithubUrlToObject.I__opts): null|object;
+declare function GithubUrlToObject(repoUrl: GithubUrlToObject.I__repoUrl, opts: undefined): object;
+declare namespace GithubUrlToObject {
+  export interface I__repoUrl {
+    'url': undefined | string;
+  }
+
+  export interface I__opts {
+    'enterprise': undefined | boolean;
+  }
+}
+    \end{lstlisting}
+    \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
+  \end{subfigure}
+
+  \begin{subfigure}{0.80\linewidth}
+    \begin{lstlisting}[language=JavaScript]
+var gh = require('github-url-to-object')
+
+gh('github:monkey/business');
+gh('https://github.com/monkey/business');
+gh('https://github.com/monkey/business/tree/master');
+gh('https://github.com/monkey/business/tree/master/nested/file.js');
+gh('https://github.com/monkey/business.git');
+gh('http://github.com/monkey/business');
+gh('git://github.com/monkey/business.git');
+
+// Manually added:
+gh('git+https://githuuub.com/monkey/business.git', {});
+gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
+gh({url: 'git://github.com/monkey/business.git'});
+      
+    \end{lstlisting}
+    \caption{Code example for module \texttt{github-url-to-object}.}
+    \end{subfigure}
+  \caption{Manually expanded code example for \texttt{github-url-to-object} to match DefinitelyTyped declaration file. Literal interface in DefinitelyTyped gets replace by a declared interface. The \texttt{undefined} type is used instead of the optional type. Return types are not considered.}
+  \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
+
+We identified only 10 modules with \texttt{unsolvable} differences. Most of them were caused for the same error: 8 modules had an incorrectly declared interface for the \texttt{string} type. This interface contained standard properties or methods from the JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them used native NodeJS types within the declaration file and \texttt{dts-generate} could not identify those properly.
+
 
 \section{Related Work}
 \label{sec:related-work}
@@ -1284,7 +1433,7 @@ We developed an architecture that supports the automatic generation of declarati
 
 Building an end-to-end solution for the generation of TypeScript declaration files was prioritized over type inference accuracy. Consequently, types were taken over from the values at run-time. Since developers expose through code how a library should be used, obtaining the types from the code examples extracted from the repositories proved to be a pragmatic and effective approximation, enabling to work on specific aspects regarding the TypeScript declaration file generation itself.
 
-We built a mechanism to automatically create declaration files for potentially every module uploaded to DefinitelyTyped. We managed to generate declaration files for 244 modules. We compared the results against the corresponding files uploaded to DefinitelyTyped by creating a TypeScript declaration files parser and a comparator.
+We built a mechanism to automatically create declaration files for potentially every module uploaded to DefinitelyTyped. We managed to generate declaration files for 244 modules. We compared the results against the corresponding files uploaded to DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and \texttt{dts-compare}, a comparator.
 
 We exposed the fundamental aspect of capturing the developer's intention when inferring types in JavaScript. Instead of applying constraints and restrictions for operations with certain types, we presented a proposal where common practices are favored. Uncommon usage is not forbidden but greatly disfavored. Accordingly, we collected evidence regarding the usage of JavaScript operators by analyzing 400 libraries.
 
