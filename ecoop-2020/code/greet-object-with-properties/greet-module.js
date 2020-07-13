@@ -17,7 +17,8 @@
     // This example returns an object, but the module
     // can return a function as the exported value.
     return {
-	    makeGreeting: function (str) { return "<-- " + str + " -->"; },
+        makeGreeting: function (str) { return "<-- " + str + " -->"; },
+        makeGoodBye: function () { return "<-- " + "Goodbye" + " -->"; },
 	    numberOfGreetings: 42
     };
 }));
