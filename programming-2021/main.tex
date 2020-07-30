@@ -178,7 +178,7 @@ compared with the corresponding declaration file provided on DefinitelyTyped. 72
 
 \section{Introduction}
 \label{sec:introduction}
-JavaScript has become the most popular language for writing web
+JavaScript is the most popular language for writing web
 applications \cite{github-statistics}. It is also gaining popularity
 for back-end applications running in \NodeJS{}, a JavaScript-based
 server-side platform. JavaScript is appealing to developers because
@@ -187,9 +187,8 @@ them to create simple pieces of code very quickly and proceed on a
 trial-and-error basis.
 
 JavaScript was never intended to be more than a
-scripting language. Hence, it lacks features for maintaining and evolving large
-codebases.
-Presently, however, JavaScript is being used for creating large and complex
+scripting language and thus lacks features for maintaining and evolving large
+codebases. However, JavaScript is increasingly used for creating large and complex
 applications. 
 Mistakes such as mistyped property
 names and misunderstood or unexpected type coercions cause developers
@@ -224,52 +223,64 @@ null instanceof Object; // false
 \end{lstlisting}
 % pjt: why unexpected?
 
-The cognitive load produced by such dynamic typing (which includes
-unchecked property names) is not present in other languages that use
+The cognitive load produced by these behaviors is mitigated in languages that use
 build tools based on type information. This insight motivated the
-creation of TypeScript, a superset of JavaScript with type
+creation of TypeScript, a superset of JavaScript with expressive type
 annotations \cite{typescript}. It has become a widely used alternative
 among JavaScript developers, because it incorporates features that are
 helpful for developing and maintaining large applications
 \cite{DBLP:conf/icse/GaoBB17}. TypeScript enables the early detection
 of several kinds of run-time errors and the integration of code intelligence
-tools like auto-completion in an IDE.
+tooling like auto-completion in an IDE.
 
-Existing JavaScript libraries can be used in a TypeScript project by
+Despite the advantages, it is unrealistic to expect the world to
+switch to TypeScript in a day. Therefore, 
+existing JavaScript libraries can be used in a TypeScript project by
 adding a declaration file that contains a description of the library's
 API in terms of types. Lots of declaration files for popular
 JavaScript libraries have been created in a community effort in the
 DefinitelyTyped repository~\cite{definitely-typed-repository}.
 At the time of writing this repository contains declaration files for
 more than 6000 JavaScript libraries. Unfortunately, most declaration
-files in this libraries have been manually created and maintained,
+files in this repository have been manually created and maintained,
 which is error prone and time consuming. As TypeScript takes a
 declaration file at face value, discrepancies are not detected at
-compile time and the inaccurate code-intelligence features are misleading the
+compile time and the resulting inaccurate code-intelligence features
+are confusing for the
 programmer. Moreover, TypeScript does not perform any run-time 
-checking on types, either, so that a discrepancy  between the declaration file
+checking of types, either, so that a discrepancy  between the declaration file
 and its corresponding JavaScript library can lead to unexpected 
 behavior and crashes. Such behavior can lead to developer
 frustration, longish debugging sessions, and decreasing confidence in
 the tool chain.
 
-Some previous work tackled the problem of improving the quality of
-declaration files. Feldthaus et al
-\cite{DBLP:conf/oopsla/FeldthausM14} search automatically for
-mismatches between a declaration file and implementation code. TSTest
-\cite{DBLP:journals/pacmpl/KristensenM17}
-adapted feedback-directed random testing to detect discrepancies between a
-declaration file and a JavaScript library. Tools like TSInfer and
-TSEvolve~\cite{DBLP:conf/fase/KristensenM17} are designed for
-assisting the creation of new declaration 
-files and supporting the evolution the declaration file when the
-corresponding JavaScript library gets modified, respectively. They
-rely on an existing static analyzer for JavaScript \cite{DBLP:conf/sas/JensenMT09}.
-TypeScript itself
-developed \texttt{dts-gen}, a tool that generates a
-declaration file that is meant to be used as a \emph{starting point
-for writing a high-quality declaration file} \cite{dts-gen}.
+We aim to improve on this situation by automatically generating
+sound TypeScript declaration files. To this end, we rely on the examples provided
+by programmers as part of the documentation of their library. If these
+examples are sufficiently rich, then our toolchain can generate the
+desired declaration files from them. This approach takes advantage of
+best practices in the dynamic languages community which favors
+examples over writing out type signatues.
 
+
+\begin{description}
+\item[PJT: How about a short example at this point?] 
+\item[PJT: maybe later] Some previous work tackled the problem of improving
+  the quality of declaration files. Feldthaus et al
+  \cite{DBLP:conf/oopsla/FeldthausM14} search automatically for
+  mismatches between a declaration file and implementation
+  code. TSTest \cite{DBLP:journals/pacmpl/KristensenM17} adapted
+  feedback-directed random testing to detect discrepancies between a
+  declaration file and a JavaScript library. Tools like TSInfer and
+  TSEvolve~\cite{DBLP:conf/fase/KristensenM17} are designed for
+  assisting the creation of new declaration files and supporting the
+  evolution the declaration file when the corresponding JavaScript
+  library gets modified, respectively. They rely on an existing static
+  analyzer for JavaScript \cite{DBLP:conf/sas/JensenMT09}.  TypeScript
+  itself developed \texttt{dts-gen}, a tool that generates a
+  declaration file that is meant to be used as a \emph{starting point
+    for writing a high-quality declaration file} \cite{dts-gen}.
+\end{description}
 In this work we present the tool \texttt{dts-generate}
 as a first step to explore the possibilities for
 generating useful declaration files without the heavy lifting of
