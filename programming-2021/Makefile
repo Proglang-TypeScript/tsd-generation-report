@@ -1,5 +1,7 @@
 SHELL=/bin/sh
 DOC=main
+LATEX=pdflatex
+BIBPROG=biber
 
 .SUFFIXES:
 .SUFFIXES: .bib .pdf .tex
@@ -8,15 +10,11 @@ DOC=main
 run: $(DOC).pdf
 
 $(DOC).pdf: $(DOC).bbl $(DOC).tex
-	pdflatex $(DOC) -draftmode
-	pdflatex $(DOC) 
+	$(LATEX) $(DOC) -draftmode
+	$(LATEX) $(DOC) 
 
-$(DOC).bbl: $(DOC).aux
-	bibtex $(DOC)
-
-$(DOC).aux: $(DOC).bib
-	pdflatex $(DOC) -draftmode
-	pdflatex $(DOC) -draftmode
+$(DOC).bbl: $(DOC).aux $(DOC).bib
+	$(BIBPROG) $(DOC)
 
 clean:
 	rm -rf *.aux *.lof *.log *.lot *.toc *.bbl *.blg *.vtc *.out $(DOC).pdf
