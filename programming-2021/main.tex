@@ -17,6 +17,7 @@
 \usepackage[backend=biber]{biblatex}
 \addbibresource{main.bib}
 
+\usepackage{cleveref}
 \usepackage{pgfplots}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -33,7 +34,7 @@
 \newcommand{\coderef}[1]{Listing~\ref{#1}}
 
 \lstdefinelanguage{JavaScript}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, undefined},
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, undefined,const},
   keywordstyle=\color{black}\bfseries,
   ndkeywords={class, export, boolean, throw, implements, import, this},
   ndkeywordstyle=\color{black}\bfseries,
@@ -48,7 +49,7 @@
 }
 
 \lstdefinelanguage{TypeScript}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, undefined},
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, undefined,const},
   keywordstyle=\color{black}\bfseries,
   ndkeywords={class, export, boolean, throw, implements, import, this, declare, constructor, namespace, interface},
   ndkeywordstyle=\color{black}\bfseries,
@@ -179,7 +180,7 @@ compared with the corresponding declaration file provided on DefinitelyTyped. 72
 \section{Introduction}
 \label{sec:introduction}
 JavaScript is the most popular language for writing web
-applications \cite{github-statistics}. It is also gaining popularity
+applications \cite{github-statistics}. It is also increasingly used
 for back-end applications running in \NodeJS{}, a JavaScript-based
 server-side platform. JavaScript is appealing to developers because
 its forgiving dynamic typing enables 
@@ -188,8 +189,8 @@ trial-and-error basis.
 
 JavaScript was never intended to be more than a
 scripting language and thus lacks features for maintaining and evolving large
-codebases. However, JavaScript is increasingly used for creating large and complex
-applications. 
+codebases. However, nowadays developers create large and complex
+applications in JavaScript. 
 Mistakes such as mistyped property
 names and misunderstood or unexpected type coercions cause developers
 to spend a significant amount of time in debugging. There is ample
@@ -200,10 +201,10 @@ JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some
 of these unintuitive JavaScript behaviors. 
 
 \begin{lstlisting}[
-    caption={\textbf{Unintuitive JavaScript behavior} - falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
+    caption={\textbf{Unintuitive JavaScript behavior} Falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
     language=JavaScript,
 	label=code:introduction-javascript-wtfs,
-    float,
+    float=bp,
     abovecaptionskip=-\medskipamount
 ]
 "0" == false; // true
@@ -221,7 +222,7 @@ typeof null; // object
 null instanceof Object; // false
 "01" < "00100"; // false
 \end{lstlisting}
-% pjt: why unexpected?
+% pjt: why unexpected? 
 
 The cognitive load produced by these behaviors is mitigated in languages that use
 build tools based on type information. This insight motivated the
@@ -231,71 +232,100 @@ among JavaScript developers, because it incorporates features that are
 helpful for developing and maintaining large applications
 \cite{DBLP:conf/icse/GaoBB17}. TypeScript enables the early detection
 of several kinds of run-time errors and the integration of code intelligence
-tooling like auto-completion in an IDE.
+tools like autocompletion in an IDE.
 
 Despite the advantages, it is unrealistic to expect the world to
 switch to TypeScript in a day. Therefore, 
 existing JavaScript libraries can be used in a TypeScript project by
 adding a declaration file that contains a description of the library's
-API in terms of types. Lots of declaration files for popular
-JavaScript libraries have been created in a community effort in the
-DefinitelyTyped repository~\cite{definitely-typed-repository}.
-At the time of writing this repository contains declaration files for
-more than 6000 JavaScript libraries. Unfortunately, most declaration
-files in this repository have been manually created and maintained,
+API in terms of types. 
+The DefinitelyTyped repository~\cite{definitely-typed-repository} has
+been created as a community effort to collect declaration files for
+popular JavaScript libraries. At the time of writing it contains
+declaration files for more than 6000 libraries.
+
+Unfortunately, creation and maintenance for most declaration
+files in DefinitelyTyped is conducted manually,
 which is error prone and time consuming. As TypeScript takes a
 declaration file at face value, discrepancies are not detected at
-compile time and the resulting inaccurate code-intelligence features
-are confusing for the
-programmer. Moreover, TypeScript does not perform any run-time 
-checking of types, either, so that a discrepancy  between the declaration file
+compile time and the resulting inaccuracies in autocompletion, say,
+are confusing for the programmer.
+As TypeScript does not perform any run-time 
+checking of types, either,  discrepancies  between the declaration file
 and its corresponding JavaScript library can lead to unexpected 
-behavior and crashes. Such behavior can lead to developer
+behavior and crashes. Such an experience can lead to developer
 frustration, longish debugging sessions, and decreasing confidence in
 the tool chain.
 
-We aim to improve on this situation by automatically generating
-sound TypeScript declaration files. To this end, we rely on the examples provided
-by programmers as part of the documentation of their library. If these
-examples are sufficiently rich, then our toolchain can generate the
-desired declaration files from them. This approach takes advantage of
+\subsection{Approach}
+\label{sec:approach}
+
+
+We aim to improve on this situation by providing a tool that generates
+sound TypeScript declaration files automatically. To do so, we rely on the examples provided
+as part of the documentation of a library. If these
+examples are sufficiently rich, then our toolchain can generate
+high-quality declaration files from them. This approach takes
+advantage of 
 best practices in the dynamic languages community which favors
-examples over writing out type signatues.
+examples and tests over writing out type signatures.
 
+As an example, consider the NPM module
+\texttt{abs} that
+``computes the absolute path of an input''. Its documentation consists
+of the following three examples\footnote{\url{https://www.npmjs.com/package/abs}}.
+\begin{lstlisting}[language=JavaScript,numbers=none]
+const abs = require("abs");
+ 
+console.log(abs("/foo"));
+// => "/foo"
+ 
+console.log(abs("foo"));
+// => "/path/to/where/you/are/foo"
+ 
+console.log(abs("~/foo"));
+// => "/home/username/foo"
+\end{lstlisting}
+From the examples, our tool generates a TypeScript declaration file,
+which is equivalent to the declaration file provided in
+DefinitelyTyped\footnote{\url{https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/abs/index.d.ts}}: 
+\begin{lstlisting}[language=TypeScript,numbers=none]
+export = Abs;
+declare function Abs(input: string): string;
+\end{lstlisting}
+% \begin{description}
+% \item[PJT: maybe later] Some previous work tackled the problem of improving
+%   the quality of declaration files. Feldthaus et al
+%   \cite{DBLP:conf/oopsla/FeldthausM14} search automatically for
+%   mismatches between a declaration file and implementation
+%   code. TSTest \cite{DBLP:journals/pacmpl/KristensenM17} adapted
+%   feedback-directed random testing to detect discrepancies between a
+%   declaration file and a JavaScript library. Tools like TSInfer and
+%   TSEvolve~\cite{DBLP:conf/fase/KristensenM17} are designed for
+%   assisting the creation of new declaration files and supporting the
+%   evolution the declaration file when the corresponding JavaScript
+%   library gets modified, respectively. They rely on an existing static
+%   analyzer for JavaScript \cite{DBLP:conf/sas/JensenMT09}.  TypeScript
+%   itself developed \texttt{dts-gen}, a tool that generates a
+%   declaration file that is meant to be used as a \emph{starting point
+%     for writing a high-quality declaration file} \cite{dts-gen}.
+% \end{description}
 
-\begin{description}
-\item[PJT: How about a short example at this point?] 
-\item[PJT: maybe later] Some previous work tackled the problem of improving
-  the quality of declaration files. Feldthaus et al
-  \cite{DBLP:conf/oopsla/FeldthausM14} search automatically for
-  mismatches between a declaration file and implementation
-  code. TSTest \cite{DBLP:journals/pacmpl/KristensenM17} adapted
-  feedback-directed random testing to detect discrepancies between a
-  declaration file and a JavaScript library. Tools like TSInfer and
-  TSEvolve~\cite{DBLP:conf/fase/KristensenM17} are designed for
-  assisting the creation of new declaration files and supporting the
-  evolution the declaration file when the corresponding JavaScript
-  library gets modified, respectively. They rely on an existing static
-  analyzer for JavaScript \cite{DBLP:conf/sas/JensenMT09}.  TypeScript
-  itself developed \texttt{dts-gen}, a tool that generates a
-  declaration file that is meant to be used as a \emph{starting point
-    for writing a high-quality declaration file} \cite{dts-gen}.
-\end{description}
-In this work we present the tool \texttt{dts-generate}
-as a first step to explore the possibilities for
-generating useful declaration files without the heavy lifting of
-static analysis. \texttt{dts-generate} comes with a framework that
+Our tool \texttt{dts-generate} is a first step to explore the possibilities for
+generating useful declaration files from code
+examples. \texttt{dts-generate} comes with a framework that 
 supports the generation of declaration files for an existing
 JavaScript library published to the \NPM{} registry. The tool gathers
-data flow and type information at run-time to generate a declaration
+data flow and type information at run time to generate a declaration
 file based on that information.
 
 The novelty of our tool is twofold:
 \begin{enumerate}
-\item 
+\item
+  %% without the heavy lifting of static analysis
   We do not rely on static analysis, which is hard to implement
   soundly and precisely and which is prone to maintenance problems
-  when keeping up with JavaScript's yearly language updates.
+  when keeping up with JavaScript's frequent language updates.
 \item
   Instead we extract example code from the programmer's library
   documentation and rely on dynamic analysis to extract typed usage
@@ -310,7 +340,10 @@ The novelty of our tool is twofold:
 % Finally, we generated declaration files for 244 JavaScript libraries
 % and evaluated them against the DefinitelyTyped repository. 
 
-The contributions of this paper are as follows.
+\subsection{Contributions}
+\label{sec:contributions}
+
+
 \begin{itemize}
 % \item We introduce an architecture that supports generating TypeScript
 %   Declaration Files for a given JavaScript Library using run-time
@@ -323,7 +356,7 @@ The contributions of this paper are as follows.
   documentation of an \NPM{} package and collects run-time type
   information from running these examples.
 
-\item The tool \texttt{dts-generate}, a command line
+\item Design and implementation of the tool \texttt{dts-generate}, a command line
   application that generates a valid TypeScript declaration file for a
   specific \NPM{} package using run-time information.
 
@@ -341,19 +374,19 @@ The contributions of this paper are as follows.
 \section{Motivating Example}
 \label{sec:motivating-example}
 The \NPM{} package \texttt{glob-to-regexp} is a simple JavaScript library, which turns a glob expression into a regular expression\footnote{https://www.npmjs.com/package/glob-to-regexp}. It
-has about 6,500,000 weekly downloads and 181 \NPM{} packages depend on it. If
+has about 9,900,000 weekly downloads and 188 \NPM{} packages depend on it. If
 a developer creates or extends TypeScript code that depends on the
 \texttt{glob-to-regexp} library, the TypeScript
 compiler and IDE requires a declaration file for that library to
-perform static checking and code completion, respectively. We 
-use \texttt{dts-generate} to automatically generate a TypeScript
+perform static checking and code completion, respectively. With
+\texttt{dts-generate} we automatically generate a TypeScript
 declaration file for \texttt{glob-to-regexp}. The tool downloads the \NPM{} 
 package, runs the examples extracted from its documentation, gathers
 run-time information, and generates a TypeScript declaration
 file. The result is 
 shown in \figref{fig:motivating-example-glob-to-regexp-vscode} and it is
 ready for use in a TypeScript project. For example,  Visual Studio's
-code completion runs properly with it
+code completion runs properly with the generated file
 (\figref{fig:motivating-example-glob-to-regexp-vscode}). If the
 \texttt{glob-to-regexp} package gets modified in the future, a new declaration
 file can be generated automatically using
@@ -362,59 +395,62 @@ for incompatibilities with the previous declaration file.
 
 \begin{figure}[tp]
   \centering
-  \begin{subfigure}{0.70\linewidth}
-    \begin{lstlisting}[language=TypeScript]
+%  \begin{subfigure}{0.70\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GlobToRegexp;
 
-declare function GlobToRegexp(glob: string, opts: undefined): RegExp;
-declare function GlobToRegexp(glob: string, opts: GlobToRegexp.I__opts): RegExp;
+declare function GlobToRegexp(glob: string, opts ?: GlobToRegexp.I__opts): RegExp;
 declare namespace GlobToRegexp {
   export interface I__opts {
-    'extended': undefined | boolean;
-    'globstar': undefined | boolean;
-    'flags': undefined | string;
+    'extended' ?: boolean;
+    'globstar' ?: boolean;
+    'flags'    ?: string;
   }
-
 }
     \end{lstlisting}
-  \end{subfigure}
-
-  \hspace{10.\textwidth}
-
-  \begin{subfigure}{1.\linewidth}
-    \centering
+  % \end{subfigure}
+  \begin{center}
     \includegraphics[width=0.8\linewidth]{motivating-example-glob-to-regexp-vscode.png}
-  \end{subfigure}
+  \end{center}
 
-  \caption{\textbf{Declaration file for \texttt{glob-to-regexp} generated with \texttt{dts-generate}} - Interfaces is correctly detected. Optional parameters are explicitly declared as \texttt{undefined}. Declaration file can be correctly used in Visual Studio Code\footnote{https://code.visualstudio.com}.}
+  \caption{\textbf{Declaration file for \texttt{glob-to-regexp}
+      generated with \texttt{dts-generate}} - The interface is
+    detected correctly. Optional parameters are detected. The
+    declaration file is usable in Visual Studio
+    Code\footnote{https://code.visualstudio.com}.} 
   \label{fig:motivating-example-glob-to-regexp-vscode}
 \end{figure}
 
-After filling in some background information on declaration files,
-Section~\ref{sec:gener-typescr-decl} examines each step in the
-generation process in detail and refer back to this example for
-concreteness.
+% After filling in some background information on declaration files,
+% Section~\ref{sec:gener-typescr-decl} examines each step in the
+% generation process in detail and refer back to this example for
+% concreteness.
 
 \section{TypeScript Declaration Files}
 \label{sec:typescr-decl-files}
 
-The declaration file shown in
-\figref{fig:motivating-example-glob-to-regexp-vscode} describes a
-package with a single exported function. The first parameter is of type \texttt{string} and the second one is an optional interface. TypeScript namespaces are used for organizing types declared in a declaration file and avoiding name collisions with other types \cite{typescript-namespaces}. For example, the interface \texttt{I\_\_opts} declared in \figref{fig:motivating-example-glob-to-regexp-vscode} is used as \lstinline[language=TypeScript]{globToRegexp.I__opts}, since it is declared within a namespace.
+The declaration file shown in \figref{fig:motivating-example-glob-to-regexp-vscode}
+describes a package with a single exported function. The first parameter is of type
+\texttt{string} and the second one is an optional interface. TypeScript namespaces
+organize types declared in a declaration file and avoid name clashes with other types
+\cite{typescript-namespaces}. For example, the interface \texttt{I\_\_opts} declared in
+\figref{fig:motivating-example-glob-to-regexp-vscode} is used as
+\lstinline[language=TypeScript]{globToRegexp.I__opts} because it is declared within a
+namespace.
 
 
 This file is an instance of one of the standard templates for writing
 declaration
 files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/templates.html}:
-\textbf{module}, \textbf{module-class} and
+\textbf{module}, \textbf{module-class}, and
 \textbf{module-function}. 
 Each template corresponds to a different way of describing the exports
-of a JavaScript library. Choosing the template depends on the
-particular organization of the underlying JavaScript library:
+of a JavaScript library. The choice of the template depends on the
+organization of the underlying JavaScript library:
 \begin{description}
 \item[module] several exported functions,
 \item[module-class] a class-like structure,
-\item[module-function] exactly one exported functions.
+\item[module-function] exactly one exported function.
 \end{description}
 
 \begin{lstlisting}[
@@ -431,12 +467,10 @@ export = Abs;
 declare function Abs(input: string): string;
 \end{lstlisting}
 
-TypeScript provides a guide on how to write high quality declaration files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. They explain the main concepts through examples. We extracted one example for each template and generated used \texttt{dts-generate} to generate a corresponding declaration file, as presented in \figref{fig:typescript-templates-by-example}. The \texttt{glob-to-regexp} library is an instance of a \textbf{module-function}. It is worth mentioning that templates are a way of describing how a JavaScript library is intended to be used. Although highly unlikely, it is possible to create a library that can be represented with a different template depending on how it is used, as shown in \figref{fig:multi-purpose-module-example}. Run-time analysis proves useful in this case, since it is not sufficient to statically analyze the exported module.
-
 \begin{figure}[tp]
   \centering
   \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=JavaScript]
+    \begin{lstlisting}[language=JavaScript,numbers=none]
 var greet = require("./greet-settings-module");
 
 greet({
@@ -449,19 +483,20 @@ greet({
   color: "#00ff00"
 });
     \end{lstlisting}
-    \caption{TypeScript example for \texttt{module-function} template}
+    \caption{Example for \texttt{module-function} template}
+    \label{fig:example-module-function}
   \end{subfigure}
   \hfill
   \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript]
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GreetSettingsModule;
 
 declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings): void;
 declare namespace GreetSettingsModule {
   export interface I__settings {
     'greeting': string;
-    'duration': number | undefined;
-    'color': undefined | string;
+    'duration' ?: number;
+    'color' ?: string;
   }
 
 }
@@ -470,7 +505,7 @@ declare namespace GreetSettingsModule {
   \end{subfigure}
 
   \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript]
+      \begin{lstlisting}[language=JavaScript,numbers=none]
 var myLib = require("./greet-module");
 
 var result = myLib.makeGreeting("hello, world");
@@ -479,11 +514,12 @@ console.log("The computed greeting is: " + result);
 var goodbye = myLib.makeGoodBye();
 console.log("The computed goodbye is: " + goodbye);    
       \end{lstlisting}
-      \caption{Example for \texttt{module}}
+    \caption{Example for \texttt{module} template}
+    \label{fig:example-module}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export function makeGreeting(str: string): string;
 export function makeGoodBye(): string;        
       \end{lstlisting}
@@ -491,18 +527,19 @@ export function makeGoodBye(): string;
     \end{subfigure}
 
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript]
+      \begin{lstlisting}[language=JavaScript,numbers=none]
 var Greeter = require("./greet-classes-module.js");
 
 var myGreeter = new Greeter("hello, world");
 myGreeter.greeting = "howdy";
 myGreeter.showGreeting();
       \end{lstlisting}
-      \caption{Example for \texttt{module-class}}
+      \caption{Example for \texttt{module-class} template}
+      \label{fig:example-class}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Greeter;
 
 declare class Greeter {
@@ -516,60 +553,86 @@ declare namespace Greeter {
       \caption{Declaration file for \texttt{module-class} template}
     \end{subfigure}
 
-  \caption{Results for \textbf{module-function} template}
+  \caption{Example uses and declaration files for different templates}
   \label{fig:typescript-templates-by-example}
 \end{figure}
+ 
+TypeScript provides a guide on how to write high-quality declaration
+files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. The guide
+explains the main concepts through examples. We selected one example for each template
+from the guide and
+used \texttt{dts-generate} to generate a corresponding declaration file, as shown in
+\figref{fig:typescript-templates-by-example}.
 
-\begin{figure}[tp]
-  \centering
-  \begin{subfigure}{0.80\linewidth}
-      \begin{lstlisting}[language=JavaScript]
-var multiPurposeModule = require('./multi-purpose-module');
+Like \texttt{dts-gen}, a TypeScript package that generates a template for a declaration
+file, we determine the kind of declaration file by examining the provided example. If the
+imported entity is used solely as a function as in Figure~\ref{fig:example-module-function}, the
+generated declaration file follows the module-function template.
+If the example only accesses properties of the imported entity as in
+Figure~\ref{fig:example-module}, we generate according to the module template.
+If the imported entity is used with \lstinline/new/ to create new instances as in
+Figure~\ref{fig:example-class}, we generate a module-class template.
 
-// module-function
-console.log(multiPurposeModule("John", "Doe"));
-// John Doe
+The libraries \texttt{glob-to-regexp} as well as \texttt{abs} are both instances of a
+\textbf{module-function}.
+Most libraries fall in one of these three categories. 
+While it is possible to create a library that can be represented with a different template
+depending on how it is used, our selection is driven by the examples in the documentation and
+hence do reflect the developers intent.
+% Run-time analysis proves useful in this case,
+% since it is not sufficient to statically analyze the exported module. 
 
 
-// module-class
-var m = new multiPurposeModule("Jane", "Doe");
-console.log(m.firstName + " - " + m.lastName);
-// Jane - Doe
+% \begin{figure}[tp]
+%   \centering
+%   \begin{subfigure}{0.80\linewidth}
+%       \begin{lstlisting}[language=JavaScript]
+% var multiPurposeModule = require('./multi-purpose-module');
 
-console.log(m.sayHello());
-// Hello, my name is Jane Doe
+% // module-function
+% console.log(multiPurposeModule("John", "Doe"));
+% // John Doe
 
-// module
-console.log(multiPurposeModule.anotherFunction());
-// I am another function! 
-      \end{lstlisting}
-      \caption{index.js}
-    \end{subfigure}
 
-    \begin{subfigure}{0.80\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-var multiPurposeModule = function(firstName, lastName) {
-  this.firstName = firstName;
-  this.lastName = lastName;
+% // module-class
+% var m = new multiPurposeModule("Jane", "Doe");
+% console.log(m.firstName + " - " + m.lastName);
+% // Jane - Doe
 
-  return firstName + " " + lastName;
-};
+% console.log(m.sayHello());
+% // Hello, my name is Jane Doe
 
-multiPurposeModule.prototype.sayHello = function() {
-  return "Hello, my name is " + this.firstName + " " + this.lastName;
-};
+% // module
+% console.log(multiPurposeModule.anotherFunction());
+% // I am another function! 
+%       \end{lstlisting}
+%       \caption{index.js}
+%     \end{subfigure}
 
-multiPurposeModule.anotherFunction = function() {
-  return "I am another function!";
-};
+%     \begin{subfigure}{0.80\linewidth}
+%       \begin{lstlisting}[language=TypeScript]
+% var multiPurposeModule = function(firstName, lastName) {
+%   this.firstName = firstName;
+%   this.lastName = lastName;
 
-module.exports = multiPurposeModule;   
-      \end{lstlisting}
-      \caption{multi-purpose-module/index.js}
-    \end{subfigure}
-  \caption{Example module that implements all three templates simultaneously}
-  \label{fig:multi-purpose-module-example}
-\end{figure}
+%   return firstName + " " + lastName;
+% };
+
+% multiPurposeModule.prototype.sayHello = function() {
+%   return "Hello, my name is " + this.firstName + " " + this.lastName;
+% };
+
+% multiPurposeModule.anotherFunction = function() {
+%   return "I am another function!";
+% };
+
+% module.exports = multiPurposeModule;   
+%       \end{lstlisting}
+%       \caption{multi-purpose-module/index.js}
+%     \end{subfigure}
+%   \caption{Example module that implements all three templates simultaneously}
+%   \label{fig:multi-purpose-module-example}
+% \end{figure}
 
 
 \section{The Generation of TypeScript Declaration Files}
@@ -771,77 +834,77 @@ information gathered in the previous step.
 
 Instead of analyzing the shape of the exported module, we inspect how the module is used to choose between the templates. We analyze the properties \texttt{isExported}, \texttt{requiredModule} and \texttt{isConstructor} from the run-time JSON to distinguish between \texttt{module-class} and \texttt{module-function}. If a function is invoked and it is imported from the module we are analyzing we infer the template \texttt{module-class} or \texttt{module-function}. We choose \texttt{module-class} if the function is used as a constructor. If not, we choose \texttt{module-function}. Otherwise, we infer the \texttt{module} template. \figref{fig:dts-generate-choose-templates} exposes this logic using the example provided in \figref{fig:multi-purpose-module-example}.
 
-\begin{figure}[tp]
-  \centering
-  \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=JavaScript]
-var multiPurposeModule = require('./multi-purpose-module');
+% \begin{figure}[tp]
+%   \centering
+%   \begin{subfigure}{0.48\linewidth}
+%     \begin{lstlisting}[language=JavaScript]
+% var multiPurposeModule = require('./multi-purpose-module');
 
-multiPurposeModule("John", "Doe");
-// John Doe
-    \end{lstlisting}
-    \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-function}}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript]
-export = MultiPurposeModule;
+% multiPurposeModule("John", "Doe");
+% // John Doe
+%     \end{lstlisting}
+%     \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-function}}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.48\linewidth}
+%     \begin{lstlisting}[language=TypeScript]
+% export = MultiPurposeModule;
 
-declare function MultiPurposeModule(firstName: string, lastName: string): string;
-    \end{lstlisting}
-    \caption{Generated declaration file with \texttt{module-function} template}
-  \end{subfigure}
+% declare function MultiPurposeModule(firstName: string, lastName: string): string;
+%     \end{lstlisting}
+%     \caption{Generated declaration file with \texttt{module-function} template}
+%   \end{subfigure}
 
-  \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=JavaScript]
-var multiPurposeModule = require('./multi-purpose-module');
+%   \begin{subfigure}{0.48\linewidth}
+%     \begin{lstlisting}[language=JavaScript]
+% var multiPurposeModule = require('./multi-purpose-module');
 
-var m = new multiPurposeModule("Jane", "Doe");
-var fullName = m.firstName + " - " + m.lastName;
-// Jane - Doe
+% var m = new multiPurposeModule("Jane", "Doe");
+% var fullName = m.firstName + " - " + m.lastName;
+% // Jane - Doe
 
-m.sayHello();
-// Hello, my name is Jane Doe
-    \end{lstlisting}
-    \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-class}}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export = MultiPurposeModule;
+% m.sayHello();
+% // Hello, my name is Jane Doe
+%     \end{lstlisting}
+%     \caption{Example module \texttt{multi-purpose-module} used as \texttt{module-class}}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}{0.48\linewidth}
+%       \begin{lstlisting}[language=TypeScript]
+% export = MultiPurposeModule;
 
-declare class MultiPurposeModule {
-  constructor(firstName: string, lastName: string);
-  sayHello(): string;
-}
+% declare class MultiPurposeModule {
+%   constructor(firstName: string, lastName: string);
+%   sayHello(): string;
+% }
 
-declare namespace MultiPurposeModule {
-}
-      \end{lstlisting}
-      \caption{Generated declaration file with \texttt{module-class} template}
-    \end{subfigure}
+% declare namespace MultiPurposeModule {
+% }
+%       \end{lstlisting}
+%       \caption{Generated declaration file with \texttt{module-class} template}
+%     \end{subfigure}
 
 
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript]
-var multiPurposeModule = require('./multi-purpose-module');
+%     \begin{subfigure}{0.48\linewidth}
+%       \begin{lstlisting}[language=JavaScript]
+% var multiPurposeModule = require('./multi-purpose-module');
 
-multiPurposeModule.anotherFunction();
-// I am another function!
-      \end{lstlisting}
-      \caption{Example module \texttt{multi-purpose-module} used as \texttt{module}}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
-export function anotherFunction(): string;
-      \end{lstlisting}
-      \caption{Generated declaration file with \texttt{module} template}
-    \end{subfigure}
+% multiPurposeModule.anotherFunction();
+% // I am another function!
+%       \end{lstlisting}
+%       \caption{Example module \texttt{multi-purpose-module} used as \texttt{module}}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}{0.48\linewidth}
+%       \begin{lstlisting}[language=TypeScript]
+% export function anotherFunction(): string;
+%       \end{lstlisting}
+%       \caption{Generated declaration file with \texttt{module} template}
+%     \end{subfigure}
 
-  \caption{Different ways of using example module presented in \figref{fig:multi-purpose-module-example}. \texttt{dts-generate} generates infers the correct template for each case. The JavaScript implementation of the module remained unmodified for each example.}
-  \label{fig:dts-generate-choose-templates}
-\end{figure}
+%   \caption{Different ways of using example module presented in \figref{fig:multi-purpose-module-example}. \texttt{dts-generate} generates infers the correct template for each case. The JavaScript implementation of the module remained unmodified for each example.}
+%   \label{fig:dts-generate-choose-templates}
+% \end{figure}
 
 
 \begin{figure}[tp]
