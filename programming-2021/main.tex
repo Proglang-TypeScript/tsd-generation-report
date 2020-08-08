@@ -77,7 +77,7 @@
    basicstyle=\footnotesize\ttfamily,
    showstringspaces=false,
    showspaces=false,
-   numbers=left,
+   numbers=none,
    numberstyle=\footnotesize,
    numbersep=9pt,
    tabsize=2,
@@ -213,7 +213,7 @@ of these unintuitive JavaScript behaviors.
     language=JavaScript,
 	label=code:introduction-javascript-wtfs,
     float=bp,
-    abovecaptionskip=-\medskipamount
+    captionpos=b
 ]
 "0" == false; // true
 true == "1.00"; // true
@@ -468,8 +468,7 @@ organization of the underlying JavaScript library:
     caption={Example for template \textbf{module-function}},
     language=bash,
 	label=code:dts-generate-example,
-    float,
-    abovecaptionskip=-\medskipamount
+    float,captionpos=b
 ]
 $ ./dts-generate abs
 $ cat output/abs/index.d.ts 
@@ -571,7 +570,7 @@ declare namespace Greeter {
   \label{fig:typescript-templates-by-example}
 \end{figure}
  
-TypeScript provides a guide on how to write high-quality declaration
+The TypeScript project provides a guide on how to write high-quality declaration
 files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. The guide
 explains the main concepts through examples. We selected one example for each template
 from the guide and
@@ -624,7 +623,7 @@ hence reflects the developers intent.
 %     \end{subfigure}
 
 %     \begin{subfigure}{0.80\linewidth}
-%       \begin{lstlisting}[language=TypeScript]
+%       \begin{lstlisting}[language=TypeScript,numbers=none]
 % var multiPurposeModule = function(firstName, lastName) {
 %   this.firstName = firstName;
 %   this.lastName = lastName;
@@ -670,7 +669,20 @@ substantiate in the next subsection.
 \begin{figure}[tp]
     \centering
     \includegraphics[width=1\linewidth]{dts-generate-block-diagram.pdf}
-    \caption[dts-generate - Architecture overview]{\textbf{dts-generate - Architecture overview} - Initial code base is retrieved from the \NPM{} package's repository. A valid TypeScript Declaration File is generated using run-time information. A Symbolic Execution Engine creates test cases based on the generated Declaration File and via a feedback loop enriches the code base until the stopping criteria is reached. The final TypeScript Declaration File gets returned. Feedback loop through the Symbolic Execution Engine was not implemented. It can be added in a future to the existing architecture, without modifying the working blocks.}
+    \caption[dts-generate - Architecture overview]{\textbf{dts-generate - Architecture
+        overview} - The initial code base is retrieved from the \NPM{} package's
+      repository.
+      Run-time information is gathered driven by example code.
+      A TypeScript Declaration File is generated using run-time
+      information.
+      % A Symbolic Execution Engine creates test cases based on the generated
+      % Declaration File and via a feedback loop enriches the code base until the stopping
+      % criteria is reached.
+      % The final TypeScript Declaration File gets returned.
+      % Feedback
+      % loop through the Symbolic Execution Engine was not implemented. It can be added in a
+      % future to the existing architecture, without modifying the working blocks.
+    } 
     \label{fig:tsd_generation_method_block_diagram}
   \end{figure}
 
@@ -771,8 +783,7 @@ that way.
   caption={Extracted example code for the \texttt{glob-to-regexp} package},
   language=JavaScript,
   label=code:code-example-extracted-motivating-example,
-  float,
-  abovecaptionskip=-\medskipamount
+  float,captionpos=b
 ]
 var globToRegExp = require('glob-to-regexp');
 var re = globToRegExp("p*uck");
@@ -880,7 +891,7 @@ template.
 %   \end{subfigure}
 %   \hfill
 %   \begin{subfigure}{0.48\linewidth}
-%     \begin{lstlisting}[language=TypeScript]
+%     \begin{lstlisting}[language=TypeScript,numbers=none]
 % export = MultiPurposeModule;
 
 % declare function MultiPurposeModule(firstName: string, lastName: string): string;
@@ -903,7 +914,7 @@ template.
 %     \end{subfigure}
 %     \hfill
 %     \begin{subfigure}{0.48\linewidth}
-%       \begin{lstlisting}[language=TypeScript]
+%       \begin{lstlisting}[language=TypeScript,numbers=none]
 % export = MultiPurposeModule;
 
 % declare class MultiPurposeModule {
@@ -929,7 +940,7 @@ template.
 %     \end{subfigure}
 %     \hfill
 %     \begin{subfigure}{0.48\linewidth}
-%       \begin{lstlisting}[language=TypeScript]
+%       \begin{lstlisting}[language=TypeScript,numbers=none]
 % export function anotherFunction(): string;
 %       \end{lstlisting}
 %       \caption{Generated declaration file with \texttt{module} template}
@@ -943,7 +954,7 @@ template.
 \begin{figure}[tp]
   \centering
   \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript]
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(str: string): boolean;
 export function v2(str: string): boolean;
 export function v3(str: string): boolean;
@@ -954,7 +965,7 @@ export function v5(str: string): boolean;
   \end{subfigure}
   \hfill
   \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript]
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(value: string): boolean;
 export function v2(value: string): boolean;
 export function v3(value: string): boolean;
@@ -1053,8 +1064,7 @@ parameter and returns an AST serialized in JSON, as shown in \coderef{code:dts-p
   caption={Example for \texttt{dts-parse} executed on module \texttt{glob-to-regexp} and combined with \texttt{jq} to browse the returned JSON},
   language=bash,
 label=code:dts-parse-example,
-  float,
-  abovecaptionskip=-\medskipamount
+  float=tp, captionpos=b
 ]
 $ dts-parse -i glob-to-regexp/index.d.ts | jq '.parsing.functions[0].name'
 "GlobToRegexp"
@@ -1073,8 +1083,7 @@ declaration files.
   caption={Example for \texttt{dts-compare} executed on declaration files without differences},
   language=bash,
 label=code:dts-compare-example,
-  float,
-  abovecaptionskip=-\medskipamount
+  float=tp,captionpos=b
 ]
 $ dts-compare -e expected.d.ts -a actual.d.ts --module-name "my-module"
 {
@@ -1146,7 +1155,7 @@ function return types is not covered in the current version of \texttt{dts-gener
 \label{sec:results}
 We analyzed the obtained results focusing on the following aspects:
 \begin{itemize}
-  \item The quality of the inferred types, interfaces and module structure using runtime information.
+  \item The quality of the inferred types, interfaces, and module structure using run-time information.
   \item The benefits of using code examples provided by developers as a first approximation to execute the libraries and avoid a cold start problem.
   \item The usability of the generated declaration file and whether \texttt{dts-generate} can be used in a proper development environment.
 \end{itemize}
@@ -1165,11 +1174,13 @@ Declaration files were generated for existing modules uploaded to the
 benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
-Figure \ref{fig:experiments-overall-funnel} shows that a declaration
-file was generated for 244 modules out of 6029 modules and we identified 80 modules that have only the features implemented by \texttt{dts-generate}. We obtained positive results for 69 of them. A detailed explanation of the overall quality of the generated files is provided in \secref{sec:experiments-evaluation}. Samples of the
-generated declaration files for templates \textbf{module},
-\textbf{module-class}, and \textbf{module-function} are presented in
-\secref{sec:experiments-declaration-files-generation}. 
+Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
+for 244 modules out of 6029 modules and we identified 80 modules that have only the
+features implemented by \texttt{dts-generate}. We obtained positive results for 69 of
+them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
+quality of the generated files.
+Section~\ref{sec:experiments-declaration-files-generation} presents examples of the generated declaration files for
+templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}. 
 
 \definecolor{myellow}{RGB}{228,212,0}
 \definecolor{mgreen}{RGB}{5,104,57}
@@ -1248,13 +1259,13 @@ to obtain working code examples for 2260 packages. The
 process of getting a valid code example for a module is divided in four
 stages: 
 \begin{itemize}
-\item Extracting repository URL.
-\item Extracting README file.
-\item Extracting code examples from README files.
-\item Executing code examples and discarding failing ones.
+\item extracting the repository URL;
+\item extracting a README file;
+\item extracting code examples from README files;
+\item executing code examples and discarding failing ones.
 \end{itemize}
 
-The results obtained for each on of them are described in the
+The results obtained for each step are described in the
 following sections. 
 
 \paragraph*{Repository URL}
@@ -1328,22 +1339,26 @@ the generated declaration file with
 in the DefinitelyTyped repository. There are no relevant
 differences between the files. Functions are correctly detected; input and output types are accurately inferred.
 
-Differences in the export assignment by modules \texttt{dirname-regex} and
-\texttt{escape-html} is not problematic since the exported module can receive a custom
-name given by the developer. \texttt{dts-generate} automatically generates the export
+The differences in the export assignment by modules \texttt{dirname-regex} and
+\texttt{escape-html} are not problematic because the module can receive an arbitrary 
+name when it is imported. \texttt{dts-generate} automatically generates the export
 assignment by transforming the module name into camel case form, following TypeScript
-guidelines. The parameter names are extracted from the variable names of the JavaScript
-code. The JavaScript concrete implementation of module \texttt{escape-html} declares the
-first parameter of the exported function with the name \texttt{string} and not
-\texttt{text}, as specified in DefinitelyTyped. A difference in the names of the function
-parameters will anyway not affect the code compilation in any way. Furthermore, the
-omitted namespace in module \texttt{escape-html} is irrelevant. It is actually not
-required, since there is nothing declared within the namespace. 
+guidelines.
+
+The parameter names are extracted from the variable names of the JavaScript
+code.
+% The JavaScript implementation of module \texttt{escape-html} declares the
+% first parameter of the exported function with the name \texttt{string} and not
+% \texttt{text}, as specified in DefinitelyTyped. 
+A difference in the names of the function parameters does not affect the correctness of
+the declaration file.
+Furthermore, the module \texttt{escape-html} from DefinitelyTyped declares an empty
+namespace, which is not generated by our tool.
  
 \begin{figure}[tp]
     \centering
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Abs;
 
 declare function Abs(input: string): string;
@@ -1352,7 +1367,7 @@ declare function Abs(input: string): string;
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 declare function Abs(input: string): string;
 export = Abs;
       \end{lstlisting}
@@ -1361,7 +1376,7 @@ export = Abs;
 
 
     \begin{subfigure}{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript]
+        \begin{lstlisting}[language=TypeScript,numbers=none]
 export = DirnameRegex;
 
 declare function DirnameRegex(): RegExp;
@@ -1370,7 +1385,7 @@ declare function DirnameRegex(): RegExp;
       \end{subfigure}
       \hfill
       \begin{subfigure}{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript]
+        \begin{lstlisting}[language=TypeScript,numbers=none]
 export = dirnameRegex;
 
 declare function dirnameRegex(): RegExp;
@@ -1380,7 +1395,7 @@ declare function dirnameRegex(): RegExp;
 
 
       \begin{subfigure}{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript]
+        \begin{lstlisting}[language=TypeScript,numbers=none]
 export = EscapeHtml;
 
 declare function EscapeHtml(string: string): string;
@@ -1389,7 +1404,7 @@ declare function EscapeHtml(string: string): string;
       \end{subfigure}
       \hfill
       \begin{subfigure}{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript]
+        \begin{lstlisting}[language=TypeScript,numbers=none]
 declare function escapeHTML(text: string): string;
 declare namespace escapeHTML { }
 
@@ -1406,7 +1421,7 @@ export = escapeHTML;
 \begin{figure}[tp]
     \centering
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(str: string): boolean;
 export function v2(str: string): boolean;
 export function v3(str: string): boolean;
@@ -1417,7 +1432,7 @@ export function v5(str: string): boolean;
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(value: string): boolean;
 export function v2(value: string): boolean;
 export function v3(value: string): boolean;
@@ -1429,26 +1444,39 @@ export function anyNonNil(value: string): boolean;
       \caption{is-uuid/index.d.ts - DefinitelyTyped}
     \end{subfigure}
 
-    \caption{Results for \textbf{module}  module \texttt{is-uuid}}
+    \caption{Results for \textbf{module} \texttt{is-uuid}}
     \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
-A sample for the \textbf{module} template
-for the \texttt{is-uuid} module is shown in
+An example for the \textbf{module} template
+is shown for the \texttt{is-uuid} module in
 \figref{fig:experiments-results-module-is-uuid}.
-Again, methods that were not executed by the extracted examples are
-not included in the declaration file. 
+The generated file does not contain methods that were not executed by the extracted
+examples. The invoked function are correctly detected.
 
-Finally, we could not generate a correct declaration file with the template \texttt{module-class}. All the modules corresponding to this template had at least one of the unimplemented TypeScript features.
+Finally, we were unable to  generate a declaration file based on the
+\texttt{module-class} template. All modules corresponding to this template exhibited at least one of
+the unimplemented TypeScript features. 
 
-It is worth mentioning that for some libraries the declaration file in
-DefinitelyTyped was not correct. For example, for the module
-\texttt{glob-base}, the parameter \texttt{basePath} is declared as optional in DefinitelyTyped. However, when invoking the function without that parameter an Error is thrown at runtime. The file generated by \texttt{dts-generate} will never mark the parameter as optional, as shown in \figref{fig:experiments-results-module-glob-base}. Function return types interfaces are not inferred by \texttt{dts-generate}. Parameter name is also inferred as \texttt{pattern} instead of \texttt{basePath}, since the JavaScript implementation declares the parameter as \texttt{pattern}, as shown in \figref{fig:subfloat-globbase-js-implementation}. We even discovered errors in the selected template in DefinitelyTyped. The module \texttt{smart-truncate} in DefinitelyTyped uses the \texttt{module} template, but \texttt{dts-generate} generates a file using the \texttt{module-function} template. We see in \coderef{code:experiments-results-module-smart-truncate} that the module is indeed exported as a function, as inferred by \texttt{dts-generate}.
+It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was
+not correct. For example, for the module \texttt{glob-base}, the parameter
+\texttt{basePath} is declared as optional in DefinitelyTyped. However, when invoking the
+function without the \texttt{basePath} parameter, an error is thrown at run time. The file generated by
+\texttt{dts-generate} does not mark this parameter as optional, as shown in
+\figref{fig:experiments-results-module-glob-base}. Function return type interfaces are
+not inferred by \texttt{dts-generate}. The parameter name is \texttt{pattern}
+instead of \texttt{basePath}, because the JavaScript implementation declares the parameter
+as \texttt{pattern}, as shown in \figref{fig:subfloat-globbase-js-implementation}. We also
+discovered errors in the selected template in DefinitelyTyped. The module
+\texttt{smart-truncate} in DefinitelyTyped uses the \texttt{module} template, but
+\texttt{dts-generate} generates a file using the \texttt{module-function}
+template. \coderef{code:experiments-results-module-smart-truncate} shows that the module is indeed
+exported as a function, as inferred by \texttt{dts-generate}.
 
 \begin{figure}[tp]
     \centering
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GlobBase;
 
 declare function GlobBase(pattern: string): object;
@@ -1457,7 +1485,7 @@ declare function GlobBase(pattern: string): object;
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 declare function globbase(basePath?: string): globbase.GlobBaseResult;
 
 declare namespace globbase {
@@ -1474,7 +1502,7 @@ export = globbase;
     \end{subfigure}
 
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript]
+      \begin{lstlisting}[language=JavaScript,numbers=none]
 var globBase = require('glob-base');
 
 globBase();
@@ -1485,7 +1513,7 @@ globBase();
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript]
+      \begin{lstlisting}[language=TypeScript,numbers=none]
 'use strict';
 
 // ...
@@ -1508,8 +1536,8 @@ module.exports = function globBase(pattern) {
 
 \begin{lstlisting}[
   caption={Code example for \texttt{smart-truncate} module exporting a function},
-label=code:experiments-results-module-smart-truncate,
-  language=JavaScript
+  label=code:experiments-results-module-smart-truncate,
+  language=JavaScript,captionpos=b,float=tp,numbers=none
 ]
 var smartTruncate = require('smart-truncate');
 
@@ -1521,10 +1549,22 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed only 82 of the 244 generated files. The remaining 162 files contained at least one of the unimplemented TypeScript features and were therefore not considered. These features were identified by \texttt{dts-parse} as tags.
+We analyzed 82 of the 244 generated files. The remaining 162 files contained at least one
+of the unimplemented TypeScript features so that they could not be considered. These
+features were identified by \texttt{dts-parse} as tags. 
 
-As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a direct influence on the quality of the generated declaration file. We introduced the concept of \texttt{solvable} and \texttt{unsolvable} differences in \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were considered as positive results. We identified 72 such modules. We completed the examples manually for 10 of those modules, making them equivalent to the DefinitelyTyped files, as shown in \figref{fig:experiments-results-manually-completed-examples}. Expected differences are present: optional parameters are declared both with the actual and \texttt{undefined} type and the union type is handled through multiple overloads.
-
+As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a
+direct influence on the quality of the generated declaration file. We introduced the
+concept of \texttt{solvable} and \texttt{unsolvable} differences in
+\secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were
+considered as positive results. We identified 72 such modules. We manually completed the
+examples for 10 of those modules. Applying \texttt{dts-generate} with the completed
+examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
+shown in \figref{fig:experiments-results-manually-completed-examples}.
+\begin{changethis}
+  Expected differences are present: optional parameters are declared both with the actual
+  and \texttt{undefined} type and the union type is handled through multiple overloads.
+\end{changethis}
 \begin{figure}[tp]
   \centering
   \begin{subfigure}{0.80\linewidth}
@@ -1597,7 +1637,13 @@ gh({url: 'git://github.com/monkey/business.git'});
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
 
-We identified only 10 modules with \texttt{unsolvable} differences. Most of them were caused for the same error: 8 modules had an incorrectly declared interface for the \texttt{string} type. This interface contained standard properties or methods from the JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them used native NodeJS types within the declaration file and \texttt{dts-generate} could not identify those properly.
+We discovered only 10 modules with \texttt{unsolvable} differences. Most of them were
+caused by the same error: 8 modules incorrectly declared an interface for the
+\texttt{string} type. This interface contains standard properties and methods from the
+JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The
+remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them rely on native
+NodeJS types within the declaration file, which \texttt{dts-generate} could not identify
+properly.
 
 
 \section{Related Work}
@@ -1615,8 +1661,7 @@ Formal aspects like applying the right template and using the correct syntax are
     language=bash,
     caption={Microsoft's dts-gen example - A declaration file for module \lstinline!abs! is generated. Types are inferred as \lstinline!any!. The correct \lstinline!module-function! template is used.},
 	label=code:related-work-dts-gen-example,
-    float,
-    abovecaptionskip=-\medskipamount
+    float=tp,captionpos=b
 ]
 $ npm i -g dts-gen
 $ npm i -g abs
@@ -1649,19 +1694,47 @@ We evaluated the generated declaration files comparing them to the declaration f
 
 In a final stage, declaration files need to be checked against the proper JavaScript implementation and TSTest has to be definitely taken into account.
 
-\section{Conclusion}
+\section{Conclusions and Future Work}
 \label{sec:conclusion}
-We have presented \texttt{dts-generate}, a tool for generating a TypeScript declaration file for a specific JavaScript library. The tool downloads code samples written by the developers from the library's repository. It uses these samples to execute the library and gather data flow and type information. The tool finally generates a TypeScript declaration file based on the information gathered at run-time.
+We have presented \texttt{dts-generate}, a tool for generating a TypeScript declaration
+file for a specific JavaScript library. The tool downloads code examples written by the
+developers from the library's repository. It uses these examples to execute the library and
+gather data flow and type information. The tool finally generates a TypeScript declaration
+file based on the information gathered at run time.
 
-We developed an architecture that supports the automatic generation of declaration files for specific JavaScript libraries without additional manual tasks. The architecture contemplates a future incorporation of a Symbolic Execution Engine that refines the initial code base enabling the exploration of new execution paths. However not implemented in this work, its incorporation would result in small incremental modifications to the presented architecture as it is considered to only expand the existing code base.
+We developed an architecture that supports the automatic generation of declaration files
+for specific JavaScript libraries without additional manual tasks. The architecture
+contemplates future incorporation of a Symbolic Execution Engine that refines the
+initial code base enabling the exploration of new execution paths. Although it is not
+implemented 
+in this work, its incorporation would result in small incremental modifications to the
+presented architecture as it is considered to only expand the existing code base.
 
-Building an end-to-end solution for the generation of TypeScript declaration files was prioritized over type inference accuracy. Consequently, types were taken over from the values at run-time. Since developers expose through code how a library should be used, obtaining the types from the code examples extracted from the repositories proved to be a pragmatic and effective approximation, enabling to work on specific aspects regarding the TypeScript declaration file generation itself.
+Building an end-to-end solution for the generation of TypeScript declaration files was
+prioritized over type inference accuracy. Consequently, types were taken over from the
+values at run time. Developers express their intent how a library should be used with
+example code in the documentation. Hence,
+obtaining the types from the code examples extracted from the repositories proved to be a
+pragmatic and effective approximation, enabling to work on specific aspects regarding the
+TypeScript declaration file generation itself.
 
-We built a mechanism to automatically create declaration files for potentially every module uploaded to DefinitelyTyped. We managed to generate declaration files for 244 modules. We compared the results against the corresponding files uploaded to DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and \texttt{dts-compare}, a comparator.
+We built a mechanism to automatically create declaration files for potentially every
+module uploaded to DefinitelyTyped. We managed to generate declaration files for 244
+modules. We compared the results against the corresponding files uploaded to
+DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and
+\texttt{dts-compare}, a comparator.
 
-We exposed the fundamental aspect of capturing the developer's intention when inferring types in JavaScript. Instead of applying constraints and restrictions for operations with certain types, we presented a proposal where common practices are favored. Uncommon usage is not forbidden but greatly disfavored. Accordingly, we collected evidence regarding the usage of JavaScript operators by analyzing 400 libraries.
-
-Finally, the architecture is composed of different blocks that interact with each other. Each block is independent and has a well defined behavior as well as clear input and output values. As a result, each block can be independently and simultaneously improved.
+\begin{changethis}
+  We exposed the fundamental aspect of capturing the developer's intention when inferring
+  types in JavaScript. Instead of applying constraints and restrictions for operations
+  with certain types, we presented a proposal that favors best practice. Uncommon usage is
+  not forbidden but greatly discouraged. Accordingly, we collected evidence regarding the
+  usage of JavaScript operators by analyzing 400 libraries.
+\end{changethis}
+% Finally, the architecture is composed of different blocks that interact with each
+% other. Each block is independent and has a well defined behavior as well as clear input
+% and output values. As a result, each block can be independently and simultaneously
+% improved.
 
 \printbibliography
 %%\bibliography{main}
