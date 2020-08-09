@@ -1645,17 +1645,65 @@ remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them re
 NodeJS types within the declaration file, which \texttt{dts-generate} could not identify
 properly.
 
+\section{Discussion}
+\label{sec:discussion}
+
+How can we improve further? Given that JavaScript developers are more incentivized to develop good
+examples than writing ``boring'' type declaration, how can we capitalize on that attitude?
+The main issue is that any example-driven algorithm can only come up with an
+under-approximation of the intended meaning, so some form of help is required when
+generalization is desired.
+
+\paragraph*{Literal types vs string}
+JavaScript libraries often (?) use literal strings to select
+options and configurations. For example, \dots
+
+For our framework, it is hard to distinguish a string that is meant literally from a
+string that just serves as an example. For an automatic solution, one might collect
+typical values of literal strings and generate the corresponding literal types (or
+unions thereof) when the arguments used in the example are all typical. Alternatively, one
+might always generate literal types unless the number of different examples provided is
+greater than some threshold, in which case the generator generalizes to type
+\lstinline/string/. A further alternative would be to communicate to the developer a set
+of typical example strings, \emph{marker strings}, that the generator always resolves to the \lstinline/string/
+type.
+
+\paragraph*{Any}
+Suppose the programmer supplies examples that use \lstinline/number/, \lstinline/bool/, and
+\lstinline/string/ at the same argument position. The obvious approximation to the type of
+this argument is the union type \lstinline/number|bool|string/. But what if the programmer
+wants to advertise the type \lstinline/any/ for an argument? This intent is hard to
+advertise with a finite number of examples.
+
+We propose that the programmer relies on marker strings like \lstinline/"any"/ to indicate
+the \lstinline/any/ type for an argument position.
+
+\paragraph*{Further types}
+Similar approaches could be conceived for indexed types, polymorphic types, dependent
+types, etc. However, at present we believe incorporating these features in a tool to be
+overblown because they are not widely used in DefinitelyTyped (see
+Table~\ref{table-of-occurrences}). 
 
 \section{Related Work}
 \label{sec:related-work}
 \paragraph*{Microsoft's dts-gen}
-Microsoft developed \texttt{dts-gen}, a tool that creates starter declaration files for JavaScript libraries \cite{dts-gen}. Its documentation states that the result is however intended to be only used a starting point. The outcome needs to be refined afterwards by the developers.
+Microsoft developed \texttt{dts-gen}, a tool that creates declaration files for
+JavaScript libraries \cite{dts-gen}. Its documentation states that the result is 
+intended to be used a starting point for development of a declaration file. The outcome
+needs to be refined afterwards by the developer. 
 
-The tool analyzes the shape of the objects at runtime after initialization without executing the library. This results in many variables being inferred as \lstinline[language={}]{any}. \coderef{code:related-work-dts-gen-example} shows an example for module \lstinline[language={}]{abs}.
+The tool analyzes the shape of the objects at runtime after initialization without
+executing the library. This results in many variables being inferred as
+\lstinline[language={}]{any}. \coderef{code:related-work-dts-gen-example} shows an example
+for module \lstinline[language={}]{abs}. 
 
-The solution presented in this work, however, is intended to generate declaration files that are ready to be uploaded to DefinitelyTyped without further manual intervention. Any amount of manual work that a developer needs to do on a declaration file after updating JavaScript code increases the risk for having discrepancies between the declaration file and the implementation.
+In contrast, our tool \texttt{dts-generate} is intended to generate declaration files
+that are ready to be uploaded to DefinitelyTyped without further manual intervention. Any
+amount of manual work that a developer needs to do on a declaration file after updating
+JavaScript code increases the risk for having discrepancies between the declaration file
+and the implementation.
 
-Formal aspects like applying the right template and using the correct syntax are perfectly covered by \texttt{dts-gen}.
+% Formal aspects like applying the right template and using the correct syntax are perfectly covered by \texttt{dts-gen}.
 
 \begin{lstlisting}[
     language=bash,
@@ -1677,22 +1725,51 @@ declare function abs(input: any): any;
 \end{lstlisting}
 
 \paragraph*{TSInfer \& TSEvolve}
-TSInfer and TSEvolve are presented as part of TSTools \cite{DBLP:conf/fase/KristensenM17}. Both tools are the continuation of TSCheck \cite{DBLP:conf/oopsla/FeldthausM14}, a tool for looking for mismatches between a declaration file and an implementation.
+TSInfer and TSEvolve are presented as part of TSTools
+\cite{DBLP:conf/fase/KristensenM17}. Both tools are the continuation of TSCheck
+\cite{DBLP:conf/oopsla/FeldthausM14}, a tool for detecting mismatches between a
+declaration file and the implementation of the module. 
 
-TSInfer proceeds in a similar way than TSCheck. It initializes the library in a browser and it records a snapshot of the resulting state and then it performs a light weight static analysis on all the functions and objects stored in the snapshot.
+TSInfer proceeds in a similar way than TSCheck. It initializes the library in a browser
+and records a snapshot of the resulting state.  Then it performs a lightweight static
+analysis on all the functions and objects stored in the snapshot. 
 
-The abstraction and the constraints they introduced as part of the static analysis tools for inferring the types have room for improvement. A run-time based approach like the one presented in our work will provide more accurate information, thus generating more precise declaration files.
+The abstraction and the constraints introduced as part of the static analysis tools
+for inferring the types have room for improvement. A run-time based approach like the one
+presented in our work will provide more accurate information, thus generating more precise
+declaration files.
 
-Since they analyze the objects and functions stored in the snapshot, they faced the problem of including in the declaration file internal methods and properties that developers wanted to hide. Run-time information would have informed that the developer has no intention of exposing such methods.
+As TSInfer analyzes the objects and functions stored in the snapshot, it faces the problem
+of including internal methods and private properties in the declaration file. Run-time
+information would have informed that the developer has no intention of exposing these
+methods. 
 
-Moreover, TSEvolve performs a differential analysis on the changes made to a JavaScript library in order to determine intentional discrepancies between declaration files of two consecutive versions. We consider that a differential analysis may not be needed. If the developer's intention is accurately extracted and the execution code clearly represents that intention then the generated declaration file would already describe the newer version of a library without the need of a differential analysis.
+Moreover, TSEvolve performs a differential analysis on the changes made to a JavaScript
+library to determine intentional discrepancies between the declaration files of two
+consecutive versions. However, a differential analysis may not be needed. If the
+developer's intention were accurately represented by the extracted code, then the generated
+declaration file would already describe the newer version of a library without the need of
+a differential analysis.
 
 \paragraph*{TSTest}
-TSTest is a tool that checks for mismatches between a declaration file and a JavaScript implementation \cite{DBLP:journals/pacmpl/KristensenM17}. It applies feedback-directed random testing for generating type test scripts. These scripts will execute the library in order to check if it behaves the way it is described in the declaration file. TSTest also provides concrete executions for mismatches.
+TSTest is a tool that checks for mismatches between a declaration file and the JavaScript
+implementation of the module \cite{DBLP:journals/pacmpl/KristensenM17}. It applies feedback-directed
+random testing for generating type test scripts. These scripts execute the library with
+random arguments with the typings from the declarations file and check whether the output
+matches the prescribed type. TSTest thus provides concrete counterexamples if it detects mismatches.
 
-We evaluated the generated declaration files comparing them to the declaration files uploaded to DefinitelyTyped. The disadvantage of doing this is that since the uploaded files are written manually, they could already contain mismatches with the JavaScript implementation. However, it is a suitable choice for a development stage since it is used as a baseline.
+% We evaluated the generated declaration files comparing them to the declaration files
+% uploaded to DefinitelyTyped. The disadvantage of doing this is that since the uploaded
+% files are written manually, they could already contain mismatches with the JavaScript
+% implementation. However, it is a suitable choice for a development stage since it is used
+% as a baseline.
 
-In a final stage, declaration files need to be checked against the proper JavaScript implementation and TSTest has to be definitely taken into account.
+% In a final stage, declaration files need to be checked against the proper JavaScript
+% implementation and TSTest has to be definitely taken into account. 
+
+TSTest could be used to extend our tool with a feedback loop. If TSTest detects a problem
+with a declaration file generated by \texttt{dts-generate}, then we would add the
+resulting counterexamples to the example code and restart the generation process. 
 
 \section{Conclusions and Future Work}
 \label{sec:conclusion}
