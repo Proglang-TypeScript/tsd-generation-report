@@ -1216,7 +1216,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 			in {
 				4.05,
 				7.33,
-				24.02,
+				18.02,
 				37.49,
 				71.19,
 				82.50,
@@ -1229,10 +1229,10 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 		\node[right=0.04\textwidth of a0] {\textbf{244}};
 
 		\node[left=0.02\textwidth of a1] {Run-time Information};
-		\node[right=0.06\textwidth of a1] {\textbf{442}};
+		\node[right=0.06\textwidth of a1] {\textbf{436}};
 
 		\node[left=0.02\textwidth of a2] {Working Examples};
-		\node[right=0.17\textwidth of a2] {\textbf{1448}};
+		\node[right=0.17\textwidth of a2] {\textbf{946}};
 
 		\node[left=0.02\textwidth of a3] {Code Examples};
 		\node[right=0.25\textwidth of a3] {\textbf{2260}};
@@ -1291,8 +1291,8 @@ evaluating the generation of declaration files.
 \paragraph*{Execution of Code Examples}
 We executed the remaining 2260 extracted code examples by installing the
 required packages and running the code as a \NodeJS{}
-application. Unfortunately, the code examples only worked for 1448
-modules. 812 modules did not run correctly and had to be
+application. Unfortunately, the code examples only worked for 946
+modules. 1314 modules did not run correctly and had to be
 discarded. Some failing samples were analyzed and there were mainly
 two reasons for the failure: 
 \begin{itemize}
@@ -1304,18 +1304,18 @@ two reasons for the failure:
 \end{itemize}
 
 \paragraph*{Run-time Information}
-Run-time information was extracted for only 442 out of 1448 modules with working code
+Run-time information was extracted for only 436 out of 946 modules with working code
 examples. As explained, to extract the run-time information, the behavior of the code
 under analysis was explicitly modified by wrapping the arguments. Furthermore, Jalangi’s
 instrumentation itself caused some executions to fail, because the modules contained
 JavaScript features that are not supported by Jalangi. As a result, run-time information
-could not be extracted for 1006 modules. An instrumentation without user-defined analysis
+could not be extracted for 510 modules. An instrumentation without user-defined analysis
 modules was not applied, so it was not possible to determine which modules were failing
 only because of Jalangi’s own limitations. 
 
 \paragraph*{Generated Declaration Files}
-A declaration file was generated for 244 out of 442 modules. Despite the correct execution
-of the instrumented code examples, 198 modules did not yield suitable run-time information
+A declaration file was generated for 244 out of 436 modules. Despite the correct execution
+of the instrumented code examples, 192 modules did not yield suitable run-time information
 for generating a declaration file. The extracted code examples for these modules did not
 execute the library. Hence, the collected run-time information was not useful
 for generating a declaration file. 
