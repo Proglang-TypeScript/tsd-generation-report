@@ -506,8 +506,8 @@ declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings):
 declare namespace GreetSettingsModule {
   export interface I__settings {
     'greeting': string;
-    'duration' ?: number;
-    'color' ?: string;
+    'duration'?: number;
+    'color'?: string;
   }
 
 }
@@ -982,15 +982,13 @@ export function anyNonNil(value: string): boolean;
   \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
-\begin{changethis}
-  We implemented only basic TypeScript features and we focused our effort in building an
-  end-to-end solution that generates valid and useful declaration files. Only the basic
-  types \texttt{string}, \texttt{number}, \texttt{boolean} and its union were considered
-  both for function parameters and interface properties. Common types such as
-  \texttt{any}, arrays, function callbacks, tuples, intersections and features such as
-  generics, index signatures were not implemented. Each declaration file was tagged with
-  \texttt{dts-parse} and those containing unimplemented features were ignored.
-\end{changethis}
+We implemented only basic TypeScript features and we focused our effort in building an
+end-to-end solution that generates valid and useful declaration files. Only the basic
+types \texttt{string}, \texttt{number}, \texttt{boolean} and its union were considered
+both for function parameters and interface properties. Common types such as
+\texttt{any}, arrays, function callbacks, tuples, intersections and features such as
+generics, index signatures were not implemented. Each declaration file was tagged with
+\texttt{dts-parse} and those containing unimplemented features were ignored.
 
 % \paragraph*{Interfaces}
 Finally, interfaces are created by exploring \texttt{getField} and
