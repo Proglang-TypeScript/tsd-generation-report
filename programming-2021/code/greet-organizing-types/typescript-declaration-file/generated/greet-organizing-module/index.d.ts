@@ -2,8 +2,8 @@ export = Greeter;
 
 declare class Greeter {
 	constructor(message: string);
-	log(logSetting: I__logSetting): void;
-	alert(alertSetting: I__alertSetting): void;
+	log(logSetting: Greeter.I__logSetting): void;
+	alert(alertSetting: Greeter.I__alertSetting): void;
 }
 
 declare namespace Greeter {

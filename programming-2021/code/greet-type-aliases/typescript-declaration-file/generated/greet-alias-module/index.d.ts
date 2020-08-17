@@ -9,7 +9,5 @@ declare namespace Greet {
 		'greeting': string;
 	}
 
-export function greetAliasModule(init: string): void;
-export function greetAliasModule(init: Function): void;
-export function greetAliasModule(init: Greet|Greet.I__init): void;
+export function greetAliasModule(init: string | Function | Greet | Greet.I__init): void;
 }

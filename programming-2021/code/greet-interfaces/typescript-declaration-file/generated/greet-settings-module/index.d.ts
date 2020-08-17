@@ -4,8 +4,8 @@ declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings):
 declare namespace GreetSettingsModule {
 	export interface I__settings {
 		'greeting': string;
-		'duration': number | undefined;
-		'color': undefined | string;
+		'duration'?: number;
+		'color'?: string;
 	}
 
 }
