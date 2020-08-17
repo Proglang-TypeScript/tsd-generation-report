@@ -410,13 +410,14 @@ for incompatibilities with the previous declaration file.
     \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GlobToRegexp;
 
-declare function GlobToRegexp(glob: string, opts ?: GlobToRegexp.I__opts): RegExp;
+declare function GlobToRegexp(glob: string, opts?: GlobToRegexp.I__opts): RegExp;
 declare namespace GlobToRegexp {
   export interface I__opts {
-    'extended' ?: boolean;
-    'globstar' ?: boolean;
-    'flags'    ?: string;
+    'extended'?: boolean;
+    'globstar'?: boolean;
+    'flags'?: string;
   }
+
 }
     \end{lstlisting}
   % \end{subfigure}
@@ -988,10 +989,7 @@ export function anyNonNil(value: string): boolean;
   both for function parameters and interface properties. Common types such as
   \texttt{any}, arrays, function callbacks, tuples, intersections and features such as
   generics, index signatures were not implemented. Each declaration file was tagged with
-  \texttt{dts-parse} and those containing unimplemented features were ignored. We add the
-  \texttt{undefined} type for describing an optional parameter instead of adding the
-  corresponding token \texttt{?}, which is also done by TypeScript in strict null checking
-  mode\cite{typescript-optional-parameters-and-properties}.
+  \texttt{dts-parse} and those containing unimplemented features were ignored.
 \end{changethis}
 
 % \paragraph*{Interfaces}
@@ -1175,8 +1173,8 @@ benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
-for 244 modules out of 6029 modules and we identified 80 modules that have only the
-features implemented by \texttt{dts-generate}. We obtained positive results for 69 of
+for 244 modules out of 6029 modules and we identified 60 modules that have only the
+features implemented by \texttt{dts-generate}. We obtained positive results for 52 of
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
 Section~\ref{sec:experiments-declaration-files-generation} presents examples of the generated declaration files for
@@ -1549,22 +1547,20 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed 82 of the 244 generated files. The remaining 162 files contained at least one
+We analyzed 60 of the 244 generated files. The remaining 184 files contained at least one
 of the unimplemented TypeScript features so that they could not be considered. These
-features were identified by \texttt{dts-parse} as tags. 
+features were identified by \texttt{dts-parse} as tags.
+
 
 As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a
 direct influence on the quality of the generated declaration file. We introduced the
 concept of \texttt{solvable} and \texttt{unsolvable} differences in
 \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were
-considered as positive results. We identified 72 such modules. We manually completed the
+considered as positive results. We identified 52 such modules. We manually completed the
 examples for 10 of those modules. Applying \texttt{dts-generate} with the completed
 examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
 shown in \figref{fig:experiments-results-manually-completed-examples}.
-\begin{changethis}
-  Expected differences are present: optional parameters are declared both with the actual
-  and \texttt{undefined} type and the union type is handled through multiple overloads.
-\end{changethis}
+
 \begin{figure}[tp]
   \centering
   \begin{subfigure}{0.80\linewidth}
@@ -1637,10 +1633,10 @@ gh({url: 'git://github.com/monkey/business.git'});
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
 
-We discovered only 10 modules with \texttt{unsolvable} differences. Most of them were
-caused by the same error: 8 modules incorrectly declared an interface for the
+We discovered only 8 modules with \texttt{unsolvable} differences. Most of them were
+caused by the same error: 7 modules incorrectly declared an interface for the
 \texttt{string} type. This interface contains standard properties and methods from the
-JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The
+JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The remaining module is \texttt{stream}
 remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them rely on native
 NodeJS types within the declaration file, which \texttt{dts-generate} could not identify
 properly.
