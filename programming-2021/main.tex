@@ -1591,17 +1591,16 @@ export = gh;
     \begin{lstlisting}[language=TypeScript]
 export = GithubUrlToObject;
 
-declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: undefined): object;
-declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: GithubUrlToObject.I__opts): null|object;
-declare function GithubUrlToObject(repoUrl: GithubUrlToObject.I__repoUrl, opts: undefined): object;
+declare function GithubUrlToObject(repoUrl: string | GithubUrlToObject.I__repoUrl, opts?: GithubUrlToObject.I__opts): object | null;
 declare namespace GithubUrlToObject {
   export interface I__repoUrl {
-    'url': undefined | string;
+    'url'?: string;
   }
 
   export interface I__opts {
-    'enterprise': undefined | boolean;
+    'enterprise'?: boolean;
   }
+
 }
     \end{lstlisting}
     \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
@@ -1623,7 +1622,8 @@ gh('git://github.com/monkey/business.git');
 gh('git+https://githuuub.com/monkey/business.git', {});
 gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
 gh({url: 'git://github.com/monkey/business.git'});
-      
+gh('this is not a proper url');
+gh({url: 'this is not a proper url'});
     \end{lstlisting}
     \caption{Code example for module \texttt{github-url-to-object}.}
     \end{subfigure}
@@ -1634,10 +1634,7 @@ gh({url: 'git://github.com/monkey/business.git'});
 We discovered only 8 modules with \texttt{unsolvable} differences. Most of them were
 caused by the same error: 7 modules incorrectly declared an interface for the
 \texttt{string} type. This interface contains standard properties and methods from the
-JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The remaining module is \texttt{stream}
-remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them rely on native
-NodeJS types within the declaration file, which \texttt{dts-generate} could not identify
-properly.
+JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}.
 
 \section{Discussion}
 \label{sec:discussion}
