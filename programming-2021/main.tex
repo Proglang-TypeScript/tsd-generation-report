@@ -984,15 +984,55 @@ export function anyNonNil(value: string): boolean;
 
 We implemented only basic TypeScript features and we focused our effort in building an
 end-to-end solution that generates valid and useful declaration files. Only the basic
-types \texttt{string}, \texttt{number}, \texttt{boolean} and its union were considered
+types \texttt{string}, \texttt{number}, \texttt{boolean}, its union and the optional type were considered
 both for function parameters and interface properties. Common types such as
 \texttt{any}, arrays, function callbacks, tuples, intersections and features such as
-generics, index signatures were not implemented. Each declaration file was tagged with
-\texttt{dts-parse} and those containing unimplemented features were ignored.
+generics, index signatures were not implemented.
+
+Each declaration file in the DT repository was tagged with
+\texttt{dts-parse}. We summarized the results in Table~\ref{tab:dts-parse-stats}. We based our decisions of prioritizing particular features on these results.
+
+\begin{table}[tp]
+  \begin{center}
+    \begin{tabular}{ |c|c|c| } 
+      \hline
+      \textbf{TypeScript feature} & \textbf{Count Declaration Files} & \textbf{\%} \\ 
+      \hline
+      string & 5086 & 76.50\% \\
+      optional-parameter & 4915 & 73.93\% \\
+      boolean & 3891 & 58.53\% \\
+      number & 3699 & 55.64\% \\
+      void & 3548 & 53.37\% \\
+      type-union & 3456 & 51.99\% \\
+      type-function & 3286 & 49.43\% \\
+      type-array & 3264 & 49.10\% \\
+      type-any & 3127 & 47.04\% \\
+      literals & 1925 & 28.96\% \\
+      alias-type & 1899 & 28.56\% \\
+      index-signature & 1271 & 19.12\% \\
+      generics-function & 1145 & 17.22\% \\
+      dot-dot-dot-token & 882 & 13.27\% \\
+      call-signature & 817 & 12.29\% \\
+      generics-interface & 718 & 10.80\% \\
+      object & 661 & 9.94\% \\
+      undefined & 577 & 8.68\% \\
+      type-intersection & 431 & 6.48\% \\
+      readonly & 373 & 5.61\% \\
+      type-tuple & 355 & 5.34\% \\
+      generics-class & 265 & 3.99\% \\
+      static & 251 & 3.78\% \\
+      private & 82 & 1.23\% \\
+      public & 43 & 0.65\% \\
+      protected & 19 & 0.29\% \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped. The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
+  \label{tab:dts-parse-stats}
+\end{table}
 
 % \paragraph*{Interfaces}
-Finally, interfaces are created by exploring \texttt{getField} and
-\texttt{methodCall} interactions from the run-time information. We
+Finally, interfaces are created by exploring \texttt{getField} and \texttt{methodCall} interactions from the run-time information. We
 gather the interactions for a specific argument and build the
 interface by incrementally adding new properties. Interactions within
 the \texttt{followingInteractions} field are recursively traversed,
@@ -1673,7 +1713,7 @@ the \lstinline/any/ type for an argument position.
 Similar approaches could be conceived for indexed types, polymorphic types, dependent
 types, etc. However, at present we believe incorporating these features in a tool to be
 overblown because they are not widely used in DefinitelyTyped (see
-Table~\ref{table-of-occurrences}). 
+Table~\ref{tab:dts-parse-stats}). 
 
 \section{Related Work}
 \label{sec:related-work}
