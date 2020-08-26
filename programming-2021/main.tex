@@ -94,8 +94,8 @@
 % \titlerunning{Dummy short title}%optional, please use if title is longer than one line
 
 \author{Fernando Cristiani}
-\authorinfo{contact \email{fc@example.org}}
-\affiliation{Hochschule Karlsruhe, Germany }
+\authorinfo{\email{fernando.cristiani@hs-karlsruhe.de}}
+\affiliation{Hochschule Karlsruhe, Germany}
 
 \author{Peter Thiemann}
 \authorinfo{\email{thiemann@informatik.uni-freiburg.de}}
@@ -1182,7 +1182,7 @@ The concrete evaluated differences are as follows:
 Type aliases are expanded before the comparison and thus invisible to
 \texttt{dts-compare}: the declaration
 \lstinline{type T = string | number; declare function F(a: T);} is equivalent to
-\lstinline{declare function F(a: string | number);}. The same approach applies to literal
+\lstinline{declare function} \lstinline{F(a: string | number);}. The same approach applies to literal
 interfaces. \texttt{dts-compare} does 
 not contemplate differences in function return types, because interface inference of
 function return types is not covered in the current version of \texttt{dts-generate}. 
@@ -1601,22 +1601,14 @@ shown in \figref{fig:experiments-results-manually-completed-examples}.
 
 \begin{figure}[tp]
   \centering
-  \begin{subfigure}{0.80\linewidth}
+  \begin{subfigure}{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 declare namespace gh {
   interface Options {
       enterprise?: boolean;
   }
   interface Result {
-      user: string;
-      repo: string;
-      branch: string;
-      https_url: string;
-      tarball_url: string;
-      clone_url: string;
-      travis_url: string;
-      api_url: string;
-      zip_url: string;
+      ...
   }
 }
 
@@ -1624,10 +1616,10 @@ declare function gh(url: string | {url: string}, options?: gh.Options): gh.Resul
 
 export = gh;    
     \end{lstlisting}
-    \caption{github-url-to-object/index.d.ts - DefinitelyTyped}
+    \caption{github-url-to-object/index.d.ts - DefinitelyTyped. Properties of interface \texttt{Result} were ignored for readability, since return types were not considered.}
   \end{subfigure}
-
-  \begin{subfigure}{0.80\linewidth}
+  \hfill
+  \begin{subfigure}{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 export = GithubUrlToObject;
 
@@ -1832,13 +1824,14 @@ modules. We compared the results against the corresponding files uploaded to
 DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and
 \texttt{dts-compare}, a comparator.
 
-\begin{changethis}
-  We exposed the fundamental aspect of capturing the developer's intention when inferring
-  types in JavaScript. Instead of applying constraints and restrictions for operations
-  with certain types, we presented a proposal that favors best practice. Uncommon usage is
-  not forbidden but greatly discouraged. Accordingly, we collected evidence regarding the
-  usage of JavaScript operators by analyzing 400 libraries.
-\end{changethis}
+% \begin{changethis}
+%   We exposed the fundamental aspect of capturing the developer's intention when inferring
+%   types in JavaScript. Instead of applying constraints and restrictions for operations
+%   with certain types, we presented a proposal that favors best practice. Uncommon usage is
+%   not forbidden but greatly discouraged. Accordingly, we collected evidence regarding the
+%   usage of JavaScript operators by analyzing 400 libraries.
+% \end{changethis}
+
 % Finally, the architecture is composed of different blocks that interact with each
 % other. Each block is independent and has a well defined behavior as well as clear input
 % and output values. As a result, each block can be independently and simultaneously
