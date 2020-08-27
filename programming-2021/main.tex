@@ -94,8 +94,8 @@
 % \titlerunning{Dummy short title}%optional, please use if title is longer than one line
 
 \author{Fernando Cristiani}
-\authorinfo{contact \email{fc@example.org}}
-\affiliation{Hochschule Karlsruhe, Germany }
+\authorinfo{\email{fernando.cristiani@hs-karlsruhe.de}}
+\affiliation{Hochschule Karlsruhe, Germany}
 
 \author{Peter Thiemann}
 \authorinfo{\email{thiemann@informatik.uni-freiburg.de}}
@@ -181,7 +181,7 @@ registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
 information. To evaluate the tool, 244 declaration files were generated and 82 were
-compared with the corresponding declaration file provided on DefinitelyTyped. 72 files presented positive results, having no differences at all or differences that can be solved by modifying the code examples accordingly.
+compared with the corresponding declaration file provided on DefinitelyTyped. 52 files presented positive results, having no differences at all or differences that can be solved by modifying the code examples accordingly.
 
 \end{abstract}
 
@@ -348,6 +348,16 @@ The novelty of our tool is twofold:
 % Finally, we generated declaration files for 244 JavaScript libraries
 % and evaluated them against the DefinitelyTyped repository. 
 
+The implementation and the results are available under the following repositories:
+
+\begin{itemize}
+  \item \url{https://github.com/proglang/run-time-information-gathering/tree/v1.1}
+  \item \url{https://github.com/proglang/ts-declaration-file-generator/tree/v1.1}
+  \item \url{https://github.com/proglang/ts-declaration-file-generator-service/tree/v1.1}
+  \item \url{https://github.com/proglang/dts-generate-method/tree/v1.1}
+  \item \url{https://github.com/proglang/dts-generate-results/tree/v1.1}
+\end{itemize}
+
 \subsection{Contributions}
 \label{sec:contributions}
 
@@ -410,13 +420,14 @@ for incompatibilities with the previous declaration file.
     \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GlobToRegexp;
 
-declare function GlobToRegexp(glob: string, opts ?: GlobToRegexp.I__opts): RegExp;
+declare function GlobToRegexp(glob: string, opts?: GlobToRegexp.I__opts): RegExp;
 declare namespace GlobToRegexp {
   export interface I__opts {
-    'extended' ?: boolean;
-    'globstar' ?: boolean;
-    'flags'    ?: string;
+    'extended'?: boolean;
+    'globstar'?: boolean;
+    'flags'?: string;
   }
+
 }
     \end{lstlisting}
   % \end{subfigure}
@@ -505,8 +516,8 @@ declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings):
 declare namespace GreetSettingsModule {
   export interface I__settings {
     'greeting': string;
-    'duration' ?: number;
-    'color' ?: string;
+    'duration'?: number;
+    'color'?: string;
   }
 
 }
@@ -981,22 +992,57 @@ export function anyNonNil(value: string): boolean;
   \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
-\begin{changethis}
-  We implemented only basic TypeScript features and we focused our effort in building an
-  end-to-end solution that generates valid and useful declaration files. Only the basic
-  types \texttt{string}, \texttt{number}, \texttt{boolean} and its union were considered
-  both for function parameters and interface properties. Common types such as
-  \texttt{any}, arrays, function callbacks, tuples, intersections and features such as
-  generics, index signatures were not implemented. Each declaration file was tagged with
-  \texttt{dts-parse} and those containing unimplemented features were ignored. We add the
-  \texttt{undefined} type for describing an optional parameter instead of adding the
-  corresponding token \texttt{?}, which is also done by TypeScript in strict null checking
-  mode\cite{typescript-optional-parameters-and-properties}.
-\end{changethis}
+We implemented only basic TypeScript features and we focused our effort in building an
+end-to-end solution that generates valid and useful declaration files. Only the basic
+types \texttt{string}, \texttt{number}, \texttt{boolean}, its union and the optional type were considered
+both for function parameters and interface properties. Common types such as
+\texttt{any}, arrays, function callbacks, tuples, intersections and features such as
+generics, index signatures were not implemented.
+
+Each declaration file in the DT repository was tagged with
+\texttt{dts-parse}. We summarized the results in Table~\ref{tab:dts-parse-stats}. We based our decisions of prioritizing particular features on these results.
+
+\begin{table}[tp]
+  \begin{center}
+    \begin{tabular}{ |c|c|c| } 
+      \hline
+      \textbf{TypeScript feature} & \textbf{Count Declaration Files} & \textbf{\%} \\ 
+      \hline
+      string & 5086 & 76.50\% \\
+      optional-parameter & 4915 & 73.93\% \\
+      boolean & 3891 & 58.53\% \\
+      number & 3699 & 55.64\% \\
+      void & 3548 & 53.37\% \\
+      type-union & 3456 & 51.99\% \\
+      type-function & 3286 & 49.43\% \\
+      type-array & 3264 & 49.10\% \\
+      type-any & 3127 & 47.04\% \\
+      literals & 1925 & 28.96\% \\
+      alias-type & 1899 & 28.56\% \\
+      index-signature & 1271 & 19.12\% \\
+      generics-function & 1145 & 17.22\% \\
+      dot-dot-dot-token & 882 & 13.27\% \\
+      call-signature & 817 & 12.29\% \\
+      generics-interface & 718 & 10.80\% \\
+      object & 661 & 9.94\% \\
+      undefined & 577 & 8.68\% \\
+      type-intersection & 431 & 6.48\% \\
+      readonly & 373 & 5.61\% \\
+      type-tuple & 355 & 5.34\% \\
+      generics-class & 265 & 3.99\% \\
+      static & 251 & 3.78\% \\
+      private & 82 & 1.23\% \\
+      public & 43 & 0.65\% \\
+      protected & 19 & 0.29\% \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped. The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
+  \label{tab:dts-parse-stats}
+\end{table}
 
 % \paragraph*{Interfaces}
-Finally, interfaces are created by exploring \texttt{getField} and
-\texttt{methodCall} interactions from the run-time information. We
+Finally, interfaces are created by exploring \texttt{getField} and \texttt{methodCall} interactions from the run-time information. We
 gather the interactions for a specific argument and build the
 interface by incrementally adding new properties. Interactions within
 the \texttt{followingInteractions} field are recursively traversed,
@@ -1146,7 +1192,7 @@ The concrete evaluated differences are as follows:
 Type aliases are expanded before the comparison and thus invisible to
 \texttt{dts-compare}: the declaration
 \lstinline{type T = string | number; declare function F(a: T);} is equivalent to
-\lstinline{declare function F(a: string | number);}. The same approach applies to literal
+\lstinline{declare function} \lstinline{F(a: string | number);}. The same approach applies to literal
 interfaces. \texttt{dts-compare} does 
 not contemplate differences in function return types, because interface inference of
 function return types is not covered in the current version of \texttt{dts-generate}. 
@@ -1175,8 +1221,8 @@ benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
-for 244 modules out of 6029 modules and we identified 80 modules that have only the
-features implemented by \texttt{dts-generate}. We obtained positive results for 69 of
+for 244 modules out of 6029 modules and we identified 60 modules that have only the
+features implemented by \texttt{dts-generate}. We obtained positive results for 52 of
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
 Section~\ref{sec:experiments-declaration-files-generation} presents examples of the generated declaration files for
@@ -1216,7 +1262,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 			in {
 				4.05,
 				7.33,
-				24.02,
+				18.02,
 				37.49,
 				71.19,
 				82.50,
@@ -1229,10 +1275,10 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 		\node[right=0.04\textwidth of a0] {\textbf{244}};
 
 		\node[left=0.02\textwidth of a1] {Run-time Information};
-		\node[right=0.06\textwidth of a1] {\textbf{442}};
+		\node[right=0.06\textwidth of a1] {\textbf{436}};
 
 		\node[left=0.02\textwidth of a2] {Working Examples};
-		\node[right=0.17\textwidth of a2] {\textbf{1448}};
+		\node[right=0.17\textwidth of a2] {\textbf{946}};
 
 		\node[left=0.02\textwidth of a3] {Code Examples};
 		\node[right=0.25\textwidth of a3] {\textbf{2260}};
@@ -1291,8 +1337,8 @@ evaluating the generation of declaration files.
 \paragraph*{Execution of Code Examples}
 We executed the remaining 2260 extracted code examples by installing the
 required packages and running the code as a \NodeJS{}
-application. Unfortunately, the code examples only worked for 1448
-modules. 812 modules did not run correctly and had to be
+application. Unfortunately, the code examples only worked for 946
+modules. 1314 modules did not run correctly and had to be
 discarded. Some failing samples were analyzed and there were mainly
 two reasons for the failure: 
 \begin{itemize}
@@ -1304,18 +1350,18 @@ two reasons for the failure:
 \end{itemize}
 
 \paragraph*{Run-time Information}
-Run-time information was extracted for only 442 out of 1448 modules with working code
+Run-time information was extracted for only 436 out of 946 modules with working code
 examples. As explained, to extract the run-time information, the behavior of the code
 under analysis was explicitly modified by wrapping the arguments. Furthermore, Jalangi’s
 instrumentation itself caused some executions to fail, because the modules contained
 JavaScript features that are not supported by Jalangi. As a result, run-time information
-could not be extracted for 1006 modules. An instrumentation without user-defined analysis
+could not be extracted for 510 modules. An instrumentation without user-defined analysis
 modules was not applied, so it was not possible to determine which modules were failing
 only because of Jalangi’s own limitations. 
 
 \paragraph*{Generated Declaration Files}
-A declaration file was generated for 244 out of 442 modules. Despite the correct execution
-of the instrumented code examples, 198 modules did not yield suitable run-time information
+A declaration file was generated for 244 out of 436 modules. Despite the correct execution
+of the instrumented code examples, 192 modules did not yield suitable run-time information
 for generating a declaration file. The extracted code examples for these modules did not
 execute the library. Hence, the collected run-time information was not useful
 for generating a declaration file. 
@@ -1549,40 +1595,30 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed 82 of the 244 generated files. The remaining 162 files contained at least one
+We analyzed 60 of the 244 generated files. The remaining 184 files contained at least one
 of the unimplemented TypeScript features so that they could not be considered. These
-features were identified by \texttt{dts-parse} as tags. 
+features were identified by \texttt{dts-parse} as tags.
+
 
 As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a
 direct influence on the quality of the generated declaration file. We introduced the
 concept of \texttt{solvable} and \texttt{unsolvable} differences in
 \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were
-considered as positive results. We identified 72 such modules. We manually completed the
+considered as positive results. We identified 52 such modules. We manually completed the
 examples for 10 of those modules. Applying \texttt{dts-generate} with the completed
 examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
 shown in \figref{fig:experiments-results-manually-completed-examples}.
-\begin{changethis}
-  Expected differences are present: optional parameters are declared both with the actual
-  and \texttt{undefined} type and the union type is handled through multiple overloads.
-\end{changethis}
+
 \begin{figure}[tp]
   \centering
-  \begin{subfigure}{0.80\linewidth}
+  \begin{subfigure}{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 declare namespace gh {
   interface Options {
       enterprise?: boolean;
   }
   interface Result {
-      user: string;
-      repo: string;
-      branch: string;
-      https_url: string;
-      tarball_url: string;
-      clone_url: string;
-      travis_url: string;
-      api_url: string;
-      zip_url: string;
+      ...
   }
 }
 
@@ -1590,24 +1626,23 @@ declare function gh(url: string | {url: string}, options?: gh.Options): gh.Resul
 
 export = gh;    
     \end{lstlisting}
-    \caption{github-url-to-object/index.d.ts - DefinitelyTyped}
+    \caption{github-url-to-object/index.d.ts - DefinitelyTyped. Properties of interface \texttt{Result} were ignored for readability, since return types were not considered.}
   \end{subfigure}
-
-  \begin{subfigure}{0.80\linewidth}
+  \hfill
+  \begin{subfigure}{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 export = GithubUrlToObject;
 
-declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: undefined): object;
-declare function GithubUrlToObject(repoUrl: string|GithubUrlToObject.I__repoUrl, opts: GithubUrlToObject.I__opts): null|object;
-declare function GithubUrlToObject(repoUrl: GithubUrlToObject.I__repoUrl, opts: undefined): object;
+declare function GithubUrlToObject(repoUrl: string | GithubUrlToObject.I__repoUrl, opts?: GithubUrlToObject.I__opts): object | null;
 declare namespace GithubUrlToObject {
   export interface I__repoUrl {
-    'url': undefined | string;
+    'url'?: string;
   }
 
   export interface I__opts {
-    'enterprise': undefined | boolean;
+    'enterprise'?: boolean;
   }
+
 }
     \end{lstlisting}
     \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
@@ -1629,21 +1664,19 @@ gh('git://github.com/monkey/business.git');
 gh('git+https://githuuub.com/monkey/business.git', {});
 gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
 gh({url: 'git://github.com/monkey/business.git'});
-      
+gh('this is not a proper url');
+gh({url: 'this is not a proper url'});
     \end{lstlisting}
     \caption{Code example for module \texttt{github-url-to-object}.}
     \end{subfigure}
-  \caption{Manually expanded code example for \texttt{github-url-to-object} to match DefinitelyTyped declaration file. Literal interface in DefinitelyTyped gets replace by a declared interface. The \texttt{undefined} type is used instead of the optional type. Return types are not considered.}
+  \caption{Manually expanded code example for \texttt{github-url-to-object} to match DefinitelyTyped declaration file. Literal interface in DefinitelyTyped gets replace by a declared interface. Return types are not considered.}
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
 
-We discovered only 10 modules with \texttt{unsolvable} differences. Most of them were
-caused by the same error: 8 modules incorrectly declared an interface for the
+We discovered only 8 modules with \texttt{unsolvable} differences. Most of them were
+caused by the same error: 7 modules incorrectly declared an interface for the
 \texttt{string} type. This interface contains standard properties and methods from the
-JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}. The
-remaining modules are \texttt{duplexer2} and \texttt{duplexer3}. Both of them rely on native
-NodeJS types within the declaration file, which \texttt{dts-generate} could not identify
-properly.
+JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -1682,7 +1715,7 @@ the \lstinline/any/ type for an argument position.
 Similar approaches could be conceived for indexed types, polymorphic types, dependent
 types, etc. However, at present we believe incorporating these features in a tool to be
 overblown because they are not widely used in DefinitelyTyped (see
-Table~\ref{table-of-occurrences}). 
+Table~\ref{tab:dts-parse-stats}). 
 
 \section{Related Work}
 \label{sec:related-work}
@@ -1801,13 +1834,14 @@ modules. We compared the results against the corresponding files uploaded to
 DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and
 \texttt{dts-compare}, a comparator.
 
-\begin{changethis}
-  We exposed the fundamental aspect of capturing the developer's intention when inferring
-  types in JavaScript. Instead of applying constraints and restrictions for operations
-  with certain types, we presented a proposal that favors best practice. Uncommon usage is
-  not forbidden but greatly discouraged. Accordingly, we collected evidence regarding the
-  usage of JavaScript operators by analyzing 400 libraries.
-\end{changethis}
+% \begin{changethis}
+%   We exposed the fundamental aspect of capturing the developer's intention when inferring
+%   types in JavaScript. Instead of applying constraints and restrictions for operations
+%   with certain types, we presented a proposal that favors best practice. Uncommon usage is
+%   not forbidden but greatly discouraged. Accordingly, we collected evidence regarding the
+%   usage of JavaScript operators by analyzing 400 libraries.
+% \end{changethis}
+
 % Finally, the architecture is composed of different blocks that interact with each
 % other. Each block is independent and has a well defined behavior as well as clear input
 % and output values. As a result, each block can be independently and simultaneously
