@@ -1014,7 +1014,7 @@ Common types such as
 is, types formed using the intersection operator \lstinline[language=TypeScript]/&/) and features such as
 generics, index signatures were not implemented.
 
-Our selection of type features covered in the tool is driven by
+The selection of typing features covered in the tool is driven by
 examination of the files in
 the DefinitelyTyped repository. We parsed each declaration file with
 \texttt{dts-parse} and tagged it according to the features used in the file.
@@ -1080,7 +1080,7 @@ differences between two TypeScript declaration files.
 % \end{itemize}
 
 For each module, we applied \texttt{dts-compare} to the generated declaration file and the
-one uploaded to the DefinitelyTyped repository for the same module, as shown in
+one uploaded to the DefinitelyTyped repository for the same module as shown in
 \figref{fig:evaluation-diagram}. While this approach does not provide an absolute measure
 of quality, it gives us at least an indication of the pragmatics of \texttt{dts-generate}:
 The files on DefinitelyTyped are perceived to be useful by the community. If the accuracy
@@ -1110,38 +1110,43 @@ course, we are not interested in a textual comparison, but in a
 comparison of the structures described by the files.
 
 The first step is to parse the declaration files, which can be
-achieved by using the TypeScript Compiler API, a library which traverse the
+achieved by using the TypeScript Compiler API, a library which traverses the
 Abstract Syntax Tree of a TypeScript program
 \cite{typescript-compiler-api}. 
 The step also performs a sanity check of the generated declaration
 files as it rejects files with syntactic or semantics errors.
 The output of \texttt{dts-parse} is a structure where declared
-{interfaces}, {functions}, {classes} and
+{interfaces}, {functions}, {classes}, and
 {namespaces} are stored separately. Function arguments are
 correctly described, identifying complex types like union types or
 callbacks. Optional parameters are also identified. For
-{classes}, a distinction between the constructor and methods
-is made. Declaration files are tagged according to their features, which is useful for identifying and filtering out declaration files containing unimplemented features.
+{classes}, a distinction between constructors and methods
+is made. Declaration files are tagged according to their features,
+which is useful for identifying and filtering out declaration files
+that contain unimplemented features.
 
 \texttt{dts-parse} is itself written in TypeScript. It receives the file as input
-parameter and returns an AST serialized in JSON, as shown in \coderef{code:dts-parse-example}.
+parameter and returns an AST serialized in JSON.
 
-\begin{lstlisting}[
-  caption={Example for \texttt{dts-parse} executed on module \texttt{glob-to-regexp} and combined with \texttt{jq} to browse the returned JSON},
-  language=bash,
-label=code:dts-parse-example,
-  float=tp, captionpos=b
-]
-$ dts-parse -i glob-to-regexp/index.d.ts | jq '.parsing.functions[0].name'
-"GlobToRegexp"
-\end{lstlisting} %$
+% , as shown in \coderef{code:dts-parse-example}.
+% \begin{lstlisting}[
+%   caption={Example for \texttt{dts-parse} executed on module \texttt{glob-to-regexp} and combined with \texttt{jq} to browse the returned JSON},
+%   language=bash,
+% label=code:dts-parse-example,
+%   float=tp, captionpos=b
+% ]
+% $ dts-parse -i glob-to-regexp/index.d.ts | jq '.parsing.functions[0].name'
+% "GlobToRegexp"
+% \end{lstlisting} %$
 
 \subsection{dts-compare}
 \label{sec:dts-compare}
-The tool is written in TypeScript. It takes two declaration files as input and returns a
-JSON file containing the result of the comparison, as shown in
-\coderef{code:dts-compare-example}. Following the naming convention of any standard Unit
-Testing framework, the input files are marked as \lstinline{expected} or
+
+% The tool is written in TypeScript.
+The compare tool takes two declaration files as input and returns a
+JSON file containing the result of the comparison as shown in
+\coderef{code:dts-compare-example}. Following the standard naming convention of unit
+testing frameworks, the input files are marked as \lstinline{expected} or
 \lstinline{actual}. We use \lstinline{expected} for the DefinitelyTyped
 declaration files. 
 
@@ -1162,36 +1167,26 @@ $ dts-compare -e expected.d.ts -a actual.d.ts --module-name "my-module"
 
 \texttt{dts-compare} applies \texttt{dts-parse} internally to both files to get 
 normalized structures that are easy to compare. The result of the comparison is an array
-of an abstract entity \texttt{Difference}.
-
-We extracted code examples written by
-developers to execute the code and gather run-time information. The quality of the
-generated declaration file is heavily dependent on the code examples. For example, if a
-property of an interface does not get accessed due to a code example not exploring a
-particular execution path, that property will not exist in the generated declaration
-file. 
-
-To measure the impact of incomplete code examples on the
-quality of generated declaration files we categorized each difference as follows: 
-\begin{itemize}
-  \item \texttt{solvable}: Differences that can be resolved by adding more code
-    examples. For example, invoking a function with different parameters so that a missing
-    interface property gets accessed. 
-  \item \texttt{unsolvable}: Differences that cannot be resolved with further examples.
-    % are marked as \texttt{unsolvable}. These differences are implementation errors of \texttt{dts-generate}.
-\end{itemize}
+of an abstract entity \texttt{Difference}. 
+A difference is \texttt{solvable} if it can be resolved by adding more code
+examples. For example, invoking a function with different parameters so that a missing
+interface property gets accessed. Otherwise it is  \texttt{unsolvable}. 
 
 The concrete evaluated differences are as follows:
 \begin{itemize}
   \item \texttt{TemplateDifference}: A difference between the choice of TypeScript
-    templates. For example, if the file in DefinitelyTyped is written as a \texttt{module}
-    but we generated the file using the \texttt{module-function} template. The comparison
+    templates. For example, if the file in DefinitelyTyped is written as a \textbf{module}
+    but we generated the file using the \textbf{module-function} template. The comparison
     stops if the templates differ. 
   \item \texttt{ExportAssignmentDifference}: An equality check between the export
-    assignments of both files, that is in the expression \lstinline{export = XXX}. 
+    assignments of both files, that is in the expression
+    \lstinline{export = XXX}.
+    \begin{changethis}
+      Q: how severe is that? That's not an issue, right?
+    \end{changethis}
   \item \texttt{FunctionMissingDifference}: A function declaration is present in the expected
     file but not in the generated one. This difference applies to functions as well as methods of classes
-    and interfaces. 
+    and properties of interfaces. 
   \item \texttt{FunctionExtraDifference}: A function is present in the generated declaration file but not in DefinitelyTyped.
   \item \texttt{FunctionOverloadingDifference}: The number of declarations for the same
     function is different. This difference can be due to inexperience of the author of a
@@ -1216,6 +1211,22 @@ Type aliases are expanded before the comparison and thus invisible to
 interfaces. \texttt{dts-compare} does 
 not contemplate differences in function return types, because interface inference of
 function return types is not covered in the current version of \texttt{dts-generate}. 
+
+
+\begin{changethis}
+
+To measure the impact of incomplete code examples on the
+quality of generated declaration files we categorized each difference as follows: 
+
+
+
+  We extracted code examples written by developers to execute the code
+  and gather run-time information. The quality of the generated
+  declaration file is heavily dependent on the code examples. For
+  example, if a property of an interface does not get accessed due to
+  a code example not exploring a particular execution path, that
+  property will not exist in the generated declaration file.
+\end{changethis}
 
 \section{Results}
 \label{sec:results}
@@ -1350,7 +1361,7 @@ the implementation checks for several naming conventions like
 In this step, we loose another 50\% of modules! This loss is mainly
 explained because some developers do not wrap their code in a block
 using the \texttt{javascript} or \texttt{js} tags. However, as we are
-still left with code examples for 2200 modules, we did not further
+still left with code examples for 2260 modules, we did not further
 look into code extraction as this number was considered sufficient for
 evaluating the generation of declaration files. 
 
