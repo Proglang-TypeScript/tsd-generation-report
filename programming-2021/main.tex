@@ -90,7 +90,7 @@
 %%\bibliographystyle{plainurl}% the mandatory bibstyle
 
 \title{Generation of TypeScript Declaration Files from JavaScript Code}
-
+\subtitle{Catching the Developer's Intent from Examples}
 % \titlerunning{Dummy short title}%optional, please use if title is longer than one line
 
 \author{Fernando Cristiani}
@@ -99,7 +99,7 @@
 
 \author{Peter Thiemann}
 \authorinfo{\email{thiemann@informatik.uni-freiburg.de}}
-\affiliation{Universität Freiburg, Germany}
+\affiliation{Albert-Ludwigs-Universität Freiburg, Germany}
 
 \keywords{JavaScript, TypeScript, Dynamic Analysis, Declaration
   Files}%TODO mandatory; please add comma-separated list of 1--5 keywords
@@ -169,7 +169,7 @@ TypeScript, a typed dialect of JavaScript. TypeScript applications
 integrate JavaScript libraries via typed descriptions of their APIs
 called declaration files. DefinitelyTyped is the standard public
 repository for these files.
-The repository is maintained manually by volunteers, which
+The repository is populated and maintained manually by volunteers, which
 is error prone and time consuming. Discrepancies between a
 declaration file and the JavaScript implementation lead to
 incorrect feedback from the TypeScript IDE and thus to incorrect uses
@@ -180,9 +180,12 @@ TypeScript declaration files for JavaScript libraries uploaded to the \NPM{}
 registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
-information. To evaluate the tool, 244 declaration files were generated and 82 were
-compared with the corresponding declaration file provided on DefinitelyTyped. 52 files presented positive results, having no differences at all or differences that can be solved by modifying the code examples accordingly.
-
+information. To evaluate the tool, 244 declaration files were
+generated directly from an \NPM{} module and 82 of these were
+compared with the corresponding declaration file provided on
+DefinitelyTyped. We obtained positive results for 52 files, which
+exhibited no differences at all or differences that can be resolved by
+modifying the developer-provided examples. 
 \end{abstract}
 
 \section{Introduction}
@@ -209,7 +212,9 @@ JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some
 of these unintuitive JavaScript behaviors. 
 
 \begin{lstlisting}[
-    caption={\textbf{Unintuitive JavaScript behavior} Falsy values, \lstinline!typeof!, \lstinline!null! and \lstinline!undefined! operators and type coercion},
+    caption={\textbf{Unintuitive JavaScript behavior:} Falsy values,
+    \lstinline!null! vs. \lstinline!undefined!,
+ \lstinline!typeof!, and type coercion},
     language=JavaScript,
 	label=code:introduction-javascript-wtfs,
     float=bp,
@@ -221,15 +226,15 @@ false == "    \n\r\t     "; // true
 false == []; // true
 0 == []; // true
 null == undefined; // true
-[1] + 1; //'11'
-[2] == "2"; // true
-null + undefined + [1, 2, 3] // 'NaN1,2,3'
-"hello world".lenth + 1 // NaN | note 'lenth' instead of 'length'
-[1, 15, 20, 100].sort() // [ 1, 100, 15, 20 ]
+null + undefined + [1, 2, 3] // 'NaN1,2,3' 
 typeof null; // object
 null instanceof Object; // false
-"01" < "00100"; // false
+[1] + 1; //'11'
+[2] == "2"; // true
+"hello world".lenth + 1 // NaN | note 'lenth' instead of 'length'
+[1, 15, 20, 100].sort() // [ 1, 100, 15, 20 ]
 \end{lstlisting}
+% "01" < "00100"; // false 
 % pjt: why unexpected? 
 
 The cognitive load produced by these behaviors is mitigated in languages that use
@@ -252,15 +257,15 @@ been created as a community effort to collect declaration files for
 popular JavaScript libraries. At the time of writing it contains
 declaration files for more than 6000 libraries.
 
-Unfortunately, creation and maintenance for most declaration
+Unfortunately, creation and maintenance of most declaration
 files in DefinitelyTyped is conducted manually,
-which is error prone and time consuming. As TypeScript takes a
-declaration file at face value, discrepancies are not detected at
-compile time and the resulting inaccuracies in autocompletion, say,
-are confusing for the programmer.
+which is time consuming and  error prone. Errors are aggravated because TypeScript takes a
+declaration file at face value. Discrepancies between declaration and
+implementing JavaScript library are not detected at 
+compile time and result in incorrect behavior (e.g., autocompletion
+hints) of the IDE. 
 As TypeScript does not perform any run-time 
-checking of types, either,  discrepancies  between the declaration file
-and its corresponding JavaScript library can lead to unexpected 
+checking of types, these  discrepancies can lead to unexpected 
 behavior and crashes. Such an experience can lead to developer
 frustration, longish debugging sessions, and decreasing confidence in
 the tool chain.
@@ -271,14 +276,15 @@ the tool chain.
 
 We aim to improve on this situation by providing a tool that generates
 sound TypeScript declaration files automatically. To do so, we rely on the examples provided
-as part of the documentation of a library. If these
+by the developer as part of the documentation of a library. If these
 examples are sufficiently rich, then our toolchain can generate
-high-quality declaration files from them. This approach takes
+high-quality declaration files for the library. This approach takes
 advantage of 
 best practices in the dynamic languages community which favors
 examples and tests over writing out type signatures.
 
-As an example, consider the NPM module
+As an example, consider the NPM\footnote{NPM is the \href{https://www.npmjs.com/}{Node package
+  manager}, an online repository for JavaScript modules.} module
 \texttt{abs} that
 ``computes the absolute path of an input''. Its documentation consists
 of the following three examples\footnote{\url{https://www.npmjs.com/package/abs}}.
@@ -385,7 +391,7 @@ The implementation and the results are available under the following repositorie
 \item An evaluation of our framework (Sections~\ref{sec:dts-generate-evaluation}
   and~\ref{sec:results}). We examined all 6029 entries in 
   the DefinitelyTyped repository and found 244 sufficiently
-  well-documented \NPM{} packages, on which we ran \texttt{dts-generate}
+  well documented \NPM{} packages, on which we ran \texttt{dts-generate}
   and compared the outcome with the respective declaration file from the
   DefinitelyTyped repository. 
 \end{itemize}
@@ -394,7 +400,7 @@ The implementation and the results are available under the following repositorie
 \label{sec:motivating-example}
 The \NPM{} package \texttt{glob-to-regexp} is a simple JavaScript library, which turns a
 glob expression for matching filenames in the shell into a regular
-expression\footnote{https://www.npmjs.com/package/glob-to-regexp}. It 
+expression\footnote{\url{https://www.npmjs.com/package/glob-to-regexp}}. It 
 has about 9,900,000 weekly downloads and 188 \NPM{} packages depend on it. If
 a developer creates or extends TypeScript code that depends on the
 \texttt{glob-to-regexp} library, the TypeScript
@@ -411,7 +417,7 @@ code completion runs properly with the generated file
 (\figref{fig:motivating-example-glob-to-regexp-vscode}). If the
 \texttt{glob-to-regexp} package gets modified in the future, a new declaration
 file can be generated automatically using
-\texttt{dts-generate}. Our comparator tool can compare the new file
+\texttt{dts-generate}. Our comparator tool (Section~\ref{sec:dts-compare}) can compare the new file
 for incompatibilities with the previous declaration file.
 
 \begin{figure}[tp]
@@ -453,30 +459,37 @@ declare namespace GlobToRegexp {
 
 The declaration file shown in \figref{fig:motivating-example-glob-to-regexp-vscode}
 describes a package with a single exported function. The first parameter is of type
-\texttt{string} and the second one is an optional interface. TypeScript namespaces
+\texttt{string} and the second one is an optional object described by an interface. TypeScript namespaces
 organize types declared in a declaration file and avoid name clashes with other types
-\cite{typescript-namespaces}. For example, the interface \texttt{I\_\_opts} declared in
-\figref{fig:motivating-example-glob-to-regexp-vscode} is used as
-\lstinline[language=TypeScript]{globToRegexp.I__opts} because it is declared within a
-namespace.
+\cite{typescript-namespaces}. For example, the interface
+\lstinline[language=TypeScript]{I__opts} is declared in namespace
+\lstinline[language=TypeScript]{globToRegexp} in
+\figref{fig:motivating-example-glob-to-regexp-vscode}. Hence its uses
+must be qualified by the namespace as in
+\lstinline[language=TypeScript]{globToRegexp.I__opts}.
 
 
 This file is an instance of one of the standard templates for writing
 declaration
-files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/templates.html}:
+files\footnote{\url{https://www.typescriptlang.org/docs/handbook/declaration-files/templates.html}}:
 \textbf{module}, \textbf{module-class}, and
 \textbf{module-function}. 
-Each template corresponds to a different way of describing the exports
+Each template corresponds to a different way of organizing the exports
 of a JavaScript library. The choice of the template depends on the
-organization of the underlying JavaScript library:
+structure of the underlying JavaScript library:
 \begin{description}
 \item[module] several exported functions,
 \item[module-class] a class-like structure,
 \item[module-function] exactly one exported function.
 \end{description}
+There are further templates, but most libraries fall in one of these
+three categories.
+Both libraries \texttt{glob-to-regexp} and \texttt{abs} are instances of the
+\textbf{module-function} template.
+
 
 \begin{lstlisting}[
-    caption={Example for template \textbf{module-function}},
+    caption={Example for \textbf{module-function} template},
     language=bash,
 	label=code:dts-generate-example,
     float,captionpos=b
@@ -504,7 +517,7 @@ greet({
   color: "#00ff00"
 });
     \end{lstlisting}
-    \caption{Example for \texttt{module-function} template}
+    \caption{Example for \textbf{module-function} template}
     \label{fig:example-module-function}
   \end{subfigure}
   \hfill
@@ -522,7 +535,7 @@ declare namespace GreetSettingsModule {
 
 }
     \end{lstlisting}
-    \caption{Declaration file for \texttt{module-function} template}
+    \caption{Declaration file for \textbf{module-function} template}
     \label{fig:template-module-function}
   \end{subfigure}
 
@@ -536,7 +549,7 @@ console.log("The computed greeting is: " + result);
 var goodbye = myLib.makeGoodBye();
 console.log("The computed goodbye is: " + goodbye);    
       \end{lstlisting}
-    \caption{Example for \texttt{module} template}
+    \caption{Example for \textbf{module} template}
     \label{fig:example-module}
     \end{subfigure}
     \hfill
@@ -545,7 +558,7 @@ console.log("The computed goodbye is: " + goodbye);
 export function makeGreeting(str: string): string;
 export function makeGoodBye(): string;        
       \end{lstlisting}
-      \caption{Declaration file for \texttt{module} template}
+      \caption{Declaration file for \textbf{module} template}
       \label{fig:template-module}
     \end{subfigure}
 
@@ -557,7 +570,7 @@ var myGreeter = new Greeter("hello, world");
 myGreeter.greeting = "howdy";
 myGreeter.showGreeting();
       \end{lstlisting}
-      \caption{Example for \texttt{module-class} template}
+      \caption{Example for \textbf{module-class} template}
       \label{fig:example-class}
     \end{subfigure}
     \hfill
@@ -573,7 +586,7 @@ declare class Greeter {
 declare namespace Greeter {
 }
       \end{lstlisting}
-      \caption{Declaration file for \texttt{module-class} template}
+      \caption{Declaration file for \textbf{module-class} template}
       \label{fig:template-class}
     \end{subfigure}
 
@@ -589,17 +602,14 @@ used \texttt{dts-generate} to generate a corresponding declaration file, as show
 \figref{fig:typescript-templates-by-example}.
 
 Like \texttt{dts-gen}, a TypeScript package that generates a template for a declaration
-file, we determine the kind of declaration file by examining the provided example. If the
+file, we determine the kind of declaration file by examining the usage
+of the module. If the
 imported entity is used solely as a function as in Figure~\ref{fig:example-module-function}, the
-generated declaration file follows the module-function template as shown in Figure~\ref{fig:template-module-function}.
+generated declaration file follows the \textbf{module-function} template as shown in Figure~\ref{fig:template-module-function}.
 If the example only accesses properties of the imported entity as in
-Figure~\ref{fig:example-module}, we generate according to the module template (Figure~\ref{fig:template-module}).
+Figure~\ref{fig:example-module}, we generate according to the \textbf{module} template (Figure~\ref{fig:template-module}).
 If the imported entity is used with \lstinline/new/ to create new instances as in
-Figure~\ref{fig:example-class}, we generate a module-class template (Figure~\ref{fig:template-class}).
-
-The libraries \texttt{glob-to-regexp} as well as \texttt{abs} are both instances of the
-\textbf{module-function} template.
-Most libraries fall in one of these three categories. 
+Figure~\ref{fig:example-class}, we generate a \textbf{module-class} template (Figure~\ref{fig:template-class}).
 While it is possible to create a library of undetermined category, our selection is driven
 by the examples in the documentation and 
 hence reflects the developers intent.
@@ -709,21 +719,21 @@ Jalangi \cite{DBLP:conf/sigsoft/SenKBG13} to gather data flow
 information and type information at run time. Jalangi is a configurable
 framework for dynamic analysis of JavaScript. It provides several
 analysis modules that we extended as needed to retrieve the required
-run-time information, which is then saved in a JSON file. 
+run-time information.
+%, which is then saved in a JSON file. 
 
 A second independent block uses the run-time information to generate a
 TypeScript declaration file. It infers the overall structure of the JavaScript
 library, its interfaces, and the types from the run-time information. 
 The resulting declaration file is ready for use in the development
 process. Its contents mimic the usage of the library in the example
-code fragments and matches the structure of the
+code fragments and match the structure of the
 JavaScript library under analysis, so that the JavaScript code
 generated after compiling the TypeScript code runs without
 interface-related errors.
 
-The command-line interface is inspired by the \texttt{dts-gen} tool
-\cite{dts-gen}. \coderef{code:dts-generate-example} shows
-that invoking the package is very simple. Its only required
+The command-line interface is very simple and inspired by the \texttt{dts-gen} tool
+\cite{dts-gen} (see \coderef{code:dts-generate-example}). The only required
 argument is the name of the module published to the \NPM{} registry. 
 
 
@@ -731,9 +741,8 @@ argument is the name of the module published to the \NPM{} registry.
 \label{sec:initial-code-base}
 
 To extract run-time information from a JavaScript library, it is
-necessary, by definition, to actually execute the code, because the
-analysis modules provided by Jalangi to gather information are only
-triggered if the instrumented code gets executed.
+necessary, by definition, to execute the code, because the
+analysis modules provided by Jalangi can only gather information if the instrumented code gets executed.
 
 There are several options to obtain code fragments that drive the
 library code:
@@ -745,7 +754,7 @@ library code:
 
 Option~\ref{item:1} does not solve our problem, it just delegates it
 to the importing library, which also needs code to drive it. Moreover,
-it is costly to download and instrument another package.
+we need to identify a dependent package, which is costly to download and instrument.
 
 We considered option~\ref{item:2} under the assumption that most
 libraries would come with test cases. However, there is no standard
@@ -755,15 +764,16 @@ employ differing (or no) testing tools, or do not have tests
 at all. Moreover, developers try to cover edge cases or to trigger errors by using illegal
 input values in their tests. Such tests are not really useful for describing a library
 from the consumer's point of view. For example, a developer might write a test invoking a
-function with \texttt{null} just to validate that it throws an error in such scenario. 
+function with \texttt{null} just to validate that it throws an error
+in such a scenario. 
 
-In the end, option~\ref{item:3} was the most viable even though there
+In the end, option~\ref{item:3} was the most viable option even though there
 is no standard for documentation, either. However, almost all repositories
 contain README files where the library authors briefly describe in prose what
 the code does, which problem it solves, how to install the
 application, how to build the code, etc. It is very common that
 developers provide code examples in the README files to show how the
-library works and how to use it. These code fragments represent common usage cases rather
+library works and how to use it. These code fragments showcase common use cases rather
 than stress-testing the implementation (the problem of
 option~\ref{item:2}) because they are meant to be instructive to users of the package.  
 
@@ -824,7 +834,7 @@ examples, thus avoiding possible cold start problems.
 
 \subsection{Run-time Information Gathering}
 \label{sec:run-time-information}
-The Runtime Information block described in
+The Runtime Information block in
 \figref{fig:tsd_generation_method_block_diagram} gathers
 type-related information as well as usage-related information for each function parameter.
 For example,
@@ -876,15 +886,16 @@ information gathered in the previous step.
 % The tool itself is written in TypeScript and runs in a
 % Docker container in \NodeJS.  
 
-Instead of analyzing the shape of the exported module, we inspect how the module is used
-to choose between the templates. We analyze the properties \texttt{isExported},
-\texttt{requiredModule} and \texttt{isConstructor} from the run-time JSON to distinguish
-between \texttt{module-class} and \texttt{module-function}. If a function is invoked and
+Instead of analyzing the shape of the exported module, we choose the
+template based on how the module is used. We analyze the properties \texttt{isExported},
+\texttt{requiredModule}, and \texttt{isConstructor} from the
+information gathered at run time to distinguish
+between \textbf{module-class} and \textbf{module-function}. If a function is invoked and
 it is imported from the module we are analyzing we infer the template
-\texttt{module-class} or \texttt{module-function}. We choose \texttt{module-class} if the
+\textbf{module-class} or \textbf{module-function}. We choose \textbf{module-class} if the
 function is used as a constructor. Otherwise, we choose
-\texttt{module-function}.
-If no function is invoked, we use the \texttt{module}
+\textbf{module-function}.
+If no function is invoked, we use the \textbf{module}
 template.
 % \figref{fig:dts-generate-choose-templates} exposes this logic using the example
 % provided in \figref{fig:multi-purpose-module-example}.
@@ -994,38 +1005,47 @@ export function anyNonNil(value: string): boolean;
 
 We implemented only basic TypeScript features and we focused our effort in building an
 end-to-end solution that generates valid and useful declaration files. Only the basic
-types \texttt{string}, \texttt{number}, \texttt{boolean}, its union and the optional type were considered
-both for function parameters and interface properties. Common types such as
-\texttt{any}, arrays, function callbacks, tuples, intersections and features such as
+types \texttt{string}, \texttt{number}, \texttt{boolean}, unions
+thereof, and optional elements were considered
+both for function parameters and interface properties. We also
+considered overloaded functions.
+Common types such as
+\texttt{any}, arrays, function callbacks, tuples, intersections (that
+is, types formed using the intersection operator \lstinline[language=TypeScript]/&/) and features such as
 generics, index signatures were not implemented.
 
-Each declaration file in the DT repository was tagged with
-\texttt{dts-parse}. We summarized the results in Table~\ref{tab:dts-parse-stats}. We based our decisions of prioritizing particular features on these results.
+Our selection of type features covered in the tool is driven by
+examination of the files in
+the DefinitelyTyped repository. We parsed each declaration file with
+\texttt{dts-parse} and tagged it according to the features used in the file.
+Table~\ref{tab:dts-parse-stats} summarizes the results.
+We decided to prioritize the features with the highest number of
+occurrences and support them first in our framework.
 
 \begin{table}[tp]
   \begin{center}
-    \begin{tabular}{ |c|c|c| } 
+    \begin{tabular}{ |l|c|r| } 
       \hline
-      \textbf{TypeScript feature} & \textbf{Count Declaration Files} & \textbf{\%} \\ 
+      \textbf{TypeScript feature} & \textbf{Count} & \multicolumn{1}{|c|}{\textbf{\%}} \\ 
       \hline
-      string & 5086 & 76.50\% \\
+      type-string & 5086 & 76.50\% \\
       optional-parameter & 4915 & 73.93\% \\
-      boolean & 3891 & 58.53\% \\
-      number & 3699 & 55.64\% \\
-      void & 3548 & 53.37\% \\
+      type-boolean & 3891 & 58.53\% \\
+      type-number & 3699 & 55.64\% \\
+      type-void & 3548 & 53.37\% \\
       type-union & 3456 & 51.99\% \\
       type-function & 3286 & 49.43\% \\
       type-array & 3264 & 49.10\% \\
       type-any & 3127 & 47.04\% \\
-      literals & 1925 & 28.96\% \\
+      type-literals & 1925 & 28.96\% \\
       alias-type & 1899 & 28.56\% \\
       index-signature & 1271 & 19.12\% \\
       generics-function & 1145 & 17.22\% \\
       dot-dot-dot-token & 882 & 13.27\% \\
       call-signature & 817 & 12.29\% \\
       generics-interface & 718 & 10.80\% \\
-      object & 661 & 9.94\% \\
-      undefined & 577 & 8.68\% \\
+      type-object & 661 & 9.94\% \\
+      type-undefined & 577 & 8.68\% \\
       type-intersection & 431 & 6.48\% \\
       readonly & 373 & 5.61\% \\
       type-tuple & 355 & 5.34\% \\
@@ -1037,7 +1057,7 @@ Each declaration file in the DT repository was tagged with
       \hline
     \end{tabular}
   \end{center}
-  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped. The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
+  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped (DT). The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
   \label{tab:dts-parse-stats}
 \end{table}
 
