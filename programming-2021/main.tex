@@ -501,9 +501,9 @@ export = Abs;
 declare function Abs(input: string): string;
 \end{lstlisting}
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
-  \begin{subfigure}{0.48\linewidth}
+  \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=JavaScript,numbers=none]
 var greet = require("./greet-settings-module");
 
@@ -521,7 +521,7 @@ greet({
     \label{fig:example-module-function}
   \end{subfigure}
   \hfill
-  \begin{subfigure}{0.48\linewidth}
+  \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GreetSettingsModule;
 
@@ -539,7 +539,7 @@ declare namespace GreetSettingsModule {
     \label{fig:template-module-function}
   \end{subfigure}
 
-  \begin{subfigure}{0.48\linewidth}
+  \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=JavaScript,numbers=none]
 var myLib = require("./greet-module");
 
@@ -553,7 +553,7 @@ console.log("The computed goodbye is: " + goodbye);
     \label{fig:example-module}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.48\linewidth}
+    \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
 export function makeGreeting(str: string): string;
 export function makeGoodBye(): string;        
@@ -562,7 +562,7 @@ export function makeGoodBye(): string;
       \label{fig:template-module}
     \end{subfigure}
 
-    \begin{subfigure}{0.48\linewidth}
+    \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=JavaScript,numbers=none]
 var Greeter = require("./greet-classes-module.js");
 
@@ -574,7 +574,7 @@ myGreeter.showGreeting();
       \label{fig:example-class}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.48\linewidth}
+    \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Greeter;
 
@@ -1563,11 +1563,21 @@ exported as a function, as inferred by \texttt{dts-generate}.
     \centering
     \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
-export = GlobBase;
+'use strict';
 
-declare function GlobBase(pattern: string): object;
+// ...
+
+module.exports = function globBase(pattern) {
+  if (typeof pattern !== 'string') {
+    throw new TypeError('glob-base expects a string.');
+  }
+
+  // ...
+} 
       \end{lstlisting}
-      \caption{glob-base/index.d.ts - Generated}
+      \caption{glob-base/index.js - Excerpt of JS implementation
+        that throws an Error when input parameter is not a string} 
+      \label{fig:subfloat-globbase-js-implementation}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
@@ -1587,26 +1597,7 @@ export = globbase;
       \caption{glob-base/index.d.ts - DefinitelyTyped}
     \end{subfigure}
 
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
-'use strict';
-
-// ...
-
-module.exports = function globBase(pattern) {
-  if (typeof pattern !== 'string') {
-    throw new TypeError('glob-base expects a string.');
-  }
-
-  // ...
-} 
-      \end{lstlisting}
-      \caption{glob-base/index.js - Excerpt from JS implementation
-        that throws an Error when input parameter is not a string} 
-      \label{fig:subfloat-globbase-js-implementation}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
+\begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=JavaScript,numbers=none]
 var globBase = require('glob-base');
 
@@ -1616,7 +1607,16 @@ globBase();
       \end{lstlisting}
       \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
     \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript,numbers=none]
+export = GlobBase;
 
+declare function GlobBase(pattern: string): object;
+      \end{lstlisting}
+      \caption{glob-base/index.d.ts - Generated}
+    \end{subfigure}
+    
     \caption{Incorrect optional parameter for module \texttt{glob-base}}
     \label{fig:experiments-results-module-glob-base}
 \end{figure}
@@ -1650,9 +1650,9 @@ examples for 10 of those modules. Applying \texttt{dts-generate} with the comple
 examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
 shown in \figref{fig:experiments-results-manually-completed-examples}.
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
-  \begin{subfigure}{0.45\linewidth}
+  \begin{subfigure}[t]{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 declare namespace gh {
   interface Options {
@@ -1670,7 +1670,7 @@ export = gh;
     \caption{github-url-to-object/index.d.ts - DefinitelyTyped. Properties of interface \texttt{Result} were ignored for readability, since return types were not considered.}
   \end{subfigure}
   \hfill
-  \begin{subfigure}{0.45\linewidth}
+  \begin{subfigure}[t]{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 export = GithubUrlToObject;
 
@@ -1710,20 +1710,23 @@ gh({url: 'this is not a proper url'});
     \end{lstlisting}
     \caption{Code example for module \texttt{github-url-to-object}.}
     \end{subfigure}
-  \caption{Manually expanded code example for \texttt{github-url-to-object} to match DefinitelyTyped declaration file. Literal interface in DefinitelyTyped gets replace by a declared interface. Return types are not considered.}
+  \caption{Manually expanded code example for
+    \texttt{github-url-to-object} to match DefinitelyTyped declaration
+    file. The literal interface in DefinitelyTyped is replaced by a
+    declared interface. Return types are not considered.} 
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
 
 We discovered only 8 modules with \texttt{unsolvable} differences. Most of them were
 caused by the same error: 7 modules incorrectly declared an interface for the
-\texttt{string} type. This interface contains standard properties and methods from the
+\texttt{string} type. This interface contains standard properties and methods of the
 JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}.
 
 \section{Discussion}
 \label{sec:discussion}
 
-How can we improve further? Given that JavaScript developers are more incentivized to develop good
-examples than writing ``boring'' type declaration, how can we capitalize on that attitude?
+How can we improve further? Given that JavaScript developers are incentivized to develop good
+examples rather than writing ``boring'' type declarations, how can we capitalize on that attitude?
 The main issue is that any example-driven algorithm can only come up with an
 under-approximation of the intended meaning, so some form of help is required when
 generalization is desired.
@@ -1738,16 +1741,19 @@ typical values of literal strings and generate the corresponding literal types (
 unions thereof) when the arguments used in the example are all typical. Alternatively, one
 might always generate literal types unless the number of different examples provided is
 greater than some threshold, in which case the generator generalizes to type
-\lstinline/string/. A further alternative would be to communicate to the developer a set
-of typical example strings, \emph{marker strings}, that the generator always resolves to the \lstinline/string/
-type.
+\lstinline/string/. Both alternatives come with the problem that they
+create a local over-approximation, so that it would become harder to
+qualify the output of the generator. A further alternative that does
+not suffer from this drawback would be to communicate to the developer a set
+of typical example strings, \emph{marker strings}, that the generator
+always generalizes to the \lstinline/string/ type.
 
 \paragraph*{Any}
 Suppose the programmer supplies examples that use \lstinline/number/, \lstinline/bool/, and
 \lstinline/string/ at the same argument position. The obvious approximation to the type of
 this argument is the union type \lstinline/number|bool|string/. But what if the programmer
 wants to advertise the type \lstinline/any/ for an argument? This intent is hard to
-advertise with a finite number of examples.
+communicate with a finite number of examples.
 
 We propose that the programmer relies on marker strings like \lstinline/"any"/ to indicate
 the \lstinline/any/ type for an argument position.
@@ -1760,43 +1766,48 @@ Table~\ref{tab:dts-parse-stats}).
 
 \section{Related Work}
 \label{sec:related-work}
-\paragraph*{Microsoft's dts-gen}
-Microsoft developed \texttt{dts-gen}, a tool that creates declaration files for
+\paragraph*{dts-gen}
+TypeScript comes with \texttt{dts-gen}, a tool that creates declaration files for
 JavaScript libraries \cite{dts-gen}. Its documentation states that the result is 
-intended to be used a starting point for development of a declaration file. The outcome
+intended to be used as a starting point for the development of a declaration file. The outcome
 needs to be refined afterwards by the developer. 
 
 The tool analyzes the shape of the objects at runtime after initialization without
-executing the library. This results in many variables being inferred as
-\lstinline[language={}]{any}. \coderef{code:related-work-dts-gen-example} shows an example
-for module \lstinline[language={}]{abs}. 
+executing the library. This results in most parameters and results being inferred as
+\lstinline[language={}]{any}.
+% \coderef{code:related-work-dts-gen-example} shows an example
+% for module \lstinline[language={}]{abs}. 
 
 In contrast, our tool \texttt{dts-generate} is intended to generate declaration files
 that are ready to be uploaded to DefinitelyTyped without further manual intervention. Any
 amount of manual work that a developer needs to do on a declaration file after updating
-JavaScript code increases the risk for having discrepancies between the declaration file
+JavaScript code increases the risk of discrepancies between the declaration file
 and the implementation.
 
 % Formal aspects like applying the right template and using the correct syntax are perfectly covered by \texttt{dts-gen}.
 
-\begin{lstlisting}[
-    language=bash,
-    caption={Microsoft's dts-gen example - A declaration file for module \lstinline!abs! is generated. Types are inferred as \lstinline!any!. The correct \lstinline!module-function! template is used.},
-	label=code:related-work-dts-gen-example,
-    float=tp,captionpos=b
-]
-$ npm i -g dts-gen
-$ npm i -g abs
-$ dts-gen -m abs
-Wrote 5 lines to abs.d.ts.
+%$ npm i -g dts-gen
+% $ npm i -g abs
+% $ dts-gen -m abs
+% Wrote 5 lines to abs.d.ts.
 
-$ cat abs.d.ts
-/** Declaration file generated by dts-gen */
+% $ cat abs.d.ts
 
-export = abs;
+% \begin{lstlisting}[
+%     language=TypeScript,
+%     caption={Microsoft's dts-gen example - A declaration file for
+% module \lstinline!abs! is generated. Types are inferred as
+% \lstinline!any!. The correct \textbf{module-function} template is
+% used.}, 
+% 	label=code:related-work-dts-gen-example,
+%     float=tp,captionpos=b
+% ]
+% /** Declaration file generated by dts-gen */
 
-declare function abs(input: any): any;
-\end{lstlisting}
+% export = abs;
+
+% declare function abs(input: any): any;
+% \end{lstlisting}
 
 \paragraph*{TSInfer \& TSEvolve}
 TSInfer and TSEvolve are presented as part of TSTools
