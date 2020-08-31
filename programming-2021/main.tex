@@ -1732,8 +1732,23 @@ under-approximation of the intended meaning, so some form of help is required wh
 generalization is desired.
 
 \paragraph*{Literal types vs string}
-JavaScript libraries often (?) use literal strings to select
-options and configurations. For example, \dots
+Many JavaScript libraries use literal strings to select
+options and configurations. To be concrete, 1925 DT packages rely on
+literal types (see Table~\ref{tab:dts-parse-stats}). For example, the bonjour
+package\footnote{\url{https://www.npmjs.com/package/@types/bonjour}}
+relies on strings to control events and indicate protocols in (different) interfaces:
+\begin{lstlisting}[language=TypeScript]
+    removeAllListeners(event?: 'up' | 'down'): this;
+    protocol?: 'udp'|'tcp';
+\end{lstlisting}
+The carlo
+package\footnote{\url{https://www.npmjs.com/package/@types/carlo}}
+uses it to distinguish different 
+types of events.
+\begin{lstlisting}[language=TypeScript]
+export type AppEvent = 'exit' | 'window';
+\end{lstlisting}
+% coinbase ...
 
 For our framework, it is hard to distinguish a string that is meant literally from a
 string that just serves as an example. For an automatic solution, one might collect
