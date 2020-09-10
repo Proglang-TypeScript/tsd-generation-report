@@ -181,9 +181,9 @@ registry. It extracts code examples from the documentation written by
 the developer, executes the library driven by the examples, gathers
 run-time information, and generates a declaration file based on this
 information. To evaluate the tool, 244 declaration files were
-generated directly from an \NPM{} module and 82 of these were
+generated directly from an \NPM{} module and 70 of these were
 compared with the corresponding declaration file provided on
-DefinitelyTyped. We obtained positive results for 52 files, which
+DefinitelyTyped. We obtained positive results for all of these files, which
 exhibited no differences at all or differences that can be resolved by
 modifying the developer-provided examples. 
 \end{abstract}
@@ -1252,8 +1252,8 @@ benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
-for 244 modules out of 6029 modules and we identified 60 modules that have only the
-features implemented by \texttt{dts-generate}. We obtained positive results for 52 of
+for 244 modules out of 6029 modules and we identified 70 modules that have only the
+features implemented by \texttt{dts-generate}. We obtained positive results for all of
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
 Section~\ref{sec:experiments-declaration-files-generation} presents examples of the generated declaration files for
@@ -1636,7 +1636,7 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed 60 of the 244 generated files. The remaining 184 files contained at least one
+We analyzed 70 of the 244 generated files. The remaining 174 files contained at least one
 of the unimplemented TypeScript features so that they could not be considered. These
 features were identified by \texttt{dts-parse} as tags.
 
@@ -1645,7 +1645,7 @@ As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples h
 direct influence on the quality of the generated declaration file. We introduced the
 concept of \texttt{solvable} and \texttt{unsolvable} differences in
 \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were
-considered as positive results. We identified 52 such modules. We manually completed the
+considered as positive results. All of the analyzed files contained only \texttt{solvable} differences. We manually completed the
 examples for 10 of those modules. Applying \texttt{dts-generate} with the completed
 examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
 shown in \figref{fig:experiments-results-manually-completed-examples}.
@@ -1716,11 +1716,6 @@ gh({url: 'this is not a proper url'});
     declared interface. Return types are not considered.} 
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure}
-
-We discovered only 8 modules with \texttt{unsolvable} differences. Most of them were
-caused by the same error: 7 modules incorrectly declared an interface for the
-\texttt{string} type. This interface contains standard properties and methods of the
-JavaScript \texttt{String} object, such as \texttt{length} or \texttt{indexOf()}.
 
 \section{Discussion}
 \label{sec:discussion}
