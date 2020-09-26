@@ -101,8 +101,7 @@
 \authorinfo{\email{thiemann@informatik.uni-freiburg.de}}
 \affiliation{Albert-Ludwigs-Universität Freiburg, Germany}
 
-\keywords{JavaScript, TypeScript, Dynamic Analysis, Declaration
-  Files}%TODO mandatory; please add comma-separated list of 1--5 keywords
+\keywords{JavaScript, TypeScript, Dynamic Analysis, Declaration Files}%TODO mandatory; please add comma-separated list of 1--5 keywords
 
 %%%%%%%%%%%%%%%%%%
 %% These data MUST be filled for your submission. (see 5.3)
@@ -1072,7 +1071,17 @@ to be equivalent are merged.
 \section{Evaluation}
 \label{sec:dts-generate-evaluation}
 After generating a declaration file for an \NPM{} package, we need to
-evaluate its quality. To this end, we created \texttt{dts-compare}, a tool to compute the
+evaluate its quality.
+As we extracted code examples written by developers, the quality of the generated
+declaration file is heavily dependent on these examples. For
+example, if a property of an interface is not accessed because
+a code example does not explore a particular execution path, then that
+property will not appear in the generated declaration file.
+
+
+As a measure of the quality of a generated file we use its distance to
+the declaration file provided on DefinitelyTyped for the same module. 
+To this end, we created \texttt{dts-compare}, a tool to compute the
 differences between two TypeScript declaration files.
 % \begin{itemize}
 %   \item \texttt{dts-parse}: A TypeScript declaration files parser, which transforms the file into a JSON file with a defined structure.
@@ -1085,7 +1094,7 @@ one uploaded to the DefinitelyTyped repository for the same module as shown in
 of quality, it gives us at least an indication of the pragmatics of \texttt{dts-generate}:
 The files on DefinitelyTyped are perceived to be useful by the community. If the accuracy
 of the generated files is comparable with the accuracy of the files on DefinitelyTyped,
-then \texttt{dts-generate} is a viable alternative to manually created definition files.
+then \texttt{dts-generate} is a viable alternative to hand-crafted definition files.
  
 \begin{figure}[tp]
     \begin{centering}
@@ -1101,17 +1110,16 @@ then \texttt{dts-generate} is a viable alternative to manually created definitio
 
 \subsection{dts-parse}
 \label{sec:dts-parse}
-We need a means of comparing two declaration files. Of
-course, we are not interested in a textual comparison, but in a
-comparison of the structures described by the files.
 
-The first step is to parse the declaration files, which can be
-achieved by using the TypeScript Compiler API, a library which traverses the
+We are not interested in a textual comparison of declaration files, but in a
+comparison of the structures described by the files. Hence,
+the first step is to parse the declaration files using the TypeScript
+Compiler API to build and traverse the 
 Abstract Syntax Tree of a TypeScript program
 \cite{typescript-compiler-api}. 
-The step also performs a sanity check of the generated declaration
-files as it rejects files with syntactic or semantics errors.
-The output of \texttt{dts-parse} is a structure where declared
+This step also performs a sanity check of the generated declaration
+files as it rejects files with syntactic or semantic errors.
+The output of \texttt{dts-parse} is a structure similar to a symbol table where declared
 {interfaces}, {functions}, {classes}, and
 {namespaces} are stored separately. Function arguments are
 correctly described, identifying complex types like union types or
@@ -1141,7 +1149,7 @@ parameter and returns an AST serialized in JSON.
 % The tool is written in TypeScript.
 The compare tool takes two declaration files as input and returns a
 JSON file containing the result of the comparison as shown in
-\coderef{code:dts-compare-example}. Following the standard naming convention of unit
+\coderef{code:dts-compare-example}. Following the naming convention of unit
 testing frameworks, the input files are marked as \lstinline{expected} or
 \lstinline{actual}. We use \lstinline{expected} for the DefinitelyTyped
 declaration files. 
@@ -1160,15 +1168,16 @@ $ dts-compare -e expected.d.ts -a actual.d.ts --module-name "my-module"
     "tags": []
 }
 \end{lstlisting}
+% $
 
 \texttt{dts-compare} applies \texttt{dts-parse} internally to both files to get 
 normalized structures that are easy to compare. The result of the comparison is an array
 of an abstract entity \texttt{Difference}. 
-A difference is \texttt{solvable} if it can be resolved by adding more code
-examples. For example, invoking a function with different parameters so that a missing
-interface property gets accessed. Otherwise it is  \texttt{unsolvable}. 
+We classify a difference as \texttt{solvable} if it can be resolved by adding more code
+examples. For example, we might add a function invocation with different parameters so that a missing
+interface property gets accessed. Otherwise it is classified as  \texttt{unsolvable}. 
 
-The concrete evaluated differences are as follows:
+We consider the following differences:
 \begin{itemize}
   \item \texttt{TemplateDifference}: A difference between the choice of TypeScript
     templates. For example, if the file in DefinitelyTyped is written as a \textbf{module}
@@ -1206,20 +1215,6 @@ not contemplate differences in function return types, because interface inferenc
 function return types is not covered in the current version of \texttt{dts-generate}. 
 
 
-\begin{changethis}
-
-To measure the impact of incomplete code examples on the
-quality of generated declaration files we categorized each difference as follows: 
-
-
-
-  We extracted code examples written by developers to execute the code
-  and gather run-time information. The quality of the generated
-  declaration file is heavily dependent on the code examples. For
-  example, if a property of an interface does not get accessed due to
-  a code example not exploring a particular execution path, that
-  property will not exist in the generated declaration file.
-\end{changethis}
 
 \section{Results}
 \label{sec:results}
