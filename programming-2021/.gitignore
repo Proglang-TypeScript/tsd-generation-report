@@ -1,4 +1,5 @@
 *.vtc
 *.bcf
 *.xml
+*.rel
 auto
