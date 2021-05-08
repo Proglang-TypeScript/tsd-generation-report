@@ -1,0 +1,84 @@
+% -*- coding: utf-8; -*-
+\documentclass[english,cleveref,autoref,submission]{acmart}
+
+\usepackage{cleveref}
+\usepackage{pgfplots}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{caption}
+\tcbuselibrary{breakable}
+
+\begin{document}
+
+\definecolor{myellow}{RGB}{228,212,0}
+\definecolor{mgreen}{RGB}{5,104,57}
+
+\newcommand\funnel[3]{%
+\pgfmathsetmacro\mwid{(0.3+\val*0.06)}
+\pgfmathsetmacro\mradius{(\val*0.01 + 1)}
+\pgfmathsetmacro\mheight{(\val*0.003 + 0.4)}
+\pgfmathsetmacro\marc{\mwid-.4}
+    \begin{scope}[%
+        shift={(0,#1)}, 
+        line width=.05pt, 
+        %x=5mm, 
+        scale=0.7,
+        yshift=\xi*0.05
+        ]
+    \draw[black,bottom color=#2, top color=#2] (-\mwid,0) -- (-\mwid+.4,-\mheight) arc (190:350:\marc cm and \mradius mm) -- (\mwid,0);
+    \draw[black,fill=#3] (0,0) ellipse (\mwid cm and \mradius mm);
+    \path (-\mwid,0) -- (-\mwid+.4,-\mheight) coordinate[midway] (a\xi);
+    \end{scope}
+}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\foreach \val
+				[%
+				count=\xi starting from 0, 
+				evaluate=\xi as \shadecolor using int(25*\xi),
+				evaluate=\xi as \coord using int(\xi-12)
+				]
+			in {
+				4.05,
+				7.33,
+				18.02,
+				37.49,
+				71.19,
+				82.50,
+				100.00
+			}{
+				\funnel{\coord}{mgreen!\shadecolor !myellow}{mgreen!\shadecolor !myellow}
+			}   
+
+		\node[left=0.02\textwidth of a0] {Generated Declaration Files};
+		\node[right=0.04\textwidth of a0] {\textbf{244}};
+
+		\node[left=0.02\textwidth of a1] {Run-time Information};
+		\node[right=0.06\textwidth of a1] {\textbf{436}};
+
+		\node[left=0.02\textwidth of a2] {Working Examples};
+		\node[right=0.12\textwidth of a2] {\textbf{946}};
+
+		\node[left=0.02\textwidth of a3] {Code Examples};
+		\node[right=0.23\textwidth of a3] {\textbf{2260}};
+
+		\node[left=0.02\textwidth of a4] {README file};
+		\node[right=0.42\textwidth of a4] {\textbf{4292}};
+
+		\node[left=0.02\textwidth of a5] {Github Repository};
+		\node[right=0.48\textwidth of a5] {\textbf{4974}};
+
+		\node[align=right,left=0.02\textwidth of a6, text width=0.25\textwidth] {Definitely Typed Modules};
+		\node[right=0.58\textwidth of a6] {\textbf{6029}};
+
+	\end{tikzpicture}
+	\caption{}
+\end{figure}
+
+\end{document}

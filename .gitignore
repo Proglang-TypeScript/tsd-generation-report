@@ -17,6 +17,7 @@ auto
 bib/__*_temp.tex
 _minted-thesis_main
 .vscode
+*_temp.tex
 
 thesis_main.pdf
 

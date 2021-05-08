@@ -1,21 +1,36 @@
-% -*- coding: utf-8; -*-
-\documentclass[english,cleveref,autoref,submission]{programming}
-% Programming:
-% The main part of the paper should not exceed 22 pages (in the
-% provided style of the journal), but there is no limit for
-% bibliography and appendices. The page limit for the main part of the
-% paper is in place in order to keep the paper on focus and to avoid
-% overloading the reviewers. Authors are encouraged to move important
-% details to appendices, which may be consulted by the reviewers. In
-% some cases, if authors feel that the main part requires
-% substantially more pages, they should explain the reasons why in the
-% additional comments field of the submission form; examples of these
-% cases may include papers with substantial source code listings, and
-% essays. Papers whose length is incommensurate with their
-% contribution will be rejected. 
+%%
+%% This is file `sample-sigconf.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `sigconf')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigconf.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% The first command in your LaTeX source must be the \documentclass command.
 
-\usepackage[backend=biber]{biblatex}
-\addbibresource{main.bib}
+\input{macros}
+\newcommand{\secref}[1]{Section~\ref{#1} - \nameref{#1}}
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\coderef}[1]{Listing~\ref{#1}}
+
+
+\documentclass[sigconf]{acmart}
+\usepackage{listings}
 
 \usepackage{cleveref}
 \usepackage{pgfplots}
@@ -26,20 +41,11 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{breakable}
 
-\newenvironment{changethis}{%
-  \begin{tcolorbox}[breakable,notitle,boxrule=0pt,colback=blue!20,colframe=blue!20]}{%
-  \end{tcolorbox}}
+\usepackage{subcaption}
 
-\input{macros}
+\usepackage[htt]{hyphenat}
 
 \definecolor{backgroundgray}{rgb}{.94,.94,.94}
-\definecolor{lightgray}{rgb}{.35,.35,.5}
-\definecolor{darkgray}{rgb}{.2, .2, .2}
-\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
-
-\newcommand{\secref}[1]{Section~\ref{#1} - \nameref{#1}}
-\newcommand{\figref}[1]{Figure~\ref{#1}}
-\newcommand{\coderef}[1]{Listing~\ref{#1}}
 
 \lstdefinelanguage{JavaScript}{
   keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, undefined,const},
@@ -87,105 +93,172 @@
 
 \graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
-%%\bibliographystyle{plainurl}% the mandatory bibstyle
+\settopmatter{printfolios=true}
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmcopyright}
+\copyrightyear{2018}
+\acmYear{2018}
+\acmDOI{10.1145/1122445.1122456}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Woodstock '18]{Woodstock '18: ACM Symposium on Neural
+  Gaze Detection}{June 03--05, 2018}{Woodstock, NY}
+\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+  June 03--05, 2018, Woodstock, NY}
+\acmPrice{15.00}
+\acmISBN{978-1-4503-XXXX-X/18/06}
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
 \title{Generation of TypeScript Declaration Files from JavaScript Code}
-\subtitle{Catching the Developer's Intent from Examples}
-% \titlerunning{Dummy short title}%optional, please use if title is longer than one line
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
 
 \author{Fernando Cristiani}
-\authorinfo{\email{fernando.cristiani@hs-karlsruhe.de}}
-\affiliation{Hochschule Karlsruhe, Germany}
+\affiliation{%
+  \institution{Hochschule Karlsruhe}
+  \city{Karlsruhe}
+  \country{Germany}}
+\email{fernando.cristiani@hs-karlsruhe.de}
 
 \author{Peter Thiemann}
-\authorinfo{\email{thiemann@informatik.uni-freiburg.de}}
-\affiliation{Albert-Ludwigs-Universität Freiburg, Germany}
-
-\keywords{JavaScript, TypeScript, Dynamic Analysis, Declaration Files}%TODO mandatory; please add comma-separated list of 1--5 keywords
-
-%%%%%%%%%%%%%%%%%%
-%% These data MUST be filled for your submission. (see 5.3)
-\paperdetails{
-  %% perspective options are: art, sciencetheoretical, scienceempirical, engineering.
-  %% Choose exactly the one that best describes this work. (see 2.1)
-  perspective=science-empirical,
-  %% State one or more areas, separated by a comma. (see 2.2)
-  %% Please see list of areas in http://programming-journal.org/cfp/
-  %% The list is open-ended, so use other areas if yours is/are not listed.
-  area={General-purpose programming, Web programming},
-  %% You may choose the license for your paper (see 3.)
-  %% License options include: cc-by (default), cc-by-nc
-  % license=cc-by,
+\affiliation{%
+  \institution{Albert-Ludwigs-Universit{\"a}t Freiburg}
+  \city{Freiburg}
+  \country{Germany}
 }
-%%%%%%%%%%%%%%%%%%
+\email{thiemann@informatik.uni-freiburg.de}
 
-%%%%%%%%%%%%%%%%%%
-%% These data are provided by the editors. May be left out on submission.
-%\paperdetails{
-%  submitted=2016-08-10,
-%  published=2016-10-11,
-%  year=2016,
-%  volume=1,
-%  issue=1,
-%  articlenumber=1,
-%}
-%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Please go to https://dl.acm.org/ccs/ccs.cfm and generate your Classification
-% System [view CCS TeX Code] stanz and copy _all of it_ to this place.
-%% From HERE
-%%% !!! REVISE
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+% \renewcommand{\shortauthors}{Trovato and Tobin, et al.}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+  Developers are starting to write large and complex applications in
+  TypeScript, a typed dialect of JavaScript. TypeScript applications
+  integrate JavaScript libraries via typed descriptions of their APIs
+  called declaration files. DefinitelyTyped is the standard public
+  repository for these files.
+  The repository is populated and maintained manually by volunteers, which
+  is error prone and time consuming. Discrepancies between a
+  declaration file and the JavaScript implementation lead to
+  incorrect feedback from the TypeScript IDE and thus to incorrect uses
+  of the underlying JavaScript library.
+
+  This work presents \texttt{dts-generate}, a tool that generates
+  TypeScript declaration files for JavaScript libraries uploaded to the \NPM{}
+  registry. It extracts code examples from the documentation written by
+  the developer, executes the library driven by the examples, gathers
+  run-time information, and generates a declaration file based on this
+  information. To evaluate the tool, 244 declaration files were
+  generated directly from an \NPM{} module and 70 of these were
+  compared with the corresponding declaration file provided on
+  DefinitelyTyped. We obtained positive results for all of these files, which
+  exhibited no differences at all or differences that can be resolved by
+  modifying the developer-provided examples.
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
 \begin{CCSXML}
 <ccs2012>
-<concept>
-<concept_id>10002944.10011122.10003459</concept_id>
-<concept_desc>General and reference~Computing standards, RFCs and guidelines</concept_desc>
-<concept_significance>300</concept_significance>
-</concept>
-<concept>
-<concept_id>10010405.10010476.10010477</concept_id>
-<concept_desc>Applied computing~Publishing</concept_desc>
-<concept_significance>300</concept_significance>
-</concept>
+ <concept>
+  <concept_id>10010520.10010553.10010562</concept_id>
+  <concept_desc>Computer systems organization~Embedded systems</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010520.10010575.10010755</concept_id>
+  <concept_desc>Computer systems organization~Redundancy</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010520.10010553.10010554</concept_id>
+  <concept_desc>Computer systems organization~Robotics</concept_desc>
+  <concept_significance>100</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10003033.10003083.10003095</concept_id>
+  <concept_desc>Networks~Network reliability</concept_desc>
+  <concept_significance>100</concept_significance>
+ </concept>
 </ccs2012>
 \end{CCSXML}
 
-\ccsdesc[300]{Software and its engineering~Software notations and tools}
-\ccsdesc[100]{Software and its engineering~General programming languages}
+\ccsdesc[500]{Computer systems organization~Embedded systems}
+\ccsdesc[300]{Computer systems organization~Redundancy}
+\ccsdesc{Computer systems organization~Robotics}
+\ccsdesc[100]{Networks~Network reliability}
 
-% To HERE
-%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{JavaScript, TypeScript, Dynamic Analysis, Declaration Files}
 
-\begin{document}
+%% A "teaser" image appears between the author and affiliation
+%% information and the body of the document, and typically spans the
+%% page.
+% \begin{teaserfigure}
+%   GRAPHICS REMOVED % \includegraphics[width=\textwidth]{sampleteaser}
+%   \caption{Seattle Mariners at Spring Training, 2010.}
+%   \Description{Enjoying the baseball game from the third-base
+%   seats. Ichiro Suzuki preparing to bat.}
+%   \label{fig:teaser}
+% \end{teaserfigure}
 
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
 \maketitle
-
-%TODO mandatory: add short abstract of the document
-\begin{abstract}
-Developers are starting to write large and complex applications in
-TypeScript, a typed dialect of JavaScript. TypeScript applications
-integrate JavaScript libraries via typed descriptions of their APIs
-called declaration files. DefinitelyTyped is the standard public
-repository for these files.
-The repository is populated and maintained manually by volunteers, which
-is error prone and time consuming. Discrepancies between a
-declaration file and the JavaScript implementation lead to
-incorrect feedback from the TypeScript IDE and thus to incorrect uses
-of the underlying JavaScript library.
-
-This work presents \texttt{dts-generate}, a tool that generates
-TypeScript declaration files for JavaScript libraries uploaded to the \NPM{}
-registry. It extracts code examples from the documentation written by
-the developer, executes the library driven by the examples, gathers
-run-time information, and generates a declaration file based on this
-information. To evaluate the tool, 244 declaration files were
-generated directly from an \NPM{} module and 70 of these were
-compared with the corresponding declaration file provided on
-DefinitelyTyped. We obtained positive results for all of these files, which
-exhibited no differences at all or differences that can be resolved by
-modifying the developer-provided examples. 
-\end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
@@ -211,13 +284,13 @@ JavaScript. \coderef{code:introduction-javascript-wtfs} exposes some
 of these unintuitive JavaScript behaviors. 
 
 \begin{lstlisting}[
-    caption={\textbf{Unintuitive JavaScript behavior:} Falsy values,
-    \lstinline!null! vs. \lstinline!undefined!,
- \lstinline!typeof!, and type coercion},
-    language=JavaScript,
-	label=code:introduction-javascript-wtfs,
-    float=bp,
-    captionpos=b
+  caption={\textbf{Unintuitive JavaScript behavior:} Falsy values,
+  \lstinline!null! vs. \lstinline!undefined!,
+\lstinline!typeof!, and type coercion},
+  language=JavaScript,
+label=code:introduction-javascript-wtfs,
+  float=bp,
+  captionpos=b
 ]
 "0" == false; // true
 true == "1.00"; // true
@@ -233,8 +306,6 @@ null instanceof Object; // false
 "hello world".lenth + 1 // NaN | note 'lenth' instead of 'length'
 [1, 15, 20, 100].sort() // [ 1, 100, 15, 20 ]
 \end{lstlisting}
-% "01" < "00100"; // false 
-% pjt: why unexpected? 
 
 The cognitive load produced by these behaviors is mitigated in languages that use
 build tools based on type information. This insight motivated the
@@ -272,7 +343,6 @@ the tool chain.
 \subsection{Approach}
 \label{sec:approach}
 
-
 We aim to improve on this situation by providing a tool that generates
 sound TypeScript declaration files automatically. To do so, we rely on the examples provided
 by the developer as part of the documentation of a library. If these
@@ -287,6 +357,7 @@ As an example, consider the NPM\footnote{NPM is the \href{https://www.npmjs.com/
 \texttt{abs} that
 ``computes the absolute path of an input''. Its documentation consists
 of the following three examples\footnote{\url{https://www.npmjs.com/package/abs}}.
+
 \begin{lstlisting}[language=JavaScript,numbers=none]
 const abs = require("abs");
  
@@ -302,10 +373,12 @@ console.log(abs("~/foo"));
 From the examples, our tool generates a TypeScript declaration file,
 which is equivalent to the declaration file provided in
 DefinitelyTyped\footnote{\url{https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/abs/index.d.ts}}: 
+
 \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Abs;
 declare function Abs(input: string): string;
 \end{lstlisting}
+
 % \begin{description}
 % \item[PJT: maybe later] Some previous work tackled the problem of improving
 %   the quality of declaration files. Feldthaus et al
@@ -437,14 +510,13 @@ declare namespace GlobToRegexp {
     \end{lstlisting}
   % \end{subfigure}
   \begin{center}
-    \includegraphics[width=0.8\linewidth]{motivating-example-glob-to-regexp-vscode.png}
+    \includegraphics[width=\linewidth]{motivating-example-glob-to-regexp-vscode.png}
   \end{center}
 
-  \caption{\textbf{Declaration file for \texttt{glob-to-regexp}
-      generated with \texttt{dts-generate}} - The interface is
-    detected correctly. Optional parameters are detected. The
-    declaration file is usable in Visual Studio
-    Code\footnote{https://code.visualstudio.com}.} 
+  \caption{Declaration file for \texttt{glob-to-regexp} 
+    generated with \texttt{dts-generate} - The interface is
+    detected correctly. Optional parameters are detected. The declaration 
+    file is usable in Visual Studio Code\protect\footnote{\url{https://code.visualstudio.com}}} 
   \label{fig:motivating-example-glob-to-regexp-vscode}
 \end{figure}
 
@@ -467,7 +539,6 @@ organize types declared in a declaration file and avoid name clashes with other 
 must be qualified by the namespace as in
 \lstinline[language=TypeScript]{globToRegexp.I__opts}.
 
-
 This file is an instance of one of the standard templates for writing
 declaration
 files\footnote{\url{https://www.typescriptlang.org/docs/handbook/declaration-files/templates.html}}:
@@ -486,12 +557,11 @@ three categories.
 Both libraries \texttt{glob-to-regexp} and \texttt{abs} are instances of the
 \textbf{module-function} template.
 
-
 \begin{lstlisting}[
-    caption={Example for \textbf{module-function} template},
-    language=bash,
-	label=code:dts-generate-example,
-    float,captionpos=b
+  caption={Example for \textbf{module-function} template},
+  language=bash,
+label=code:dts-generate-example,
+  float,captionpos=b
 ]
 $ ./dts-generate abs
 $ cat output/abs/index.d.ts 
@@ -501,45 +571,45 @@ declare function Abs(input: string): string;
 \end{lstlisting}
 
 \begin{figure}[t]
-  \centering
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=JavaScript,numbers=none]
+\centering
+\begin{subfigure}[t]{0.48\linewidth}
+  \begin{lstlisting}[language=JavaScript,numbers=none]
 var greet = require("./greet-settings-module");
 
 greet({
-  greeting: "hello world",
-  duration: 4000
+greeting: "hello world",
+duration: 4000
 });
 
 greet({
-  greeting: "hello world",
-  color: "#00ff00"
+greeting: "hello world",
+color: "#00ff00"
 });
-    \end{lstlisting}
-    \caption{Example for \textbf{module-function} template}
-    \label{fig:example-module-function}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
+  \end{lstlisting}
+  \caption{Example for \textbf{module-function} template}
+  \label{fig:example-module-function}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.48\linewidth}
+  \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GreetSettingsModule;
 
 declare function GreetSettingsModule(settings: GreetSettingsModule.I__settings): void;
 declare namespace GreetSettingsModule {
-  export interface I__settings {
-    'greeting': string;
-    'duration'?: number;
-    'color'?: string;
-  }
+export interface I__settings {
+  'greeting': string;
+  'duration'?: number;
+  'color'?: string;
+}
 
 }
-    \end{lstlisting}
-    \caption{Declaration file for \textbf{module-function} template}
-    \label{fig:template-module-function}
-  \end{subfigure}
+  \end{lstlisting}
+  \caption{Declaration file for \textbf{module-function} template}
+  \label{fig:template-module-function}
+\end{subfigure}
 
-  \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript,numbers=none]
+\begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
 var myLib = require("./greet-module");
 
 var result = myLib.makeGreeting("hello, world");
@@ -547,52 +617,52 @@ console.log("The computed greeting is: " + result);
 
 var goodbye = myLib.makeGoodBye();
 console.log("The computed goodbye is: " + goodbye);    
-      \end{lstlisting}
-    \caption{Example for \textbf{module} template}
-    \label{fig:example-module}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+    \end{lstlisting}
+  \caption{Example for \textbf{module} template}
+  \label{fig:example-module}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export function makeGreeting(str: string): string;
 export function makeGoodBye(): string;        
-      \end{lstlisting}
-      \caption{Declaration file for \textbf{module} template}
-      \label{fig:template-module}
-    \end{subfigure}
+    \end{lstlisting}
+    \caption{Declaration file for \textbf{module} template}
+    \label{fig:template-module}
+  \end{subfigure}
 
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript,numbers=none]
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
 var Greeter = require("./greet-classes-module.js");
 
 var myGreeter = new Greeter("hello, world");
 myGreeter.greeting = "howdy";
 myGreeter.showGreeting();
-      \end{lstlisting}
-      \caption{Example for \textbf{module-class} template}
-      \label{fig:example-class}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+    \end{lstlisting}
+    \caption{Example for \textbf{module-class} template}
+    \label{fig:example-class}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Greeter;
 
 declare class Greeter {
-  constructor(message: string);
-  showGreeting(): void;
+constructor(message: string);
+showGreeting(): void;
 }
 
 declare namespace Greeter {
 }
-      \end{lstlisting}
-      \caption{Declaration file for \textbf{module-class} template}
-      \label{fig:template-class}
-    \end{subfigure}
+    \end{lstlisting}
+    \caption{Declaration file for \textbf{module-class} template}
+    \label{fig:template-class}
+  \end{subfigure}
 
-  \caption{Example uses and declaration files for different templates}
-  \label{fig:typescript-templates-by-example}
+\caption{Example uses and declaration files for different templates}
+\label{fig:typescript-templates-by-example}
 \end{figure}
- 
+
 The TypeScript project provides a guide on how to write high-quality declaration
 files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. The guide
 explains the main concepts through examples. We selected one example for each template
@@ -667,7 +737,6 @@ hence reflects the developers intent.
 %   \label{fig:multi-purpose-module-example}
 % \end{figure}
 
-
 \section{The Generation of TypeScript Declaration Files}
 \label{sec:gener-typescr-decl}
 This section gives an overview of our approach to generating
@@ -687,24 +756,24 @@ substantiate in the next subsection.
 % for development and uploaded to the DefinitelyTyped Repository. 
 
 \begin{figure}[tp]
-    \centering
-    \includegraphics[width=1\linewidth]{dts-generate-block-diagram.pdf}
-    \caption[dts-generate - Architecture overview]{\textbf{dts-generate - Architecture
-        overview} - The initial code base is retrieved from the \NPM{} package's
-      repository.
-      Run-time information is gathered driven by example code.
-      A TypeScript Declaration File is generated using run-time
-      information.
-      % A Symbolic Execution Engine creates test cases based on the generated
-      % Declaration File and via a feedback loop enriches the code base until the stopping
-      % criteria is reached.
-      % The final TypeScript Declaration File gets returned.
-      % Feedback
-      % loop through the Symbolic Execution Engine was not implemented. It can be added in a
-      % future to the existing architecture, without modifying the working blocks.
-    } 
-    \label{fig:tsd_generation_method_block_diagram}
-  \end{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{dts-generate-block-diagram.pdf}
+  \caption[dts-generate - Architecture overview]{dts-generate - Architecture
+      overview - The initial code base is retrieved from the \NPM{} package's
+    repository.
+    Run-time information is gathered driven by example code.
+    A TypeScript Declaration File is generated using run-time
+    information.
+    % A Symbolic Execution Engine creates test cases based on the generated
+    % Declaration File and via a feedback loop enriches the code base until the stopping
+    % criteria is reached.
+    % The final TypeScript Declaration File gets returned.
+    % Feedback
+    % loop through the Symbolic Execution Engine was not implemented. It can be added in a
+    % future to the existing architecture, without modifying the working blocks.
+  } 
+  \label{fig:tsd_generation_method_block_diagram}
+\end{figure}
 
 As \texttt{dts-generate} is based on run-time information, 
 exemplary code fragments that execute the JavaScript library are
@@ -734,7 +803,6 @@ interface-related errors.
 The command-line interface is very simple and inspired by the \texttt{dts-gen} tool
 \cite{dts-gen} (see \coderef{code:dts-generate-example}). The only required
 argument is the name of the module published to the \NPM{} registry. 
-
 
 \subsection{Initial Code Base}
 \label{sec:initial-code-base}
@@ -775,7 +843,6 @@ developers provide code examples in the README files to show how the
 library works and how to use it. These code fragments showcase common use cases rather
 than stress-testing the implementation (the problem of
 option~\ref{item:2}) because they are meant to be instructive to users of the package.  
-
 
 Obtaining code examples for a specific \NPM{} package is done in three steps.
 \begin{itemize}
@@ -971,7 +1038,6 @@ template.
 %   \label{fig:dts-generate-choose-templates}
 % \end{figure}
 
-
 \begin{figure}[tp]
   \centering
   \begin{subfigure}{0.48\linewidth}
@@ -1022,6 +1088,7 @@ We decided to prioritize the features with the highest number of
 occurrences and support them first in our framework.
 
 \begin{table}[tp]
+  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped (DT). The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
   \begin{center}
     \begin{tabular}{ |l|c|r| } 
       \hline
@@ -1056,11 +1123,9 @@ occurrences and support them first in our framework.
       \hline
     \end{tabular}
   \end{center}
-  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped (DT). The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
   \label{tab:dts-parse-stats}
 \end{table}
 
-% \paragraph*{Interfaces}
 Finally, interfaces are created by exploring \texttt{getField} and \texttt{methodCall} interactions from the run-time information. We
 gather the interactions for a specific argument and build the
 interface by incrementally adding new properties. Interactions within
@@ -1095,17 +1160,17 @@ of quality, it gives us at least an indication of the pragmatics of \texttt{dts-
 The files on DefinitelyTyped are perceived to be useful by the community. If the accuracy
 of the generated files is comparable with the accuracy of the files on DefinitelyTyped,
 then \texttt{dts-generate} is a viable alternative to hand-crafted definition files.
- 
+
 \begin{figure}[tp]
-    \begin{centering}
-        {\includegraphics[width=1\textwidth]{evaluation-diagram.pdf}}
-        \caption[Evaluation against DefinitelyTyped Repository]{\textbf{Evaluation of
-            generated declaration files against DefinitelyTyped Repository} - The parser
-          uses the TypeScript Compiler           API \cite{typescript-compiler-api} to
-          transform declaration files into an abstract syntax which is serialized in
-          JSON. The comparison is performed on the JSON format.} 
-        \label{fig:evaluation-diagram}
-    \end{centering}
+  \begin{centering}
+      {\includegraphics[width=1\linewidth]{evaluation-diagram.pdf}}
+      \caption[Evaluation against DefinitelyTyped Repository]{\textbf{Evaluation of
+          generated declaration files against DefinitelyTyped Repository} - The parser
+        uses the TypeScript Compiler           API \cite{typescript-compiler-api} to
+        transform declaration files into an abstract syntax which is serialized in
+        JSON. The comparison is performed on the JSON format.} 
+      \label{fig:evaluation-diagram}
+  \end{centering}
 \end{figure}
 
 \subsection{dts-parse}
@@ -1214,8 +1279,6 @@ interfaces. \texttt{dts-compare} does
 not contemplate differences in function return types, because interface inference of
 function return types is not covered in the current version of \texttt{dts-generate}. 
 
-
-
 \section{Results}
 \label{sec:results}
 We analyzed the obtained results focusing on the following aspects:
@@ -1245,75 +1308,17 @@ features implemented by \texttt{dts-generate}. We obtained positive results for 
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
 Section~\ref{sec:experiments-declaration-files-generation} presents examples of the generated declaration files for
-templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}. 
-
-\definecolor{myellow}{RGB}{228,212,0}
-\definecolor{mgreen}{RGB}{5,104,57}
-
-\newcommand\funnel[3]{%
-\pgfmathsetmacro\mwid{(0.3+\val*0.06)}
-\pgfmathsetmacro\mradius{(\val*0.01 + 1)}
-\pgfmathsetmacro\mheight{(\val*0.003 + 0.4)}
-\pgfmathsetmacro\marc{\mwid-.4}
-    \begin{scope}[%
-        shift={(0,#1)}, 
-        line width=.05pt, 
-        %x=5mm, 
-        scale=0.7,
-        yshift=\xi*0.05
-        ]
-    \draw[black,bottom color=#2, top color=#2] (-\mwid,0) -- (-\mwid+.4,-\mheight) arc (190:350:\marc cm and \mradius mm) -- (\mwid,0);
-    \draw[black,fill=#3] (0,0) ellipse (\mwid cm and \mradius mm);
-    \path (-\mwid,0) -- (-\mwid+.4,-\mheight) coordinate[midway] (a\xi);
-    \end{scope}
-}
+templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 
 \begin{figure}[tp]
-	\hspace*{-0.16\textwidth}
-	\centering
-	\begin{tikzpicture}
-		\foreach \val
-				[%
-				count=\xi starting from 0, 
-				evaluate=\xi as \shadecolor using int(25*\xi),
-				evaluate=\xi as \coord using int(\xi-12)
-				]
-			in {
-				4.05,
-				7.33,
-				18.02,
-				37.49,
-				71.19,
-				82.50,
-				100.00
-			}{
-				\funnel{\coord}{mgreen!\shadecolor !myellow}{mgreen!\shadecolor !myellow}
-			}   
-
-		\node[left=0.02\textwidth of a0] {Generated Declaration Files};
-		\node[right=0.04\textwidth of a0] {\textbf{244}};
-
-		\node[left=0.02\textwidth of a1] {Run-time Information};
-		\node[right=0.06\textwidth of a1] {\textbf{436}};
-
-		\node[left=0.02\textwidth of a2] {Working Examples};
-		\node[right=0.17\textwidth of a2] {\textbf{946}};
-
-		\node[left=0.02\textwidth of a3] {Code Examples};
-		\node[right=0.25\textwidth of a3] {\textbf{2260}};
-
-		\node[left=0.02\textwidth of a4] {README file};
-		\node[right=0.45\textwidth of a4] {\textbf{4292}};
-
-		\node[left=0.02\textwidth of a5] {Github Repository};
-		\node[right=0.52\textwidth of a5] {\textbf{4974}};
-
-		\node[align=right,left=0.02\textwidth of a6, text width=0.25\textwidth] {Definitely Typed Modules};
-		\node[right=0.62\textwidth of a6] {\textbf{6029}};
-
-	\end{tikzpicture}
-	\caption[Number of analyzed modules for each stage of the experiment]{\textbf{Number of analyzed modules for each stage of the experiment} - A TypeScript Declaration File was generated for only 244 modules, out of 6029 modules in the DefinitelyTyped Repository. It was possible to gather valid run-time information for only 25\% of the modules for which a Code Example was extracted.}
-	\label{fig:experiments-overall-funnel}
+  \centering
+  \includegraphics[width=1\linewidth]{funnel.png}
+  \caption[Number of analyzed modules for each stage of the experiment]{
+    \textbf{Number of analyzed modules for each stage of the experiment} - 
+  A TypeScript Declaration File was generated for only 244 modules, out of 6029 modules in the DefinitelyTyped Repository. 
+  It was possible to gather valid run-time information for only 25\% of the modules for which a Code Example was extracted.
+  } 
+  \label{fig:experiments-overall-funnel}
 \end{figure}
 
 \subsection{Code Examples}
@@ -1384,11 +1389,6 @@ of the instrumented code examples, 192 modules did not yield suitable run-time i
 for generating a declaration file. The extracted code examples for these modules did not
 execute the library. Hence, the collected run-time information was not useful
 for generating a declaration file. 
-
-\subsection{Declaration Files Generation}
-\label{sec:experiments-declaration-files-generation}
-
-%%% !!! TBC !!!
 
 This section exhibits some examples of the 244 generated
 declaration files. It shows some results for each of the implemented
@@ -1484,23 +1484,23 @@ export = escapeHTML;
     \caption{Results for \textbf{module-function} template}
     \label{fig:experiments-results-module-function}
 \end{figure}
-  
+
 
 \begin{figure}[tp]
-    \centering
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(str: string): boolean;
 export function v2(str: string): boolean;
 export function v3(str: string): boolean;
 export function v4(str: string): boolean;
 export function v5(str: string): boolean;
-      \end{lstlisting}
-      \caption{is-uuid/index.d.ts - Generated}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - Generated}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export function v1(value: string): boolean;
 export function v2(value: string): boolean;
 export function v3(value: string): boolean;
@@ -1508,12 +1508,12 @@ export function v4(value: string): boolean;
 export function v5(value: string): boolean;
 export function nil(value: string): boolean;
 export function anyNonNil(value: string): boolean;
-      \end{lstlisting}
-      \caption{is-uuid/index.d.ts - DT}
-    \end{subfigure}
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - DT}
+  \end{subfigure}
 
-    \caption{Results for \textbf{module} \texttt{is-uuid}}
-    \label{fig:experiments-results-module-is-uuid}
+  \caption{Results for \textbf{module} \texttt{is-uuid}}
+  \label{fig:experiments-results-module-is-uuid}
 \end{figure}
 
 \figref{fig:experiments-results-module-is-uuid} contains an example
@@ -1548,71 +1548,71 @@ template. \coderef{code:experiments-results-module-smart-truncate} shows that th
 exported as a function, as inferred by \texttt{dts-generate}.
 
 \begin{figure}[tp]
-    \centering
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 'use strict';
 
 // ...
 
 module.exports = function globBase(pattern) {
-  if (typeof pattern !== 'string') {
-    throw new TypeError('glob-base expects a string.');
-  }
+if (typeof pattern !== 'string') {
+  throw new TypeError('glob-base expects a string.');
+}
 
-  // ...
+// ...
 } 
-      \end{lstlisting}
-      \caption{glob-base/index.js - Excerpt of JS implementation
-        that throws an Error when input parameter is not a string} 
-      \label{fig:subfloat-globbase-js-implementation}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+    \end{lstlisting}
+    \caption{glob-base/index.js - Excerpt of JS implementation
+      that throws an Error when input parameter is not a string} 
+    \label{fig:subfloat-globbase-js-implementation}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 declare function globbase(basePath?: string): globbase.GlobBaseResult;
 
 declare namespace globbase {
-    interface GlobBaseResult {
-        base: string;
-        isGlob: boolean;
-        glob: string;
-    }
+  interface GlobBaseResult {
+      base: string;
+      isGlob: boolean;
+      glob: string;
+  }
 }
 
 export = globbase;
-      \end{lstlisting}
-      \caption{glob-base/index.d.ts - DefinitelyTyped}
-    \end{subfigure}
+    \end{lstlisting}
+    \caption{glob-base/index.d.ts - DefinitelyTyped}
+  \end{subfigure}
 
 \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=JavaScript,numbers=none]
+    \begin{lstlisting}[language=JavaScript,numbers=none]
 var globBase = require('glob-base');
 
 globBase();
 
 // Throws: TypeError: glob-base expects a string.
-      \end{lstlisting}
-      \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
+    \end{lstlisting}
+    \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
 export = GlobBase;
 
 declare function GlobBase(pattern: string): object;
-      \end{lstlisting}
-      \caption{glob-base/index.d.ts - Generated}
-    \end{subfigure}
-    
-    \caption{Incorrect optional parameter for module \texttt{glob-base}}
-    \label{fig:experiments-results-module-glob-base}
+    \end{lstlisting}
+    \caption{glob-base/index.d.ts - Generated}
+  \end{subfigure}
+  
+  \caption{Incorrect optional parameter for module \texttt{glob-base}}
+  \label{fig:experiments-results-module-glob-base}
 \end{figure}
 
 \begin{lstlisting}[
-  caption={Code example for \texttt{smart-truncate} module exporting a function},
-  label=code:experiments-results-module-smart-truncate,
-  language=JavaScript,captionpos=b,float=tp,numbers=none
+caption={Code example for \texttt{smart-truncate} module exporting a function},
+label=code:experiments-results-module-smart-truncate,
+language=JavaScript,captionpos=b,float=tp,numbers=none
 ]
 var smartTruncate = require('smart-truncate');
 
@@ -1897,7 +1897,13 @@ DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files p
 % and output values. As a result, each block can be independently and simultaneously
 % improved.
 
-\printbibliography
-%%\bibliography{main}
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}
 
 \end{document}
+\endinput
+%%
+%% End of file `sample-sigconf.tex'.
