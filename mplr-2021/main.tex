@@ -197,7 +197,7 @@
   registry. It extracts code examples from the documentation written by
   the developer, executes the library driven by the examples, gathers
   run-time information, and generates a declaration file based on this
-  information. To evaluate the tool, 244 declaration files were
+  information. To evaluate the tool, \CountModulesGeneratedDeclarationFile{} declaration files were
   generated directly from an \NPM{} module and \CountModulesOnlySolvableDifferences{} of these were
   compared with the corresponding declaration file provided on
   DefinitelyTyped. We obtained positive results for all of these files, which
@@ -423,7 +423,7 @@ The novelty of our tool is twofold:
 % new execution paths will refine the generated declaration file in each
 % iteration. 
 
-% Finally, we generated declaration files for 244 JavaScript libraries
+% Finally, we generated declaration files for \CountModulesGeneratedDeclarationFile{} JavaScript libraries
 % and evaluated them against the DefinitelyTyped repository. 
 
 The implementation and the results are available under the following repositories:
@@ -461,8 +461,8 @@ The implementation and the results are available under the following repositorie
   necessary for evaluating our framework and also useful to detect
   incompatibilities when evolving JavaScript modules.
 \item An evaluation of our framework (Sections~\ref{sec:dts-generate-evaluation}
-  and~\ref{sec:results}). We examined all 6029 entries in 
-  the DefinitelyTyped repository and found 244 sufficiently
+  and~\ref{sec:results}). We examined all \CountTotalModulesDefinitelyTyped{} entries in 
+  the DefinitelyTyped repository and found \CountModulesGeneratedDeclarationFile{} sufficiently
   well documented \NPM{} packages, on which we ran \texttt{dts-generate}
   and compared the outcome with the respective declaration file from the
   DefinitelyTyped repository. 
@@ -1303,7 +1303,7 @@ benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
-for 244 modules out of 6029 modules and we identified \CountModulesOnlySolvableDifferences{} modules that have only the
+for \CountModulesGeneratedDeclarationFile{} modules out of \CountTotalModulesDefinitelyTyped{} modules and we identified \CountModulesOnlySolvableDifferences{} modules that have only the
 features implemented by \texttt{dts-generate}. We obtained positive results for all of
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
@@ -1315,7 +1315,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
   \includegraphics[width=1\linewidth]{funnel.png}
   \caption[Number of analyzed modules for each stage of the experiment]{
     \textbf{Number of analyzed modules for each stage of the experiment} - 
-  A TypeScript Declaration File was generated for only 244 modules, out of 6029 modules in the DefinitelyTyped Repository. 
+  A TypeScript Declaration File was generated for only \CountModulesGeneratedDeclarationFile{} modules, out of \CountTotalModulesDefinitelyTyped{} modules in the DefinitelyTyped Repository. 
   It was possible to gather valid run-time information for only 25\% of the modules for which a Code Example was extracted.
   } 
   \label{fig:experiments-overall-funnel}
@@ -1325,7 +1325,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
 Retrieving the code examples for the JavaScript libraries proved to be
 a pragmatic way of driving the type gathering at run time. However, as
 shown in \figref{fig:experiments-overall-funnel}, it was only possible
-to obtain working code examples for 2260 packages. The
+to obtain working code examples for \CountModulesWithCodeExamples{} packages. The
 process of getting a valid code example for a module is divided in four
 stages: 
 \begin{itemize}
@@ -1339,14 +1339,14 @@ The results obtained for each step are described in the
 following sections. 
 
 \paragraph*{Repository URL}
-The URL of the source repository could be retrieved for only 4974
+The URL of the source repository could be retrieved for only \CountModulesWithRepositoryUrl{}
 packages. More than 1000 packages on \NPM{} do not have a repository
 entry in their corresponding \texttt{package.json} file. Therefore, the
 \texttt{npm view <module> repository.url} command returns no
 value. Even important modules like \texttt{ace} provide no repository URL.
 
 \paragraph*{README Files}
-700 packages do not have a README file in their repository, although
+\CountModulesWithoutReadmeFile{} packages do not have a README file in their repository, although
 the implementation checks for several naming conventions like
 \texttt{readme.md} or \texttt{README.md}. 
 
@@ -1354,15 +1354,15 @@ the implementation checks for several naming conventions like
 In this step, we loose another 50\% of modules! This loss is mainly
 explained because some developers do not wrap their code in a block
 using the \texttt{javascript} or \texttt{js} tags. However, as we are
-still left with code examples for 2260 modules, we did not further
+still left with code examples for \CountModulesWithCodeExamples{} modules, we did not further
 look into code extraction as this number was considered sufficient for
 evaluating the generation of declaration files. 
 
 \paragraph*{Execution of Code Examples}
-We executed the remaining 2260 extracted code examples by installing the
+We executed the remaining \CountModulesWithCodeExamples{} extracted code examples by installing the
 required packages and running the code as a \NodeJS{}
-application. Unfortunately, the code examples only worked for 946
-modules. 1314 modules did not run correctly and had to be
+application. Unfortunately, the code examples only worked for \CountModulesWorkingCodeExamples{}
+modules. \CountModulesNotWorkingCodeExamples{} modules did not run correctly and had to be
 discarded. Some failing samples were analyzed and there were mainly
 two reasons for the failure: 
 \begin{itemize}
@@ -1374,23 +1374,26 @@ two reasons for the failure:
 \end{itemize}
 
 \paragraph*{Run-time Information}
-Run-time information was extracted for only 436 out of 946 modules with working code
+Run-time information was extracted for only \CountModulesRunTimeInfoExtracted{} out of \CountModulesWorkingCodeExamples{} modules with working code
 examples. As explained, to extract the run-time information, the behavior of the code
 under analysis was explicitly modified by wrapping the arguments. Furthermore, Jalangi’s
 instrumentation itself caused some executions to fail, because the modules contained
 JavaScript features that are not supported by Jalangi. As a result, run-time information
-could not be extracted for 510 modules. An instrumentation without user-defined analysis
+could not be extracted for \CountModulesRunTimeInfoCouldNotBeExtracted{} modules. An instrumentation without user-defined analysis
 modules was not applied, so it was not possible to determine which modules were failing
 only because of Jalangi’s own limitations. 
 
 \paragraph*{Generated Declaration Files}
-A declaration file was generated for 244 out of 436 modules. Despite the correct execution
-of the instrumented code examples, 192 modules did not yield suitable run-time information
+A declaration file was generated for \CountModulesGeneratedDeclarationFile{} out of \CountModulesRunTimeInfoExtracted{} modules. Despite the correct execution
+of the instrumented code examples, \CountModulesDeclarationFileCouldNotBeGenerated{} modules did not yield suitable run-time information
 for generating a declaration file. The extracted code examples for these modules did not
 execute the library. Hence, the collected run-time information was not useful
 for generating a declaration file. 
 
-This section exhibits some examples of the 244 generated
+\subsection{Declaration Files Generation}
+\label{sec:experiments-declaration-files-generation}
+
+This section exhibits some examples of the \CountModulesGeneratedDeclarationFile{} generated
 declaration files. It shows some results for each of the implemented
 templates: \textbf{module}, \textbf{module-function}, and
 \textbf{module-class}. 
@@ -1624,7 +1627,7 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed \CountModulesOnlySolvableDifferences{} of the 244 generated files. The remaining 174 files contained at least one
+We analyzed \CountModulesOnlySolvableDifferences{} of the \CountModulesGeneratedDeclarationFile{} generated files. The remaining 174 files contained at least one
 of the unimplemented TypeScript features so that they could not be considered. These
 features were identified by \texttt{dts-parse} as tags.
 
@@ -1879,8 +1882,9 @@ pragmatic and effective approximation, enabling to work on specific aspects rega
 TypeScript declaration file generation itself.
 
 We built a mechanism to automatically create declaration files for potentially every
-module uploaded to DefinitelyTyped. We managed to generate declaration files for 244
-modules. We compared the results against the corresponding files uploaded to
+module uploaded to DefinitelyTyped. We managed to generate declaration files for
+\CountModulesGeneratedDeclarationFile{} modules. We compared the results against the corresponding 
+files uploaded to
 DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and
 \texttt{dts-compare}, a comparator.
 

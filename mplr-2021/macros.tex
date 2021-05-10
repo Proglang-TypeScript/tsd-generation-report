@@ -1,3 +1,18 @@
 \newcommand{\NPM}{NPM}
 \newcommand{\NodeJS}{NodeJS}
+
+% Result numbers: Check `numbers.log` in `dts-generate-results' repo
+\newcommand{\CountTotalModulesDefinitelyTyped}{6029}
+\newcommand{\CountModulesWithRepositoryUrl}{4974}
+\newcommand{\CountModulesWithReadmeFile}{4292}
+\newcommand{\CountModulesWithCodeExamples}{2260}
+\newcommand{\CountModulesWorkingCodeExamples}{946}
+\newcommand{\CountModulesRunTimeInfoExtracted}{436}
+\newcommand{\CountModulesGeneratedDeclarationFile}{249}
 \newcommand{\CountModulesOnlySolvableDifferences}{111}
+
+% Result helper numbers
+\newcommand{\CountModulesWithoutReadmeFile}{682} % \CountModulesWithRepositoryUrl{} - \CountModulesWithReadmeFile{}
+\newcommand{\CountModulesNotWorkingCodeExamples}{1314} % \CountModulesWithCodeExamples{} - \CountModulesWorkingCodeExamples{}
+\newcommand{\CountModulesRunTimeInfoCouldNotBeExtracted}{510} % \CountModulesWorkingCodeExamples{} - \CountModulesRunTimeInfoExtracted{}
+\newcommand{\CountModulesDeclarationFileCouldNotBeGenerated}{138} % \CountModulesGeneratedDeclarationFile{} - \CountModulesOnlySolvableDifferences{}
