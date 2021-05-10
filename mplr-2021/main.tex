@@ -198,7 +198,7 @@
   the developer, executes the library driven by the examples, gathers
   run-time information, and generates a declaration file based on this
   information. To evaluate the tool, 244 declaration files were
-  generated directly from an \NPM{} module and 70 of these were
+  generated directly from an \NPM{} module and \CountModulesOnlySolvableDifferences{} of these were
   compared with the corresponding declaration file provided on
   DefinitelyTyped. We obtained positive results for all of these files, which
   exhibited no differences at all or differences that can be resolved by
@@ -429,11 +429,11 @@ The novelty of our tool is twofold:
 The implementation and the results are available under the following repositories:
 
 \begin{itemize}
-  \item \url{https://github.com/proglang/run-time-information-gathering/tree/v1.1}
-  \item \url{https://github.com/proglang/ts-declaration-file-generator/tree/v1.2}
+  \item \url{https://github.com/proglang/run-time-information-gathering/tree/v1.1.0}
+  \item \url{https://github.com/proglang/ts-declaration-file-generator/tree/v1.5.0}
   \item \url{https://github.com/proglang/ts-declaration-file-generator-service/tree/v1.2}
-  \item \url{https://github.com/proglang/dts-generate-method/tree/v1.1}
-  \item \url{https://github.com/proglang/dts-generate-results/tree/v1.2}
+  \item \url{https://github.com/proglang/dts-generate-method/tree/v1.3.1}
+  \item \url{https://github.com/proglang/dts-generate-results/tree/v1.4.0}
 \end{itemize}
 
 \subsection{Contributions}
@@ -1303,7 +1303,7 @@ benchmark. Each of the generated files was compared against the
 corresponding declaration file uploaded to the repository.
 
 Figure \ref{fig:experiments-overall-funnel} shows that a declaration file was generated
-for 244 modules out of 6029 modules and we identified 70 modules that have only the
+for 244 modules out of 6029 modules and we identified \CountModulesOnlySolvableDifferences{} modules that have only the
 features implemented by \texttt{dts-generate}. We obtained positive results for all of
 them. Section~\ref{sec:experiments-evaluation} provides a detailed explanation of the overall
 quality of the generated files.
@@ -1624,7 +1624,7 @@ var truncated = smartTruncate(string, 15);
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
-We analyzed 70 of the 244 generated files. The remaining 174 files contained at least one
+We analyzed \CountModulesOnlySolvableDifferences{} of the 244 generated files. The remaining 174 files contained at least one
 of the unimplemented TypeScript features so that they could not be considered. These
 features were identified by \texttt{dts-parse} as tags.
 
