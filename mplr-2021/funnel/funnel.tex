@@ -12,6 +12,8 @@
 \usepackage{caption}
 \tcbuselibrary{breakable}
 
+\input{../macros}
+
 \begin{document}
 
 \definecolor{myellow}{RGB}{228,212,0}
@@ -57,25 +59,25 @@
 			}   
 
 		\node[left=0.02\textwidth of a0] {Generated Declaration Files};
-		\node[right=0.04\textwidth of a0] {\textbf{244}};
+		\node[right=0.04\textwidth of a0] {\textbf{\CountModulesGeneratedDeclarationFile{}}};
 
 		\node[left=0.02\textwidth of a1] {Run-time Information};
-		\node[right=0.06\textwidth of a1] {\textbf{436}};
+		\node[right=0.06\textwidth of a1] {\textbf{\CountModulesRunTimeInfoExtracted{}}};
 
 		\node[left=0.02\textwidth of a2] {Working Examples};
-		\node[right=0.12\textwidth of a2] {\textbf{946}};
+		\node[right=0.12\textwidth of a2] {\textbf{\CountModulesWorkingCodeExamples{}}};
 
 		\node[left=0.02\textwidth of a3] {Code Examples};
-		\node[right=0.23\textwidth of a3] {\textbf{2260}};
+		\node[right=0.23\textwidth of a3] {\textbf{\CountModulesWithCodeExamples{}}};
 
 		\node[left=0.02\textwidth of a4] {README file};
-		\node[right=0.42\textwidth of a4] {\textbf{4292}};
+		\node[right=0.42\textwidth of a4] {\textbf{\CountModulesWithReadmeFile{}}};
 
 		\node[left=0.02\textwidth of a5] {Github Repository};
-		\node[right=0.48\textwidth of a5] {\textbf{4974}};
+		\node[right=0.48\textwidth of a5] {\textbf{\CountModulesWithRepositoryUrl{}}};
 
 		\node[align=right,left=0.02\textwidth of a6, text width=0.25\textwidth] {Definitely Typed Modules};
-		\node[right=0.58\textwidth of a6] {\textbf{6029}};
+		\node[right=0.58\textwidth of a6] {\textbf{\CountTotalModulesDefinitelyTyped{}}};
 
 	\end{tikzpicture}
 	\caption{}
