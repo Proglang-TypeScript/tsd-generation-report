@@ -948,11 +948,124 @@ JavaScript event. Our instrumentation observes the following events:
 
 The implementation stores these observations as entities called
 \texttt{interactions}. They are used for translating, modifying, and
-aggregating Jalangi's raw event information to get an application-specific data representation. Each function invocation is stored as a \texttt{FunctionContainer} which contains an \texttt{ArgumentContainer} for each argument. Each \texttt{ArgumentContainer} contains the name and index of the argument and a collection of \texttt{interactions}. The interaction \texttt{getField} gets triggered whenever a property of an object gets accessed and it tracks the name of the accessed field. The invocation of an object's method is tracked with the \texttt{methodCall} interaction. The \texttt{usedAsArgument} interaction gets triggered when an argument is used in the invocation of a function. The \texttt{followingInteractions} property is used for inferring nested interfaces. It is an array that recursively records \texttt{interactions} on the return value of \texttt{getField} or \texttt{methodCall}.
+aggregating Jalangi's raw event information to get an application-specific data representation. Each function invocation is stored as
+a \texttt{FunctionContainer} which contains an \texttt{ArgumentContainer} for each argument. Each \texttt{ArgumentContainer} contains 
+the name and index of the argument and a collection of \texttt{interactions}. As shown in \figref{fig:example-get-field-interaction}, the interaction \texttt{getField} gets triggered whenever 
+a property of an object gets accessed and it tracks the name of the accessed field and the type of the returned value. The invocation of an object's method is tracked with 
+the \texttt{methodCall} interaction. The \texttt{followingInteractions} property is used for inferring nested interfaces.
+It is an array that recursively records \texttt{interactions} on the return value of \texttt{getField} or 
+\texttt{methodCall}. \figref{fig:example-method-call-interaction} provides an example for both the \texttt{methodCall} interaction
+and the \texttt{followingInteractions} property. Finally, the \texttt{usedAsArgument} interaction
+gets triggered when an argument is used in the invocation of a function.
 
-We wrap each function's argument in a wrapper object, which  stores meta-information and greatly simplifies the mapping of an observation with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We use the original values for critical operators such as \texttt{===} or \texttt{typeof}, for which wrapper objects would modify the behavior of the code.
+\begin{figure*}[t]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
+function foo(hello) {
+  if (hello.world) {
+    // ...
+  }
+}
 
-The property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly exported by the module, the property \texttt{isExported} will be set to \texttt{true} when it is invoked. If a function of an exported object is invoked, \texttt{isExported} will be \texttt{false} and \texttt{requiredModule} will contain the name of the required module.
+foo({ world: "..." });
+    \end{lstlisting}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
+{
+  functionId_1: {
+    //...
+    functionName: 'foo',
+    args: {
+      0: {
+        //...
+        argumentName: "hello",
+        interactions: [
+          // ...
+          !\textbf{\{}!
+            !\textbf{code: "getField",}!
+            !\textbf{field: "world",}!
+            !\textbf{followingInteractions: [],}!
+            !\textbf{returnTypeOf: "string",}!
+          !\textbf{\},}!
+        ],
+      },
+    },
+  },
+}
+    \end{lstlisting}
+  \end{subfigure}
+  \caption{
+      Example code that for \texttt{getField} interaction
+    }
+  \label{fig:example-get-field-interaction}
+\end{figure*}
+
+\begin{figure*}[t]
+  \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript,numbers=none]
+function foo(bar) {
+  if (bar.hello().world) {
+    // ...
+  }
+}
+
+foo({
+  hello: function () {
+    return {
+      world: "xxx",
+    };
+  },
+});    
+      \end{lstlisting}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
+{
+  functionId_1: {
+    //...
+    functionName: "foo",
+    args: {
+      0: {
+        // ...
+        argumentName: "bar",
+        interactions: [
+          // ...
+          !\textbf{\{}!
+            !\textbf{code: "methodCall",}!
+            !\textbf{methodName: "hello",}!
+            !\textbf{functionId: "functionId\_2",}!
+            !\textbf{followingInteractions: [}!
+              !\textbf{\{}!
+                !\textbf{code: "getField",}!
+                !\textbf{field: "world",}!
+                !\textbf{followingInteractions: [],}!
+                !\textbf{returnTypeOf: "string",}!
+              !\textbf{\},}!
+            !\textbf{],}!
+          !\textbf{\},}!
+        ],
+      },
+    },
+  },
+}        
+      \end{lstlisting}
+    \end{subfigure}
+  \caption{Example code for \texttt{}{methodCall} and \texttt{followingInteractions}}
+  \label{fig:example-method-call-interaction}
+  \end{figure*}
+
+We wrap each function's argument in a wrapper object, which  stores meta-information and greatly simplifies the mapping of an observation 
+with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We use the original values for critical operators such as 
+\texttt{===} or \texttt{typeof}, for which wrapper objects would modify the behavior of the code.
+
+The property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly 
+exported by the module, the property \texttt{isExported} will be set to \texttt{true} when it is invoked. If a function of an 
+exported object is invoked, \texttt{isExported} will be \texttt{false} and \texttt{requiredModule} will contain the name of 
+the required module.
 
 The run-time information is saved as a JSON file that can be used for later
 processing. The instrumentation tool is written in JavaScript and runs in \NodeJS{} in a
