@@ -1,3 +1,4 @@
+%% MPLR Format: up to 12 pages, excluding bibliography and appendix)
 %%
 %% This is file `sample-sigconf.tex',
 %% generated with the docstrip utility.
@@ -76,6 +77,7 @@
   morestring=[b]',
   morestring=[b]"
 }
+%"
 
 \lstset{
    backgroundcolor=\color{backgroundgray},
@@ -321,7 +323,7 @@ tools like autocompletion in an IDE.
 Despite the advantages, it is unrealistic to expect the world to
 switch to TypeScript in a day. Therefore, 
 existing JavaScript libraries can be used in a TypeScript project by
-adding a declaration file that contains a description of the library's
+adding a declaration file that describes the library's
 API in terms of types. 
 The DefinitelyTyped repository~\cite{definitely-typed-repository} has
 been created as a community effort to collect declaration files for
@@ -419,7 +421,7 @@ JavaScript library published to the \NPM{} registry. The tool gathers
 data flow and type information at run time to generate a declaration
 file based on that information.
 
-The novelty of our tool is twofold:
+The main contribution of our tool is twofold:
 \begin{enumerate}
 \item
   %% without the heavy lifting of static analysis
@@ -440,9 +442,13 @@ The novelty of our tool is twofold:
 % Finally, we generated declaration files for \CountModulesGeneratedDeclarationFile{} JavaScript libraries
 % and evaluated them against the DefinitelyTyped repository. 
 
+Our implementation of code instrumentation  to gather data flow
+information and type information at run time is based on
+Jalangi \cite{DBLP:conf/sigsoft/SenKBG13}, a configurable
+framework for dynamic analysis for JavaScript.
 The implementation and the results are available in the following repositories:
 
-\begin{itemize}
+\begin{itemize}\footnotesize
   \item \url{https://github.com/proglang/run-time-information-gathering/tree/v1.1.0}
   \item \url{https://github.com/proglang/ts-declaration-file-generator/tree/v1.5.0}
   \item \url{https://github.com/proglang/ts-declaration-file-generator-service/tree/v1.2}
@@ -499,9 +505,8 @@ package, runs the examples extracted from its documentation, gathers
 run-time information, and generates a TypeScript declaration
 file. The result is 
 shown in \figref{fig:motivating-example-glob-to-regexp-vscode} and it is
-ready for use in a TypeScript project. For example,  Visual Studio's
-code completion runs properly with the generated file
-(\figref{fig:motivating-example-glob-to-regexp-vscode}). If the
+ready for use in a TypeScript project:  Visual Studio's
+code completion runs properly with the generated file. If the
 \texttt{glob-to-regexp} package gets modified in the future, a new declaration
 file can be generated automatically using
 \texttt{dts-generate}. Our comparator tool (Section~\ref{sec:dts-compare}) can compare the new file
@@ -545,16 +550,20 @@ declare namespace GlobToRegexp {
 \section{TypeScript Declaration Files}
 \label{sec:typescr-decl-files}
 
-The declaration file shown in \figref{fig:motivating-example-glob-to-regexp-vscode}
-describes a package with a single exported function. The first parameter is of type
-\texttt{string} and the second one is an optional object described by an interface. TypeScript namespaces
-organize types declared in a declaration file and avoid name clashes with other types
-\cite{typescript-namespaces}. For example, the interface
+The generated declaration file shown in \figref{fig:motivating-example-glob-to-regexp-vscode}
+describes a package with a single exported function. The module name
+is derived from the NPM module name by camlization\footnote{i.e.,
+  transforming to camel case.}. The first parameter is of type
+\texttt{string} and the second one is an optional object described by
+an interface. To avoid name clashes, \texttt{dts-generate} creates a
+namespace that corresponds to the module name. This pattern is a best
+practice to  organize types declared in a declaration file
+\cite{typescript-namespaces}. In the example, the interface
 \lstinline[language=TypeScript]{I__opts} is declared in namespace
-\lstinline[language=TypeScript]{globToRegexp} in
-\figref{fig:motivating-example-glob-to-regexp-vscode}. Hence its uses
+\lstinline[language=TypeScript]{globToRegexp}. Hence, its uses
 must be qualified by the namespace as in
-\lstinline[language=TypeScript]{globToRegexp.I__opts}.
+\lstinline[language=TypeScript]{globToRegexp.I__opts}. The name of the
+interface is derived from the name of the formal parameter. 
 
 This file is an instance of one of the standard templates for writing
 declaration
@@ -801,8 +810,7 @@ code.
 
 The examples and the code base of the library are instrumented with
 Jalangi \cite{DBLP:conf/sigsoft/SenKBG13} to gather data flow
-information and type information at run time. Jalangi is a configurable
-framework for dynamic analysis of JavaScript. It provides several
+information and type information at run time. Jalangi provides several
 analysis modules that we extended as needed to retrieve the required
 run-time information.
 %, which is then saved in a JSON file. 
@@ -1910,6 +1918,53 @@ Table~\ref{tab:dts-parse-stats}).
 
 \section{Related Work}
 \label{sec:related-work}
+\paragraph*{Dynamic analysis techniques} Trace Typing
+\cite{DBLP:conf/ecoop/AndreasenGCSTS16} is a framework for evaluating
+retrofitted type systems. It involves gathering traces of JavaScript program
+executions, just like in our system. However, the goal of the type
+systems that they study is quite different from ours. They are
+interested in type information to improve run-time performance and
+traditional compilation, giving information about object layout and
+tag tests. Contrary to their approach, we do not just observe the
+types of arguments and return values. In addition, we also trace
+property accesses which translate to requirements on objects. Also, we
+have no generalization step to infer polymorphic types.
+
+Hummingbird \cite{DBLP:conf/pldi/RenF16} is a system for type checking
+Ruby programs at run time in the presence of
+metaprogramming. Metaprograms are extended to additionally generate
+type annotations for the generated code. Once a generated method is
+called, the method's body is statically checked against the actual
+argument types as well as the generated annotations. This system does
+not involve run-time tracing.
+
+Rubydust \cite{DBLP:conf/popl/AnCFH11} implements dynamic
+constraint-based type inference for Ruby. Rubydust runs an
+instrumented Ruby program that gathers subtyping constraints for
+parameters and return types of methods as well as for fields, which is
+quite different from the interaction that we collect. After
+completion, the solution of these constraints is proposed as a typing
+for the program. These types are sound if the runs cover sufficiently
+many paths in the program. Rubydust is reasonably effective because
+Ruby's type system is nominal. For JavaScript, this approach is much
+less effective as (run-time) typing is structural
+\cite{DBLP:conf/sfp/NausT16}.
+
+JSTrace \cite{saftoiu21:_jstrac} also performs dynamic type inference
+for JavaScript by gathering information at run time. It inspects the
+run-time types of arguments and return values of suitably wrapped
+functions. While the resulting information is treated similarly as in
+our work, we also gather interactions that result from property
+accesses and method calls and derive further typing constraints from
+those. Moreover, JSTrace performs an (expensive) deep inspection of
+the types of objects and arrays whereas our inspection is shallow and
+thus more efficient.
+
+None of the works tackles the question how to obtain a sufficient
+sample of run-time information. One part of our contribution is to
+systematically uncover the README files as a driver for running the
+JavaScript code under inspection.
+
 \paragraph*{dts-gen}
 TypeScript comes with \texttt{dts-gen}, a tool that creates declaration files for
 JavaScript libraries \cite{dts-gen}. Its documentation states that the result is 
