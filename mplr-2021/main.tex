@@ -560,9 +560,9 @@ namespace that corresponds to the module name. This pattern is a best
 practice to  organize types declared in a declaration file
 \cite{typescript-namespaces}. In the example, the interface
 \lstinline[language=TypeScript]{I__opts} is declared in namespace
-\lstinline[language=TypeScript]{globToRegexp}. Hence, its uses
+\lstinline[language=TypeScript]{GlobToRegexp}. Hence, its uses
 must be qualified by the namespace as in
-\lstinline[language=TypeScript]{globToRegexp.I__opts}. The name of the
+\lstinline[language=TypeScript]{GlobToRegexp.I__opts}. The name of the
 interface is derived from the name of the formal parameter. 
 
 This file is an instance of one of the standard templates for writing
@@ -881,7 +881,7 @@ Obtaining code examples for a specific \NPM{} package is done in three steps.
   written using Markdown\footnote{\url{https://www.markdownguide.org}}, a
   popular markup language, where
   code examples are presented in code blocks labeled with the programming
-  language, so that syntax highlighting is done correctly. Hence, we
+  language. Hence, we
   retrieve the code examples from code blocks labeled \texttt{js} or
   \texttt{javascript}, which both stand for JavaScript in
   Markdown.
@@ -1499,7 +1499,7 @@ the implementation checks for several naming conventions like
 \texttt{readme.md} or \texttt{README.md}. 
 
 \paragraph*{Extraction of Code Examples}
-In this step, we loose another 50\% of modules! This loss is mainly
+In this step, we lose another 50\% of modules! This loss is mainly
 explained because some developers do not wrap their code in a block
 using the \texttt{javascript} or \texttt{js} tags. As we are
 still left with code examples for \CountModulesWithCodeExamples{} modules, we did not look
