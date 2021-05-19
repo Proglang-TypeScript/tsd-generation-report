@@ -1,0 +1,248 @@
+> ----------------------- REVIEW 1 ---------------------
+> SUBMISSION: 28
+> TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+> AUTHORS: Fernando Cristiani and Peter Thiemann
+> 
+> ----------- Overall evaluation -----------
+> SCORE: -1 (major revision)
+> ----- TEXT:
+> Automatically generating TypeScript type signatures is a worthwhile
+> goal; a mechanical process for generating such declarations would be
+> less tedious, less error-prone, and more scalable. Pursuing a run-time
+> trace-based technique is also compelling, given the significant
+> difficulties that dynamically typed languages pose for static
+> analysis. The initial results of the tool are promising: 244
+> TypeScript declarations were automatically generated from existing
+> module definitions, and 70 of these could be compared and validated
+> against manually written declarations.
+> 
+> However, I believe the paper falls short both in terms of technical
+> formulation as well as evidence of practical utility.
+> 
+> With respect to technical approach, the paper says (p.3/4) that the
+> use of examples and dynamic analysis, rather than static analysis, is
+> a novelty of the proposed tool. But a similar approach has been
+> pursued previously:
+> 
+> * Trace Typing: An Approach for Evaluating Retrofitted Type Systems (Andreasen et al. ECOOP 2016)
+> 
+> * Just-in-Time Static Type Checking for Dynamic Languages (Ren et al. PLDI 2016)
+> 
+> * Dynamic Inference of Static Types for Ruby (An et al. POPL 2011)
+> 
+> * JSTrace: Run-time Type-Discovery for JavaScript (Saftoiu et al. 2010, > http://cs.brown.edu/research/plt/dl/flowtyping/v1/saftoiu-typediscovery-thesis.pdf)
+> 
+> How do the proposed techniques compare? Among these, trace typing is
+> particularly relevant: like the current paper, it uses Jalangi for
+> instrumentation.
+
+Added discussion to the related work section.
+
+> Besides not discussing this related work, the descriptions in Sections
+> 4.2 and the end of 4.3 are rather informal: What exactly is the subset
+> of JavaScript/TypeScript that is supported? What is the instrumented
+> evaluator computing? How are types --- which include unions and
+> intersections (at least for function types) --- being computed from
+> the run-time information? The lack of precise details makes it
+> difficult to understand what the tool currently does, how plausible it
+> might be to extend to support more of JavaScript/TypeScript in the
+> future, and how it relates the related work described above.
+> 
+> With respect to the implemented tool, it is not clear how close it is
+> to being useful in practice. Many TypeScript features, as described in
+> Table 1 and in the Evaluation, are not yet supported. For the 244
+> modules for which declarations could be generated (and for the 70
+> which could be compared to existing manual declarations): How many
+> lines of code are in the modules? How many definitions are exported?
+> How many examples were provided? How many examples were added to the
+> 10 modules that were marked solvable? And how do these characteristics
+> compare to the remaining Definitely Typed modules not currently
+> supported? Especially because of the questions about technical
+> formulation and novelty, it seems important for the system to come
+> with a more comprehensive practical evaluation.
+> 
+> Overall, there is a lot of potential for this work --- especially on
+> the practical side, for building a useful system --- but I think the
+> results are preliminary to publish in their current form.
+> 
+> 
+> *** Additional Comments and Questions ***
+> 
+> Fig 1: Does the tool generate declarations like this one? (If so, where
+> does the name l__opts come from?)
+
+Added explanation and a little cleanup.
+
+> p.6: I think the reliance on Jalangi, as a black box, should be
+> described earlier, along with related work.
+
+Done.
+
+> Fig 2: I spent some time wondering how the module names in (b) and (f)
+> were chosen (the former appears to be camel case version of the module
+> name, and the latter follows the name in the example program). Some of
+> this explanation comes later, but perhaps it's worth adding more
+> explanation here as this seems to be the primary place in the paper
+> where the different kind of templates are explained.
+
+Said that for Globtoregexp.I__opts already!
+
+> Fig 3: Why not depict the example extraction step --- which sometimes
+> includes manual addition of examples --- here? And consider
+> representing Jalangi's role in this architecture.
+
+Fernando?
+
+> Sec 4.2/4.3: As mentioned, I think a lot more detail is warranted
+> about the instrumentation and the process for computing types from
+> traces.
+> 
+> "Execution of Code Examples": Interesting to see how many examples
+> were perhaps out-of-date or were not proper examples. Were there any
+> interesting patterns worth discussing?
+> 
+> p.17: It's encouraging to see how the proposed tool can fix some
+> errors found in manual type declarations!
+> 
+> "Literal types vs string": If considering asking developers to mark
+> strings, instead why not ask them to directly use, e.g. the "Enums" or
+> "Discriminated Unions" (https://www.typescriptlang.org/docs/handbook)?
+> 
+> "Any": Ditto above; why not ask developers to choose the any type?
+> 
+> "Further types": Inferring indexed types, dependent types, etc. from
+> run-time traces would seem to require quite significant technical
+> extensions to the approach described here.
+> 
+> TSInfer: Is it fundamental that TSInfer apparently generates
+> signatures for helpers? Could there not be a simple syntactic analysis
+> that identifies top-level definitions, to be include in a declaration
+> file?
+> 
+> 
+> *** Minor Comments and Typos ***
+> 
+> Fig 1: Maybe I'm missing it, but I don't see Footnote 6 anywhere.j
+> 
+> p.5: "globToRegexp" ==> "GlobToRegexp" twice
+> 
+> p.8: I'm not sure why "syntax highlighting is done correctly" is
+> noteworthy here.
+> 
+> Fig 4: Is this referenced in the text?
+> 
+> p.15: "loose" ==> "lose"
+> 
+
+DONE.
+
+> 
+> ----------------------- REVIEW 2 ---------------------
+> SUBMISSION: 28
+> TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+> AUTHORS: Fernando Cristiani and Peter Thiemann
+> 
+> ----------- Overall evaluation -----------
+> SCORE: -1 (major revision)
+> ----- TEXT:
+> # Summary
+> 
+> The paper describes the tool dts-generate and its necessary companions to generate TypeScript declaration files for > JavaScript packages.
+> These JavaScript packages need to provide a repository with a dedicated README that includes documentation efforts in the > form of exemplary usages.
+> Based on the run-time information gathered by running these example, `dts-generate` produces the final TypeScript > declaration file after an additional analysis step that determines the scope of the file at hand (module, module-class, > module-function).
+> The tool was evaluated based on all NPM packages that fulfilled the documentation requirement sufficiently and > community-driven declaration files; these declaration files are compared against the generated ones using an additional > tooling machinery developed by the authors. 
+> 
+> # My two cents
+> 
+> The general idea of the paper as well as the benefit of this idea (as well as the engineering effort) is worthwhile.
+> The writing, on the other hand, does not feel mature enough for an acceptance.
+> Unfortunately, I have problems myself to pin the exact reasons for this feeling.
+> Let me try.
+> 
+> For an "empirical perspective" the evaluation (or here: result) section does not has the necessary depth to convince the > reader with, nor does it contain empirical methods (that I'm also not an expert for) that would strengthen the choice of this > perspective.
+> Instead the results include further explanations of the engineering efforts necessary for the evaluation (how code examples > were extracted), single example extracts from the generated and original declaration files.
+> The section concludes with a rather small paragraph (6.3 Evaluation) that only states that 70 files could be tested and all > qualified for a positive result.
+> One deficit of this shallow evaluation origins from the small number of final declaration files that qualified for the evaluation.
+> See some of the major and minor comments for more direct questions/remarks relating to specific sentences tackling this > deficiency.
+> 
+> The preceding part of the paper follows this rather shallow evaluation.
+> The description of the engineering effort is given in detail, but not in depth.
+> I guess these shallow descriptions are sufficient for a paper with an empirical emphasis, but since the focus of the current > version of paper is not the empirical part, I was wondering if an engineering perspective would be more suitable.
+> In its current form, the description of the engineering effort needs additional work to make the shift to such an perspective > (what's the output the run-time information provided by Jalangi that dts-generate makes use of?).
+> 
+> All in all, I think that the paper needs a major revision (and shift of focus) in order to classify as empirical perspective or > needs to change the perspective to an engineering paper with additional efforts needed to fulfil the reader's wish to get more > in-depth insight to the technical part of this work.
+> 
+> ## Major comments
+> 
+> p. 1: I have the feeling that the abstract was not prepared in accordance to the specifications of the journal including the > keywords context, inquiry, approach, knowledge, grounding and importance.
+> It's not that I do not get an impression of the work presented by the paper, but it just feels like an "ordinary abstract" and > not one that explicitly tackles the key questions behing the keywords above.
+> 
+> p. 4: "We examined all 6029 entries in the DefinitelyTyped repository and found 244 sufficiently well documented NPM > packages," - it's a shame that the final portion of repositories that can be tested is less than 5% of the starting value.
+> 
+> p. 15: "In this step, we loose another 50% of modules! This loss is mainly explained because some developers do not wrap > their code in a block using the javascript or js tags. However, as we are still left with code examples for 2260 modules, we did > not further look into code extraction as this number was considered sufficient for evaluating the generation of declaration > files." - Given the low value for the final number of repositories, you should definitely reconsider adapting your extraction > mechanism to be more robust!
+> 
+> p. 17: "We were unable to generate a declaration file based on the module-class template. All modules corresponding to this > template exhibited at least one of the unimplemented TypeScript features." - I was wondering if could make sense to adapt > the tooling machinery to leave out only the definitions that consist of unimplemented features, instead of leaving out a > whole module if one of its definition.
+> 
+> p. 18: "The remaining 174 files contained at least one of the unimplemented TypeScript features so that they could not be > considered." - This sentence sounds like you indeed generate as much as possible and filter out only layer --- how does this > statement relate my previous concern?
+> 
+> ## Minor comments
+> 
+> p. 5: "The choice of the template depends on the structure of the underlying JavaScript library:..." - here the following > listing/itemize environment seems to be missing, at least, I think that a itemize would be the better layout to use here.
+> 
+> p. 14: "dts-compare does not contemplate differences in function return types, because interface inference of function > return types is not covered in the current version of dts-generate." - Why is it that the inference for return types is that > different from parameters? You infer the parameters through example code, by running example code, you get concrete return > values that you can analyse in the same fashion. Furthermore, Figure 4 (for example) shows a generated file with functions > with return types. What am I missing here?
+> ## Typos
+> 
+> all over the paper: runtime vs run time vs run-time!
+> 
+> p. 1: "..., which is error prone and time consuming." - error-prone
+> p. 2: "..., which is time consuming and error prone." - error-prone
+> p. 8: "A TypeScript Declaration File" - declaration file (why title-case?)
+> p. 8: "... so that test cases were difficult to reap from the NPM packages:..." - read
+> p. 9: "The Runtime Information block in Figure 3" - run-time information (why title-case?)
+> p. 9: "For example, Function f ... Property foo ... Parameter a ... - function ... property ... parameter (it seems weird to start > with upper-case letters for the itemization)
+> p. 11: " and traverse the Abstract Syntax Tree of a TypeScript program" - abstract syntax tree
+> p. 12: "DefinitelyTyped Repository" - repository (why title-case?)
+> p. 12: "uses the TypeScript Compiler API" - TypeScript compiler API (why title-case?)
+> p. 18: "Excerpt of JS implementation that throws an Error when in- put parameter is not a string" - error
+> p. 19: "Properties of interface Result were ignored for readability" - result
+> p. 22: "future incorporation of a Symbolic Execution Engine that refines the" - symbolic execution engine (why title-case?)
+> 
+> ## Others
+> p. 1: "from the TypeScript IDE and thus to incorrect uses of" - and, thus,  to
+> p. 2: "a scripting language and thus lacks features for maintaining" - and, thus, lacks
+> p. 4: "The implementation and the results are available under the following repositories:" -
+> ...following repositories.
+> p. 6: "It infers the overall structure of the JavaScript library,..." - non-referential _it_, why not write "the block infers..."
+> p. 9: "...meaningful examples, thus avoiding possible cold start problems." - examples, thus, avoiding
+> 
+> 
+> 
+> ----------------------- REVIEW 3 ---------------------
+> SUBMISSION: 28
+> TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+> AUTHORS: Fernando Cristiani and Peter Thiemann
+> 
+> ----------- Overall evaluation -----------
+> SCORE: -1 (major revision)
+> ----- TEXT:
+> The paper presents a tool that automatically generates TypeScript definition files for JavaScript projects. The tool uses > dynamic analysis. It runs the code samples found in the README file in the project repository, records information about > method invocations and argument values and uses those to generate type definitions. The paper evaluates the tool by > comparing generated definitions with hand-written definitions from the DefinitelyTyped repository - this is done for libraries > which have code samples in README, i.e. about ~270 out of ~6000.
+> 
+> The paper presents a tool that is useful, although it has a fairly limited scope. The approach presented by the authors - to > run a code sample using a library and use runtime monitoring to deduce the structure of the library - is definitely a promising > one. The authors make a good first step towards building a practical tool. However, the current implementation of the tool is > quite basic in a number of ways. First, it relies on code samples in README, which is not exactly common (it will work only > for quite basic libraries). Second, it ignores many interesting types that a library could use - most prominently arrays, but > those are just one example.
+> 
+> I believe the work presented in the paper is still interesting and useful, but it would need to be much more complete to > justify writing an extensive report about it. Although the journal does not have a specific category of "Tool" papers, I imagine > that if the authors presented the work in a shorter paper and clearly acknowledged the limitations and contributions, then it > would be interesting enough for publication. (Following the idea that the length of the paper should be commensurable with > the contribution.) The current version spends a quite a lot of time discussing the high-level structure of the tool and some > practical details which I did not find particularly important.
+> 
+> DETAILED COMMENTS
+> 
+> * In the introduction, you say that manually writing definitions is error-prone, but your paper then uses manually written > definitions from DefinitelyTyped as ground truth. I find this a bit paradoxical - maybe you could instead say that this is a lot > of work and there are many libraries that are not covered by DefinitelyTyped?
+> 
+> * I have to admit that I was a bit confused by the idea of "templates" that is used in the paper. Do the templates determine > just how you structure the definition, or are they somehow limiting what kind of constructs can be used in a given file? I think > this would benefit from some clarification in the paper.
+> 
+> * There is very little detail in the paper about how you infer types from the sample values that are observed during the > runtime execution. I guess the mechanism here is quite basic, but it is still worth discussing. (You might be interested in the > related paper [1] which does this for more complex types, but also covers things like records with optional fields.)
+> 
+> * I think your evaluation is somewhat limited by the fact that the libraries that have a complete documentation in the > README are the ones with very simple API. It would be interesting to evaluate how your approach works on larger libraries > (even if that meant copying some examples into a readme manually).
+> 
+> * I think the phrasing that "more advanced types are overblown" is a bit unfortunate, especially if the tool does not support > some quite basic types like arrays.
+> 
+> * The paper should give a much more extensive overview of related work - for example, it should discuss what has been > done using static analyses, whether similar tools exist for other languages and there might also be other interesting related > approaches (perhaps some based on machine learning methods). The references in the submission are fairly minimal.
+> 
+> [1] T. Petricek, G. Guera, D. Syme. Types from data: making structured data first-class citizens in F#, PLDI 2016
