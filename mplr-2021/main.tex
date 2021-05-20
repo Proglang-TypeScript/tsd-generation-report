@@ -345,20 +345,9 @@ frustration, and decreasing confidence in the tool chain.
 \subsection{Approach}
 \label{sec:approach}
 
-% I think the reader gets the impression from the text that obtaining the code examples
-% is a "main feature" of our tool, where in fact it is only a way of easily obtaining
-% runtime information to execute our tool. We could've followed the approach of obtaining
-% the runtime information from the tests.
-% This can be useful also to divert the attention from how many repositories had README files, etc.
-% After using the code examples, we also found out that they provided a useful approximation
-% not only on the input types but also on how to use the library (i.e. we don't analyze the structure of the library).
-% This is a useful insight which can be used later to infer the correct types.
-%
-% Should we change this to 'we rely on runtime information'. 'We used the examples
-% provided by the developer as part of the documentation of a library as a first
-% pragmatic way of obtaining runtime information'.
 We aim to improve on this situation by providing a tool that generates
-TypeScript declaration files automatically. To do so, we rely on the examples provided
+TypeScript declaration files automatically. To do so, we rely on we rely on runtime information
+gathered from the examples provided
 by the developer as part of the documentation of a library. If these
 examples are sufficiently rich, then our toolchain can generate
 high-quality declaration files for the library. This way we take
@@ -426,10 +415,7 @@ declaration file.
 % \end{description}
 
 Our tool \texttt{dts-generate} is a first step to explore the possibilities for
-generating useful declaration files from code
-examples.
-% Should we change it to 'explore the possibilities for
-% generating useful declaration files from runtime information'.
+generating useful declaration files from runtime information.
 
 \texttt{dts-generate} comes with a framework that 
 supports the generation of declaration files for an existing
@@ -863,9 +849,6 @@ library code:
 Option~\ref{item:1} does not solve our problem, it just delegates it
 to the importing library, which also needs code to drive it. Moreover,
 we need to identify a dependent package, which is costly to download and instrument.
-
-% I think we should rephrase this, specially now that we know
-% it might be 'doable'.
 
 We considered option~\ref{item:2} under the assumption that most
 libraries would come with test cases. However, there is no standard
@@ -1744,6 +1727,56 @@ export function anyNonNil(value: string): boolean;
   \label{fig:experiments-results-module-is-uuid}
 \end{figure*}
 
+\begin{figure*}[tp]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+export = SteamID;
+declare class SteamID {
+    // ...
+    isValid(): boolean;
+    isGroupChat(): boolean;
+    isLobby(): boolean;
+    getSteam2RenderedID(newerFormat?: boolean): string;
+    // ...
+}
+declare namespace SteamID {
+    export function fromIndividualAccountID(accountid: string | number): SteamID;
+}  
+    \end{lstlisting}
+    \caption{steamid/index.d.ts - Generated (simplified)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+// ...
+type getSteam2RenderedID = (newerFormat?: boolean) => string;
+
+declare class SteamID {
+    // ...
+    isValid(): boolean;
+    // ...
+    isGroupChat(): boolean;
+    // ...
+    isLobby(): boolean;
+    getSteam2RenderedID: getSteam2RenderedID;
+    // ...
+}
+
+declare namespace SteamID {
+    // ...
+    function fromIndividualAccountID(accountid: number | string): SteamID;
+}
+
+export = SteamID;
+    \end{lstlisting}
+    \caption{steamid/index.d.ts - DT (simplified)}
+  \end{subfigure}
+
+  \caption{Results for \textbf{module-class} template for module \texttt{steamid}}
+  \label{fig:experiments-results-module-steamid}
+\end{figure*}
+
 \figref{fig:experiments-results-module-is-uuid} contains an example
 for the \textbf{module} template, the declaration for the \texttt{is-uuid} module.
 The generated file only contain methods that were executed by the extracted
@@ -1754,10 +1787,11 @@ It would be easy to generate a perfectly matching declaration file by
 adding two examples using functions \texttt{nil} and
 \texttt{anyNonNil}. 
 
-% This is no longer true. I'll add one result to the report.
-We were unable to  generate a declaration file based on the
-\textbf{module-class} template. All modules corresponding to this template exhibited at least one of
-the unimplemented TypeScript features. 
+\figref{fig:experiments-results-module-steamid} exposes a simplified example for the
+\textbf{module-class} template where we highlight the most important features. Class methods are
+correctly generated. For the \texttt{getSteam2RenderedID} method we correctly generate a signature
+that matches the type alias chosen by the author of the library. Finally, the method \texttt{fromIndividualAccountID}
+is correctly located in the namespace section.
 
 It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was
 not correct. For example, for the module \texttt{glob-base}, the parameter
