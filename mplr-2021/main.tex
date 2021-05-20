@@ -345,6 +345,18 @@ frustration, and decreasing confidence in the tool chain.
 \subsection{Approach}
 \label{sec:approach}
 
+% I think the reader gets the impression from the text that obtaining the code examples
+% is a "main feature" of our tool, where in fact it is only a way of easily obtaining
+% runtime information to execute our tool. We could've followed the approach of obtaining
+% the runtime information from the tests.
+% This can be useful also to divert the attention from how many repositories had README files, etc.
+% After using the code examples, we also found out that they provided a useful approximation
+% not only on the input types but also on how to use the library (i.e. we don't analyze the structure of the library).
+% This is a useful insight which can be used later to infer the correct types.
+%
+% Should we change this to 'we rely on runtime information'. 'We used the examples
+% provided by the developer as part of the documentation of a library as a first
+% pragmatic way of obtaining runtime information'.
 We aim to improve on this situation by providing a tool that generates
 TypeScript declaration files automatically. To do so, we rely on the examples provided
 by the developer as part of the documentation of a library. If these
@@ -415,7 +427,11 @@ declaration file.
 
 Our tool \texttt{dts-generate} is a first step to explore the possibilities for
 generating useful declaration files from code
-examples. \texttt{dts-generate} comes with a framework that 
+examples.
+% Should we change it to 'explore the possibilities for
+% generating useful declaration files from runtime information'.
+
+\texttt{dts-generate} comes with a framework that 
 supports the generation of declaration files for an existing
 JavaScript library published to the \NPM{} registry. The tool gathers
 data flow and type information at run time to generate a declaration
@@ -696,8 +712,8 @@ from the guide and
 used \texttt{dts-generate} to generate a corresponding declaration file, as shown in
 \figref{fig:typescript-templates-by-example}.
 
-Like \texttt{dts-gen}, a TypeScript package that generates a template for a declaration
-file, we determine the kind of declaration file by examining the usage
+Unlike \texttt{dts-gen}, a TypeScript package that generates a template for a declaration
+file which only analyzes the structure of the module, we determine the kind of declaration file by examining the usage
 of the module. If the
 imported entity is used solely as a function as in Figure~\ref{fig:example-module-function}, the
 generated declaration file follows the \textbf{module-function} template as shown in Figure~\ref{fig:template-module-function}.
@@ -847,6 +863,9 @@ Option~\ref{item:1} does not solve our problem, it just delegates it
 to the importing library, which also needs code to drive it. Moreover,
 we need to identify a dependent package, which is costly to download and instrument.
 
+% I think we should rephrase this, specially now that we know
+% it might be 'doable'.
+
 We considered option~\ref{item:2} under the assumption that most
 libraries would come with test cases. However, there is no standard
 for testing JavaScript code so that test cases were difficult to reap
@@ -858,15 +877,18 @@ from the consumer's point of view. For example, a developer might write a test i
 function with \texttt{null} just to validate that it throws an error
 in such a scenario. 
 
-In the end, option~\ref{item:3} was the most viable option even though there
-is no standard for documentation, either. However, almost all repositories
+% We can maybe change the focus to 'Option 3' was easier to implement.
+% This can be another opportunity to mention that  
+In the end, option~\ref{item:3} was the most viable option to easily gather runtime information
+even though there is no standard for documentation, either. However, almost all repositories
 contain README files where the library authors briefly describe in prose what
 the code does, which problem it solves, how to install the
 application, how to build the code, etc. It is very common that
 developers provide code examples in the README files to show how the
 library works and how to use it. These code fragments showcase common use cases rather
 than stress-testing the implementation (the problem of
-option~\ref{item:2}) because they are meant to be instructive to users of the package.  
+option~\ref{item:2}) because they are meant to be instructive to users of the package.
+
 
 Obtaining code examples for a specific \NPM{} package is done in three steps.
 \begin{itemize}
@@ -1063,7 +1085,60 @@ foo({
     \end{subfigure}
   \caption{Example code for \texttt{}{methodCall} and \texttt{followingInteractions}}
   \label{fig:example-method-call-interaction}
-  \end{figure*}
+\end{figure*}
+
+\begin{figure*}[t]
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
+const foo = require('foo');
+
+foo.doSomething();
+    \end{lstlisting}
+  \caption{Example code for \texttt{module} template}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
+{
+  functionId_1: {
+    functionName: 'doSomething',
+    //...
+    !\textbf{isExported: false,}!
+    !\textbf{requiredModule: 'foo'}!
+  }
+}    
+    \end{lstlisting}
+    \caption{Runtime information fragment for \texttt{module} template}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
+const foo = require('foo');
+
+foo();
+    \end{lstlisting}
+    \caption{Example code for \texttt{module-function} template}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
+{
+  functionId_1: {
+    functionName: 'foo',
+    //...
+    !\textbf{isExported: true,}!
+    !\textbf{requiredModule: 'foo'}!
+  }
+}    
+    \end{lstlisting}
+    \caption{Runtime information for \texttt{module-function} template}
+  \end{subfigure}
+  \caption{Example code for properties \texttt{isExported} and \texttt{requiredModule} - Property \texttt{isExported} is
+  \texttt{false} for \texttt{module} and \texttt{true} for \texttt{module-function}. Additionally, \texttt{requiredModule}
+  is \texttt{foo} for both cases.
+  }
+  \label{fig:example-is-exported-required-module}
+\end{figure*}
 
 We wrap each function's argument in a wrapper object, which  stores meta-information and greatly simplifies the mapping of an observation 
 with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We use the original values for critical operators such as 
@@ -1072,7 +1147,7 @@ with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We us
 The property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly 
 exported by the module, the property \texttt{isExported} will be set to \texttt{true} when it is invoked. If a function of an 
 exported object is invoked, \texttt{isExported} will be \texttt{false} and \texttt{requiredModule} will contain the name of 
-the required module.
+the required module, as shown in \figref{fig:example-is-exported-required-module}.
 
 The run-time information is saved as a JSON file that can be used for later
 processing. The instrumentation tool is written in JavaScript and runs in \NodeJS{} in a
@@ -1678,6 +1753,7 @@ It would be easy to generate a perfectly matching declaration file by
 adding two examples using functions \texttt{nil} and
 \texttt{anyNonNil}. 
 
+% This is no longer true. I'll add one result to the report.
 We were unable to  generate a declaration file based on the
 \textbf{module-class} template. All modules corresponding to this template exhibited at least one of
 the unimplemented TypeScript features. 
