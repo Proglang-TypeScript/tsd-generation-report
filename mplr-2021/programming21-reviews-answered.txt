@@ -92,6 +92,9 @@ Said that for Globtoregexp.I__opts already!
 > representing Jalangi's role in this architecture.
 
 Fernando?
+F: Added new images:
+  - mplr-2021/graphics/dts-generate-block-diagram-with-code-examples-block.pdf
+  - mplr-2021/graphics/dts-generate-block-diagram-with-jalangi.pdf
 
 > Sec 4.2/4.3: As mentioned, I think a lot more detail is warranted
 > about the instrumentation and the process for computing types from
