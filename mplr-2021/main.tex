@@ -817,26 +817,29 @@ substantiate in the next subsection.
   \label{fig:tsd_generation_method_block_diagram}
 \end{figure}
 
-As \texttt{dts-generate} is based on run-time information, code
-fragments are needed that import and use the JavaScript library to
-obtain run-time information from running the instrumented library
-code.
-
-
-The examples and the code base of the library are instrumented with
-Jalangi \cite{DBLP:conf/sigsoft/SenKBG13} to gather data flow
-information and type information at run time. Jalangi provides several
-analysis modules that we extended as needed to retrieve the required
-run-time information.
+As \texttt{dts-generate} is based on run-time information, we need code
+fragments that import and use the JavaScript library and we need to be
+able to obtain this run-time information while running the code.
+We explain in Section~\ref{sec:initial-code-base} how we obtain code
+fragments. 
+To obtain run-time information, we instrument
+the code fragments and the entire code base of the library with
+Jalangi \cite{DBLP:conf/sigsoft/SenKBG13}. We extend Jalangi's
+analysis modules to gather data flow and type information as required
+for our purposes and explained in Section~\ref{sec:run-time-information}.
+% Jalangi provides several
+% analysis modules that we extended as needed to retrieve the required
+% run-time information.
 %, which is then saved in a JSON file. 
 
-A second independent block uses the run-time information to generate a
-TypeScript declaration file. It infers the overall structure of the JavaScript
-library, its interfaces, and the types from the run-time information. 
-The resulting declaration file is ready for use in the development
-process. Its contents mimic the usage of the library in the example
-code fragments and match the structure of the
-JavaScript library under analysis, so that the JavaScript code
+A second independent block explained in
+Section~\ref{sec:typescr-decl-file} uses the run-time information to
+generate a TypeScript declaration file. It infers the overall
+structure of the JavaScript library, its interfaces, and the types
+from the run-time information.  The resulting declaration file is
+ready for use in the development process. Its contents mimic the usage
+of the library in the example code fragments and match the structure
+of the JavaScript library under analysis, so that the JavaScript code
 generated after compiling the TypeScript code runs without
 interface-related errors.
 
@@ -847,21 +850,24 @@ argument is the name of the module published to the \NPM{} registry.
 \subsection{Initial Code Base}
 \label{sec:initial-code-base}
 
-To extract run-time information from a JavaScript library, it is
-necessary, by definition, to execute the code, because the
-analysis modules provided by Jalangi can only gather information if the instrumented code gets executed.
+% To extract run-time information from a JavaScript library, it is
+% necessary, by definition, to execute the code, because the
+% analysis modules provided by Jalangi can only gather information if the instrumented code gets executed.
 
-There are several options to obtain code fragments that drive the
-library code:
+There are several options to obtain code fragments that exercise the
+library code in a meaningful way. In order to exercise library $A$,
+one might
 \begin{enumerate}
-\item\label{item:1} execute code that imports the library;
-\item\label{item:2} execute the test cases that come with the library;
-\item\label{item:3} execute code fragments extracted from the library documentation.
+\item\label{item:1} execute code that imports library $A$;
+\item\label{item:2} execute the test cases that come with library $A$;
+\item\label{item:3} execute code fragments extracted from library $A$'s documentation.
 \end{enumerate}
 
-Option~\ref{item:1} does not solve our problem, it just delegates it
-to the importing library, which also needs code to drive it. Moreover,
-we need to identify a dependent package, which is costly to download and instrument.
+Option~\ref{item:1} requires finding a library $B$ that depends on
+$A$. While this information is straightforward to obtain from \NPM, it
+is potentially costly to download and instrument $B$ for use with
+Jalangi. Moreover, this option delegates our problem
+to library $B$, which also needs code to drive it. 
 
 % I think we should rephrase this, specially now that we know
 % it might be 'doable'.
@@ -879,14 +885,14 @@ in such a scenario.
 
 % We can maybe change the focus to 'Option 3' was easier to implement.
 % This can be another opportunity to mention that  
-In the end, option~\ref{item:3} was the most viable option to easily gather runtime information
+In the end, option~\ref{item:3} was the most viable option to gather run-time information
 even though there is no standard for documentation, either. However, almost all repositories
 contain README files where the library authors briefly describe in prose what
 the code does, which problem it solves, how to install the
 application, how to build the code, etc. It is very common that
 developers provide code examples in the README files to show how the
 library works and how to use it. These code fragments showcase common use cases rather
-than stress-testing the implementation (the problem of
+than stress-testing the implementation (a problem of
 option~\ref{item:2}) because they are meant to be instructive to users of the package.
 
 
@@ -900,12 +906,11 @@ Obtaining code examples for a specific \NPM{} package is done in three steps.
 \item Extract the code examples from the README file. To this end,
   observe that README files are
   written using Markdown\footnote{\url{https://www.markdownguide.org}}, a
-  popular markup language, where
+  popular markup language, where most
   code examples are presented in code blocks labeled with the programming
   language. Hence, we
   retrieve the code examples from code blocks labeled \texttt{js} or
-  \texttt{javascript}, which both stand for JavaScript in
-  Markdown.
+  \texttt{javascript}, which both stand for JavaScript.
 \end{itemize}
 
 \coderef{code:code-example-extracted-motivating-example} shows
@@ -913,7 +918,7 @@ the examples extracted from  the README file of the \texttt{glob-to-regexp} pack
 that way.
 
 \begin{lstlisting}[
-  caption={Extracted example code for the \texttt{glob-to-regexp} package},
+  caption={Code extracted from the \texttt{glob-to-regexp} package},
   language=JavaScript,
   label=code:code-example-extracted-motivating-example,
   float,captionpos=b
@@ -941,7 +946,7 @@ re.test("http://example.com/www/index.html"); // true
 Obtaining the code fragments from the examples provided in the
 README files of the repository proved to be an
 appropriate and pragmatic way of extracting the developer's
-intention and provides an initial code base with meaningful
+intention. It provides an initial code base with meaningful
 examples.
 %? , thus avoiding possible cold start problems.
 
@@ -956,14 +961,20 @@ For example,
   \item Function \lstinline{f} was invoked where parameter
     \lstinline{a} held a value of type \lstinline{string} and
     \lstinline{b} a value of type \lstinline{number}. 
-  \item Property \lstinline{foo} of parameter \lstinline{a} of
-    function \lstinline{f} was accessed within the function. 
+  \item Function \lstinline{foo} was invoked. Its parameter
+    \lstinline{hello} was accessed as an object within the
+    function. Its property \lstinline{world} was found to have a
+    string value (see Figure~\ref{fig:example-get-field-interaction}).
+  \item Function \lstinline{foo} was invoked. Its parameter
+    \lstinline{bar} was accessed as an object. Its method
+    \lstinline{hello} was invoked. The return value of this call was
+    accessed as an object with property \lstinline{world}, which
+    returned a string (see Figure~\ref{fig:example-method-call-interaction}).
   \item Parameter \lstinline{a} of function \lstinline{f} was used as
     operand for \lstinline{==}. 
 \end{itemize}
 
-The dynamic analysis framework Jalangi is used for gathering this kind of
-information. Jalangi's configurable analysis modules enable
+Jalangi's configurable analysis modules enable
 programming custom callbacks that can get triggered with virtually any
 JavaScript event. Our instrumentation observes the following events: 
 \begin{itemize}
@@ -976,35 +987,36 @@ JavaScript event. Our instrumentation observes the following events:
 \end{itemize}
 
 The implementation stores these observations as entities called
-\texttt{interactions}. They are used for translating, modifying, and
+\texttt{interactions}, which document each operation applied. They are used for translating, modifying, and
 aggregating Jalangi's raw event information to get an application-specific data representation. Each function invocation is stored as
 a \texttt{FunctionContainer} which contains an \texttt{ArgumentContainer} for each argument. Each \texttt{ArgumentContainer} contains 
-the name and index of the argument and a collection of \texttt{interactions}. As shown in \figref{fig:example-get-field-interaction}, the interaction \texttt{getField} gets triggered whenever 
-a property of an object gets accessed and it tracks the name of the accessed field and the type of the returned value. The invocation of an object's method is tracked with 
-the \texttt{methodCall} interaction. The \texttt{followingInteractions} property is used for inferring nested interfaces.
-It is an array that recursively records \texttt{interactions} on the return value of \texttt{getField} or 
-\texttt{methodCall}. \figref{fig:example-method-call-interaction} provides an example for both the \texttt{methodCall} interaction
-and the \texttt{followingInteractions} property. Finally, the \texttt{usedAsArgument} interaction
-gets triggered when an argument is used in the invocation of a function.
+the name and index of the argument and a collection of
+\texttt{interactions} on the argument. As shown in \figref{fig:example-get-field-interaction}, the interaction \texttt{getField} gets triggered whenever 
+a property of an object gets accessed. It tracks the name of the
+accessed field and the type of the returned value. The invocation of a
+method is tracked with the \texttt{methodCall} interaction. An
+interaction can have a \texttt{followingInteractions} property if
+there are further operations on the return value of the interaction. It is used for inferring nested interfaces.
+That is, the \texttt{followingInteractions} recursively record \texttt{interactions} on the return value of \texttt{getField} or 
+\texttt{methodCall}, taking care of object identities to avoid
+looping. \figref{fig:example-method-call-interaction} provides an
+example for both the \texttt{methodCall} interaction 
+and the \texttt{followingInteractions} property. There is a
+\texttt{usedAsArgument} interaction (not shown) that
+gets triggered when an argument is used in the invocation of another function.
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=JavaScript,numbers=none]
 function foo(hello) {
   if (hello.world) {
     // ...
-  }
-}
+} }
 
 foo({ world: "..." });
     \end{lstlisting}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
-{
-  functionId_1: {
+{ functionId_1: {
     //...
     functionName: 'foo',
     args: {
@@ -1018,22 +1030,15 @@ foo({ world: "..." });
             !\textbf{field: "world",}!
             !\textbf{followingInteractions: [],}!
             !\textbf{returnTypeOf: "string",}!
-          !\textbf{\},}!
-        ],
-      },
-    },
-  },
-}
+          !\textbf{\},}!],},},},}
     \end{lstlisting}
-  \end{subfigure}
   \caption{
-      Example code that for \texttt{getField} interaction
+      Example code for \texttt{getField} interaction
     }
   \label{fig:example-get-field-interaction}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[t]
-  \begin{subfigure}[t]{0.48\linewidth}
+\begin{figure}[t]
       \begin{lstlisting}[language=JavaScript,numbers=none]
 function foo(bar) {
   if (bar.hello().world) {
@@ -1045,16 +1050,11 @@ foo({
   hello: function () {
     return {
       world: "xxx",
-    };
-  },
-});    
+};},});    
       \end{lstlisting}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
+
       \begin{lstlisting}[language=JavaScript,numbers=none,escapechar=!]
-{
-  functionId_1: {
+{ functionId_1: {
     //...
     functionName: "foo",
     args: {
@@ -1073,19 +1073,11 @@ foo({
                 !\textbf{field: "world",}!
                 !\textbf{followingInteractions: [],}!
                 !\textbf{returnTypeOf: "string",}!
-              !\textbf{\},}!
-            !\textbf{],}!
-          !\textbf{\},}!
-        ],
-      },
-    },
-  },
-}        
+              !\textbf{\},}! !\textbf{],}! !\textbf{\},}!],},},},}
       \end{lstlisting}
-    \end{subfigure}
-  \caption{Example code for \texttt{}{methodCall} and \texttt{followingInteractions}}
+  \caption{\texttt{}{methodCall} and \texttt{followingInteractions}}
   \label{fig:example-method-call-interaction}
-\end{figure*}
+\end{figure}
 
 \begin{figure*}[t]
   \begin{subfigure}[t]{0.48\linewidth}
@@ -1140,35 +1132,42 @@ foo();
   \label{fig:example-is-exported-required-module}
 \end{figure*}
 
-We wrap each function's argument in a wrapper object, which  stores meta-information and greatly simplifies the mapping of an observation 
-with the corresponding \texttt{ArgumentContainer} or \texttt{interaction}. We use the original values for critical operators such as 
-\texttt{===} or \texttt{typeof}, for which wrapper objects would modify the behavior of the code.
+To obtain this information we wrap each function's argument in a wrapper object, which stores meta-information and provides the mapping of an observation 
+to the corresponding \texttt{ArgumentContainer} or
+\texttt{interaction}. For operators that are aware of object identity, such as 
+\texttt{===} or \texttt{typeof}, we use the original values because
+they could return different results for wrapper objects.
 
-The property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly 
-exported by the module, the property \texttt{isExported} will be set to \texttt{true} when it is invoked. If a function of an 
+We also gather information to determine which  module template is most
+appropriate. To this end
+the property \texttt{requiredModule} stores the name of the module that declared the invoked function. If a function is explicitly 
+exported by the module, the property \texttt{isExported} is set to \texttt{true} when it is invoked. If a function of an 
 exported object is invoked, \texttt{isExported} will be \texttt{false} and \texttt{requiredModule} will contain the name of 
-the required module, as shown in \figref{fig:example-is-exported-required-module}.
+the required module, as shown in
+\figref{fig:example-is-exported-required-module}. If a function is
+used as a constructor, we set its \texttt{isConstructor} flag.
 
-The run-time information is saved as a JSON file that can be used for later
-processing. The instrumentation tool is written in JavaScript and runs in \NodeJS{} in a
-Docker container.   
+% The run-time information is saved as a JSON file that can be used for later
+% processing. The instrumentation tool is written in JavaScript and runs in \NodeJS{} in a
+% Docker container.   
 
 \subsection{TypeScript Declaration File Generation}
 \label{sec:typescr-decl-file}
 %\paragraph*{Overview}
 
-The next step in the pipeline after gathering the run-time information is
+The next step after gathering the run-time information is
 the generation of the declaration file (cf.\
-\figref{fig:tsd_generation_method_block_diagram}). It is a lightweight,
-simple, and fast application, which solely relies on the run-time
-information gathered in the previous step.
+\figref{fig:tsd_generation_method_block_diagram}).
+% It is a lightweight,
+% simple, and fast application, which solely relies on the run-time
+% information gathered in the previous step.
 % The tool itself is written in TypeScript and runs in a
 % Docker container in \NodeJS.  
-
-Instead of analyzing the shape of the exported module, we choose the
-template based on how the module is used. We analyze the properties \texttt{isExported},
+%
+Contrary to \texttt{dts-gen} which analyzes the shape of the exported module, we choose the
+template based on the way the module is used. We analyze the properties \texttt{isExported},
 \texttt{requiredModule}, and \texttt{isConstructor} from the
-information gathered at run time to distinguish
+run-time information to distinguish
 between \textbf{module-class} and \textbf{module-function}. If a function is invoked and
 it is imported from the module we are analyzing we infer the template
 \textbf{module-class} or \textbf{module-function}. We choose \textbf{module-class} if the
@@ -1281,31 +1280,38 @@ export function anyNonNil(value: string): boolean;
   \label{fig:experiments-results-module-is-uuid}
 \end{figure*}
 
-We implemented the most common TypeScript features first and we focused our effort in building an
-end-to-end solution that generates useful declaration files. The
-types \texttt{string}, \texttt{number}, \texttt{boolean}, unions
-thereof, arrays, function callbacks, and optional elements were considered
-both for function parameters and interface properties. We also
-considered overloaded functions.
-Common types such as
-\texttt{any}, tuples, intersections (that
-is, types formed using the intersection operator \lstinline[language=TypeScript]/&/) and features such as
-generics and index signatures were not implemented.
-
-The selection of typing features covered in the tool is driven by
-examination of the files in
-the DefinitelyTyped repository. We parsed each declaration file with
+Our goal is to support the  most commonly used TypeScript
+features first in our implementation. To this end,
+the selection of typing features covered in the tool is driven by
+an analysis of the 6648 declaration files in
+the DefinitelyTyped repository. \footnote{As of commit
+  \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
+We parsed each declaration file with 
 \texttt{dts-parse} and tagged it according to the features used in the file.
 Table~\ref{tab:dts-parse-stats} summarizes the results.
-We decided to prioritize the features with the highest number of
-occurrences and support them first in our framework.
+The \textbf{Count} column indicates the number of declaration files that use a
+specific feature. The 3rd column shows the corresponding
+percentage with respect to all files in the repository. 
+
+We start with a limited scope on the features with the highest number of
+occurrences. Thus, we focus our effort on building an
+end-to-end solution that generates useful declaration files. We choose
+the types \texttt{string}, \texttt{number}, \texttt{boolean}, unions
+thereof, arrays, function callbacks, and optional elements are considered
+both for function parameters and interface properties. We also
+treat aliases and overloaded functions.
+Some common types such as \texttt{any}, literals, generics, and index
+signatures are not yet implemented. 
+Rare types such as tuples and intersections (that
+is, types formed using the intersection operator
+\lstinline[language=TypeScript]/&/) were not considered. 
+
 
 \begin{table}[tp]
-  \caption{Distribution of TypeScript features in declaration files uploaded to DefinitelyTyped (DT). The 2nd column shows how many files in DT make use of a specific TypeScript feature. The 3rd column shows the corresponding percentage for a total of 6648 declaration files in DT. Numbers were obtained from commit \texttt{da93d7b13094bacb170ead3f4a289f3b8687e4e5} (April 4, 2020).}
   \begin{center}
     \begin{tabular}{ |l|c|r| } 
       \hline
-      \textbf{TypeScript feature} & \textbf{Count} & \multicolumn{1}{|c|}{\textbf{\%}} \\ 
+      \textbf{Feature} & \textbf{Count} & \multicolumn{1}{|c|}{\textbf{\%}} \\ 
       \hline
       type-string & 5086 & 76.50\% \\
       optional-parameter & 4915 & 73.93\% \\
@@ -1336,6 +1342,7 @@ occurrences and support them first in our framework.
       \hline
     \end{tabular}
   \end{center}
+  \caption{Usage of TypeScript features on DefinitelyTyped}
   \label{tab:dts-parse-stats}
 \end{table}
 
