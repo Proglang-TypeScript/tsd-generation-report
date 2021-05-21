@@ -810,9 +810,12 @@ We explain in Section~\ref{sec:initial-code-base} how we obtain code
 fragments. 
 To obtain run-time information, we instrument
 the code fragments and the entire code base of the library with
-Jalangi \cite{DBLP:conf/sigsoft/SenKBG13}. We extend Jalangi's
+Jalangi2 \cite{DBLP:conf/sigsoft/SenKBG13}. We extend Jalangi's
 analysis modules to gather data flow and type information as required
-for our purposes and explained in Section~\ref{sec:run-time-information}.
+for our purposes and explained in
+Section~\ref{sec:run-time-information}.
+\texttt{dts-generate} supports full ECMAScript~5.1, which is
+the latest JavaScript version supported by Jalangi2. 
 % Jalangi provides several
 % analysis modules that we extended as needed to retrieve the required
 % run-time information.
@@ -1289,7 +1292,6 @@ Rare types such as tuples and intersections (that
 is, types formed using the intersection operator
 \lstinline[language=TypeScript]/&/) were not considered. 
 
-
 \begin{table}[tp]
   \begin{center}
     \begin{tabular}{ |l|c|r| } 
@@ -1329,12 +1331,63 @@ is, types formed using the intersection operator
   \label{tab:dts-parse-stats}
 \end{table}
 
-Finally, interfaces are created by exploring \texttt{getField} and \texttt{methodCall} interactions from the run-time information. We
+Interfaces are created by exploring \texttt{getField} and \texttt{methodCall} interactions from the run-time information. We
 gather the interactions for a specific argument and build the
 interface by incrementally adding new properties. Interactions within
 the \texttt{followingInteractions} field are recursively traversed,
 building a new interface at each level up to a predefined depth. Interfaces that turn out
 to be equivalent are merged.
+
+To construct the type signature for a function, we inspect the
+primitive types of each argument as well as the interface created from
+interactions on the argument in the function body. We do the same for
+the return type of the function. This procedure yields a candidate
+type for each function call observed during the execution.
+For instance, for the \lstinline{globToRegExp} examples shown in
+Listing~\ref{code:code-example-extracted-motivating-example} we obtain
+the following observed candidate types
+\begin{verbatim}
+globToRegExp : (glob: string, opts: undefined) -> RegExp
+globToRegExp : (glob: string, 
+                opts: { extended : bool,
+                        globstar?: any,
+                        flags?: any }) -> RegExp
+\end{verbatim}
+As the type for \lstinline{glob} and the return type
+\lstinline{RegExp} are the same, we collapse the type for
+\lstinline{opts} into a union type. The union with the
+\lstinline{undefined} type is special and converted into an optional
+argument so we arrive at a single collapsed candidate type
+\begin{verbatim}
+globToRegExp : (glob: string, 
+                opts?: { extended : bool,
+                         globstar?: any,
+                         flags?: any }) -> RegExp
+\end{verbatim}
+We proceed in this way with merging further candidate types until we
+reach a set of non-mergable types for the function. If this set
+contains more than one candidate type, then we generate an overloaded
+definition. For example, the candidate types
+\begin{verbatim}
+f(string): string
+f(number): number
+f(boolean): boolean
+\end{verbatim}
+cannot be merged as the return types are different. They give rise to
+an overloaded definition with three alternatives. However, given the candidate types
+\begin{verbatim}
+g(string): string
+g(number): string
+g(boolean): boolean
+\end{verbatim}
+we can merge the first two types on the first argument (because all
+remaining arguments and the return types are equal) by collecting \lstinline{string} and
+\lstinline{number} into a union type. The resulting set of non-mergable types
+is thus
+\begin{verbatim}
+g(string|number): string
+g(boolean): boolean
+\end{verbatim}
 
 \section{Evaluation}
 \label{sec:dts-generate-evaluation}

@@ -40,14 +40,20 @@ Added discussion to the related work section.
 
 > Besides not discussing this related work, the descriptions in Sections
 > 4.2 and the end of 4.3 are rather informal: What exactly is the subset
-> of JavaScript/TypeScript that is supported? What is the instrumented
+> of JavaScript/TypeScript that is supported?
+
+ECMAScript 5.1
+
+> What is the instrumented
 > evaluator computing? How are types --- which include unions and
 > intersections (at least for function types) --- being computed from
 > the run-time information? The lack of precise details makes it
 > difficult to understand what the tool currently does, how plausible it
 > might be to extend to support more of JavaScript/TypeScript in the
 > future, and how it relates the related work described above.
-> 
+
+Added some details about type computation at end of section 4.
+
 > With respect to the implemented tool, it is not clear how close it is
 > to being useful in practice. Many TypeScript features, as described in
 > Table 1 and in the Evaluation, are not yet supported. For the 244
