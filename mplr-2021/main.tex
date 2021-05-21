@@ -1353,6 +1353,19 @@ globToRegExp : (glob: string,
                         globstar?: any,
                         flags?: any }) -> RegExp
 \end{verbatim}
+After expanding manually the code base with one particular case, we obtain the following type
+\begin{verbatim}
+re = globToRegExp("*/www/{*.js,*.html}", {
+  flags: "i",
+  globstar: true,
+});
+
+globToRegExp : (glob: string, 
+                opts: { extended? : any,
+                        globstar: bool,
+                        flags: string }) -> RegExp
+\end{verbatim}
+
 As the type for \lstinline{glob} and the return type
 \lstinline{RegExp} are the same, we collapse the type for
 \lstinline{opts} into a union type. The union with the
@@ -1360,9 +1373,9 @@ As the type for \lstinline{glob} and the return type
 argument so we arrive at a single collapsed candidate type
 \begin{verbatim}
 globToRegExp : (glob: string, 
-                opts?: { extended : bool,
-                         globstar?: any,
-                         flags?: any }) -> RegExp
+                opts?: { extended? : bool,
+                         globstar?: bool,
+                         flags?: string }) -> RegExp
 \end{verbatim}
 We proceed in this way with merging further candidate types until we
 reach a set of non-mergable types for the function. If this set
