@@ -190,9 +190,9 @@
   called declaration files. DefinitelyTyped is the standard public
   repository for these files.
   The repository is populated and maintained manually by volunteers, which
-  is error prone and time consuming. Discrepancies between a
+  is error-prone and time consuming. Discrepancies between a
   declaration file and the JavaScript implementation lead to
-  incorrect feedback from the TypeScript IDE and thus to incorrect uses
+  incorrect feedback from the TypeScript IDE and, thus, to incorrect uses
   of the underlying JavaScript library.
 
   This work presents \texttt{dts-generate}, a tool that generates
@@ -274,7 +274,7 @@ them to create simple pieces of code very quickly and proceed on a
 trial-and-error basis.
 
 JavaScript was never intended to be more than a
-scripting language and thus lacks features for maintaining and evolving large
+scripting language and, thus, lacks features for maintaining and evolving large
 codebases. However, nowadays developers create large and complex
 applications in JavaScript. 
 Mistakes such as mistyped property
@@ -332,7 +332,7 @@ declaration files for more than 6000 libraries.
 
 Unfortunately, creation and maintenance of most declaration
 files in DefinitelyTyped is conducted manually,
-which is time consuming and  error prone. Errors are aggravated because TypeScript takes a
+which is time consuming and  error-prone. Errors are aggravated because TypeScript takes a
 declaration file at face value. Discrepancies between declaration and
 implementing JavaScript library are not detected at 
 compile time and result in incorrect behavior (e.g., autocompletion
@@ -346,7 +346,7 @@ frustration, and decreasing confidence in the tool chain.
 \label{sec:approach}
 
 We aim to improve on this situation by providing a tool that generates
-TypeScript declaration files automatically. To do so, we rely on we rely on runtime information
+TypeScript declaration files automatically. To do so, we rely on we rely on run-time information
 gathered from the examples provided
 by the developer as part of the documentation of a library. If these
 examples are sufficiently rich, then our toolchain can generate
@@ -415,7 +415,7 @@ declaration file.
 % \end{description}
 
 Our tool \texttt{dts-generate} is a first step to explore the possibilities for
-generating useful declaration files from runtime information.
+generating useful declaration files from run-time information.
 
 \texttt{dts-generate} comes with a framework that 
 supports the generation of declaration files for an existing
@@ -448,7 +448,7 @@ Our implementation of code instrumentation  to gather data flow
 information and type information at run time is based on
 Jalangi \cite{DBLP:conf/sigsoft/SenKBG13}, a configurable
 framework for dynamic analysis for JavaScript.
-The implementation and the results are available in the following repositories:
+The implementation and the results are available in the following repositories.
 
 \begin{itemize}\footnotesize
   \item \url{https://github.com/proglang/run-time-information-gathering/tree/v1.1.0}
@@ -508,9 +508,10 @@ run-time information, and generates a TypeScript declaration
 file. As the package is insufficiently documented, we provide one
 additional example to generate the result 
 shown in \figref{fig:motivating-example-glob-to-regexp-vscode} (see
-discussion in Section~\ref{sec:typescr-decl-file}). This declaration is
-ready for use in a TypeScript project:  Visual Studio's
-code completion runs properly with the generated file. If the
+discussion in Section~\ref{sec:typescr-decl-file}).  The interface is
+detected correctly. Optional parameters are detected. This declaration is
+ready for use in a TypeScript project:  the generated file works
+properly with Visual Studio Code\footnote{\url{https://code.visualstudio.com}}. If the
 \texttt{glob-to-regexp} package gets modified in the future, a new declaration
 file can be generated automatically using
 \texttt{dts-generate}. Our comparator tool (Section~\ref{sec:dts-compare}) can compare the new file
@@ -540,9 +541,7 @@ declare namespace GlobToRegexp {
   \end{center}
 
   \caption{Declaration file for \texttt{glob-to-regexp} 
-    generated with \texttt{dts-generate} - The interface is
-    detected correctly. Optional parameters are detected. The declaration 
-    file is usable in Visual Studio Code\protect\footnote{\url{https://code.visualstudio.com}}} 
+    generated with \texttt{dts-generate}} 
   \label{fig:motivating-example-glob-to-regexp-vscode}
 \end{figure}
 
@@ -799,7 +798,7 @@ substantiate in the next subsection.
       overview - The initial code base is retrieved from the \NPM{} package's
     repository.
     Run-time information is gathered driven by example code.
-    A TypeScript Declaration File is generated using run-time
+    A TypeScript declaration file is generated using run-time
     information.
     % A Symbolic Execution Engine creates test cases based on the generated
     % Declaration File and via a feedback loop enriches the code base until the stopping
@@ -832,7 +831,7 @@ the latest JavaScript version supported by Jalangi2.
 
 A second independent block explained in
 Section~\ref{sec:typescr-decl-file} uses the run-time information to
-generate a TypeScript declaration file. It infers the overall
+generate a TypeScript declaration file. This part infers the overall
 structure of the JavaScript library, its interfaces, and the types
 from the run-time information.  The resulting declaration file is
 ready for use in the development process. Its contents mimic the usage
@@ -947,10 +946,10 @@ examples.
 
 \subsection{Run-time Information Gathering}
 \label{sec:run-time-information}
-The Runtime Information block in
+The run-time information block in
 \figref{fig:tsd_generation_method_block_diagram} gathers
 type-related information as well as usage-related information for each function parameter.
-For example,
+Here are some examples.
 
 \begin{itemize}
   \item Function \lstinline{f} was invoked where parameter
@@ -1095,7 +1094,7 @@ foo.doSomething();
   }
 }    
     \end{lstlisting}
-    \caption{Runtime information fragment for \texttt{module} template}
+    \caption{Run-time information fragment for \texttt{module} template}
   \end{subfigure}
 
   \begin{subfigure}[t]{0.48\linewidth}
@@ -1118,7 +1117,7 @@ foo();
   }
 }    
     \end{lstlisting}
-    \caption{Runtime information for \texttt{module-function} template}
+    \caption{Run-time information for \texttt{module-function} template}
   \end{subfigure}
   \caption{Example code for properties \texttt{isExported} and \texttt{requiredModule} - Property \texttt{isExported} is
   \texttt{false} for \texttt{module} and \texttt{true} for \texttt{module-function}. Additionally, \texttt{requiredModule}
@@ -1271,7 +1270,7 @@ export function anyNonNil(value: string): boolean;
     \caption{is-uuid/index.d.ts - DefinitelyTyped}
   \end{subfigure}
 
-  \caption{Results for \textbf{module}  module \texttt{is-uuid}}
+  \caption{Results for \textbf{module} \texttt{is-uuid}}
   \label{fig:experiments-results-module-is-uuid}
 \end{figure*}
 
@@ -1451,8 +1450,8 @@ then \texttt{dts-generate} is a viable alternative to hand-crafted definition fi
 \begin{figure}[tp]
   \begin{centering}
       {\includegraphics[width=1\linewidth]{evaluation-diagram.pdf}}
-      \caption[Evaluation against DefinitelyTyped Repository]{\textbf{Evaluation of
-          generated declaration files against DefinitelyTyped Repository} - The parser
+      \caption[Evaluation against DefinitelyTyped repository]{\textbf{Evaluation of
+          generated declaration files against DefinitelyTyped repository} - The parser
         uses the TypeScript Compiler           API \cite{typescript-compiler-api} to
         transform declaration files into an abstract syntax which is serialized in
         JSON. The comparison is performed on the JSON format.} 
@@ -1469,8 +1468,8 @@ files. \texttt{dts-parse} receives the file as an input
 parameter and returns an AST serialized in JSON.
 
 The first step is to parse the declaration files using the TypeScript
-Compiler API to build and traverse the 
-Abstract Syntax Tree of a TypeScript program
+compiler API to build and traverse the 
+abstract syntax tree of a TypeScript program
 \cite{typescript-compiler-api}. 
 This step also performs a sanity check of the generated declaration
 files as it rejects files with syntactic or semantic errors.
@@ -1564,7 +1563,10 @@ Type aliases are expanded before the comparison and thus invisible to
 \lstinline{declare function} \lstinline{F(a: string | number);}. The same approach applies to literal
 interfaces. \texttt{dts-compare} does 
 not contemplate differences in function return types, because interface inference of
-function return types is not covered in the current version of \texttt{dts-generate}. 
+function return types is limited in the current version of
+\texttt{dts-generate}. While the return values are inspected, a proper
+interface inference requires further operations on the return value
+(cf.\ the explanation of interactions in \secref{sec:run-time-information}).
 
 \section{Results}
 \label{sec:results}
@@ -1604,7 +1606,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
   \includegraphics[width=1\linewidth]{funnel.png}
   \caption[Number of analyzed modules for each stage of the experiment]{
     \textbf{Number of analyzed modules for each stage of the experiment} - 
-  A TypeScript Declaration File was generated for only \CountModulesGeneratedDeclarationFile{} modules, out of \CountTotalModulesDefinitelyTyped{} modules in the DefinitelyTyped Repository. 
+  A TypeScript declaration file was generated for only \CountModulesGeneratedDeclarationFile{} modules, out of \CountTotalModulesDefinitelyTyped{} modules in the DefinitelyTyped repository. 
   % It was only possible to gather valid run-time information for about 25\% of the modules for which a Code Example was extracted.
   } 
   \label{fig:experiments-overall-funnel}
@@ -1783,37 +1785,6 @@ export = escapeHTML;
     \label{fig:experiments-results-module-function}
 \end{figure*}
 
-
-\begin{figure*}[tp]
-  \centering
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-export function v1(str: string): boolean;
-export function v2(str: string): boolean;
-export function v3(str: string): boolean;
-export function v4(str: string): boolean;
-export function v5(str: string): boolean;
-    \end{lstlisting}
-    \caption{is-uuid/index.d.ts - Generated}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-export function v1(value: string): boolean;
-export function v2(value: string): boolean;
-export function v3(value: string): boolean;
-export function v4(value: string): boolean;
-export function v5(value: string): boolean;
-export function nil(value: string): boolean;
-export function anyNonNil(value: string): boolean;
-    \end{lstlisting}
-    \caption{is-uuid/index.d.ts - DT}
-  \end{subfigure}
-
-  \caption{Results for \textbf{module} \texttt{is-uuid}}
-  \label{fig:experiments-results-module-is-uuid}
-\end{figure*}
-
 \begin{figure*}[tp]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
@@ -1914,7 +1885,7 @@ if (typeof pattern !== 'string') {
 } 
     \end{lstlisting}
     \caption{glob-base/index.js - Excerpt of JS implementation
-      that throws an Error when input parameter is not a string} 
+      that throws an error when input parameter is not a string} 
     \label{fig:subfloat-globbase-js-implementation}
   \end{subfigure}
   \hfill
@@ -2065,6 +2036,12 @@ The main issue is that any example-driven algorithm can only come up with an
 under-approximation of the intended meaning, so some form of help is required when
 generalization is desired.
 
+We believe that  JavaScript developers can be taught to write their
+code examples in such a style that high-quality TypeScript signatures
+can be extracted from them without human intervention. 
+In the subsequent paragraphs we survey some approaches that rely on
+developers using special strings and other constants in their code examples.
+
 \paragraph*{Literal types vs string}
 Many JavaScript libraries use literal strings to select
 options and configurations. To be concrete, 1925 DT packages rely on
@@ -2077,7 +2054,7 @@ relies on strings to control events and indicate protocols in (different) interf
 \end{lstlisting}
 The carlo
 package\footnote{\url{https://www.npmjs.com/package/@types/carlo}}
-uses it to distinguish different 
+uses literals to distinguish different 
 types of events.
 \begin{lstlisting}[language=TypeScript]
 export type AppEvent = 'exit' | 'window';
@@ -2085,13 +2062,14 @@ export type AppEvent = 'exit' | 'window';
 % coinbase ...
 
 For our framework, it is hard to distinguish a string that is meant literally from a
-string that just serves as an example. For an automatic solution, one might collect
+string that just serves as an example. An automatic solution might collect
 typical values of literal strings and generate the corresponding literal types (or
 unions thereof) when the arguments used in the example are all typical. Alternatively, one
-might always generate literal types unless the number of different examples provided is
-greater than some threshold, in which case the generator generalizes to type
+might always generate literal types until the number of different
+examples passes some threshold, in which case the generator
+generalizes to type 
 \lstinline/string/. Both alternatives come with the problem that they
-create a local over-approximation, so that it would become harder to
+create a local over-approximation, which makes it harder to
 qualify the output of the generator. A further alternative that does
 not suffer from this drawback would be to communicate to the developer a set
 of typical example strings, \emph{marker strings}, that the generator
@@ -2099,8 +2077,8 @@ always generalizes to the \lstinline/string/ type.
 
 \paragraph*{Any}
 Suppose the programmer supplies examples that use \lstinline/number/, \lstinline/bool/, and
-\lstinline/string/ at the same argument position. The obvious approximation to the type of
-this argument is the union type \lstinline/number|bool|string/. But what if the programmer
+\lstinline/string/ at the same argument position. In this case, our
+tool calculates the union type \lstinline/number|bool|string/. But what if the programmer
 wants to advertise the type \lstinline/any/ for an argument? This intent is hard to
 communicate with a finite number of examples.
 
@@ -2168,7 +2146,7 @@ JavaScript libraries \cite{dts-gen}. Its documentation states that the result is
 intended to be used as a starting point for the development of a declaration file. The outcome
 needs to be refined afterwards by the developer. 
 
-The tool analyzes the shape of the objects at runtime after initialization without
+The tool analyzes the shape of the objects at run time after initialization without
 executing the library. This results in most parameters and results being inferred as
 \lstinline[language={}]{any}.
 % \coderef{code:related-work-dts-gen-example} shows an example
@@ -2262,7 +2240,7 @@ file based on the information gathered at run time.
 
 We developed an architecture that supports the automatic generation of declaration files
 for specific JavaScript libraries without additional manual tasks. The architecture
-contemplates future incorporation of a Symbolic Execution Engine that refines the
+contemplates future incorporation of a symbolic execution engine that refines the
 initial code base enabling the exploration of new execution paths. Although it is not
 implemented 
 in this work, its incorporation would result in small incremental modifications to the
