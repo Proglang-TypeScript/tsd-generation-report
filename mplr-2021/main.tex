@@ -25,7 +25,7 @@
 %% The first command in your LaTeX source must be the \documentclass command.
 
 \input{macros}
-\newcommand{\secref}[1]{Section~\ref{#1} - \nameref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
 \newcommand{\figref}[1]{Figure~\ref{#1}}
 \newcommand{\coderef}[1]{Listing~\ref{#1}}
 
@@ -540,8 +540,7 @@ declare namespace GlobToRegexp {
     \includegraphics[width=\linewidth]{motivating-example-glob-to-regexp-vscode.png}
   \end{center}
 
-  \caption{Declaration file for \texttt{glob-to-regexp} 
-    generated with \texttt{dts-generate}} 
+  \caption{Generated declaration file for \texttt{glob-to-regexp}} 
   \label{fig:motivating-example-glob-to-regexp-vscode}
 \end{figure}
 
@@ -795,11 +794,12 @@ substantiate in the next subsection.
   \centering
   \includegraphics[width=1\linewidth]{dts-generate-block-diagram.pdf}
   \caption[dts-generate - Architecture overview]{dts-generate - Architecture
-      overview - The initial code base is retrieved from the \NPM{} package's
-    repository.
-    Run-time information is gathered driven by example code.
-    A TypeScript declaration file is generated using run-time
-    information.
+    overview
+    % - The initial code base is retrieved from the \NPM{} package's
+    % repository.
+    % Run-time information is gathered driven by example code.
+    % A TypeScript declaration file is generated using run-time
+    % information.
     % A Symbolic Execution Engine creates test cases based on the generated
     % Declaration File and via a feedback loop enriches the code base until the stopping
     % criteria is reached.
@@ -1452,11 +1452,15 @@ then \texttt{dts-generate} is a viable alternative to hand-crafted definition fi
 \begin{figure}[tp]
   \begin{centering}
       {\includegraphics[width=1\linewidth]{evaluation-diagram.pdf}}
-      \caption[Evaluation against DefinitelyTyped repository]{\textbf{Evaluation of
-          generated declaration files against DefinitelyTyped repository} - The parser
-        uses the TypeScript Compiler           API \cite{typescript-compiler-api} to
-        transform declaration files into an abstract syntax which is serialized in
-        JSON. The comparison is performed on the JSON format.} 
+      \caption[Evaluation against DefinitelyTyped repository]{{Evaluation of
+          generated declaration files
+          % against DefinitelyTyped          repository
+        }
+        % - The parser
+        % uses the TypeScript Compiler           API \cite{typescript-compiler-api} to
+        % transform declaration files into an abstract syntax which is serialized in
+        % JSON. The comparison is performed on the JSON format.
+} 
       \label{fig:evaluation-diagram}
   \end{centering}
 \end{figure}
@@ -1508,7 +1512,7 @@ testing frameworks, the input files are marked as \lstinline{expected} or
 declaration files. 
 
 \begin{lstlisting}[
-  caption={Example for \texttt{dts-compare} executed on declaration files without differences},
+  caption={Comparing declaration files without differences},
   language=bash,
 label=code:dts-compare-example,
   float=tp,captionpos=b
@@ -1607,8 +1611,7 @@ templates \textbf{module}, \textbf{module-class}, and \textbf{module-function}.
   \centering
   \includegraphics[width=1\linewidth]{funnel.png}
   \caption[Number of analyzed modules for each stage of the experiment]{
-    \textbf{Number of analyzed modules for each stage of the experiment} - 
-  A TypeScript declaration file was generated for only \CountModulesGeneratedDeclarationFile{} modules, out of \CountTotalModulesDefinitelyTyped{} modules in the DefinitelyTyped repository. 
+    {Number of analyzed modules at each stage}
   % It was only possible to gather valid run-time information for about 25\% of the modules for which a Code Example was extracted.
   } 
   \label{fig:experiments-overall-funnel}
@@ -1632,8 +1635,7 @@ stages:
 \item executing code examples and discarding failing ones.
 \end{itemize}
 
-The results obtained for each step are described in the
-following sections. 
+Next, we describe the results obtained for each step. 
 
 \paragraph*{Repository URL}
 The URL of the source repository could be retrieved for only \CountModulesWithRepositoryUrl{}
@@ -1685,9 +1687,9 @@ only because of Jalangi's own limitations.
 
 \paragraph*{Generated Declaration Files}
 A declaration file was generated for \CountModulesGeneratedDeclarationFile{} out of \CountModulesRunTimeInfoExtracted{} modules. Despite the correct execution
-of the instrumented code examples, \CountModulesDeclarationFileCouldNotBeGenerated{} modules did not yield suitable run-time information
-for generating a declaration file. The extracted code examples for these modules did not
-execute the library. Hence, the collected run-time information was not sufficient
+of the instrumented code examples, the extracted code for
+\CountModulesDeclarationFileCouldNotBeGenerated{} modules did 
+not exercise the library sufficiently. Hence, the collected run-time information was not enough
 for generating a declaration file. 
 
 \subsection{Declaration Files Generation}
@@ -2056,8 +2058,7 @@ relies on strings to control events and indicate protocols in (different) interf
 \end{lstlisting}
 The carlo
 package\footnote{\url{https://www.npmjs.com/package/@types/carlo}}
-uses literals to distinguish different 
-types of events.
+uses literals to distinguish different events.
 \begin{lstlisting}[language=TypeScript]
 export type AppEvent = 'exit' | 'window';
 \end{lstlisting}
@@ -2104,12 +2105,12 @@ interested in type information to improve run-time performance and
 traditional compilation, giving information about object layout and
 tag tests. Contrary to their approach, we do not just observe the
 types of arguments and return values. In addition, we also trace
-property accesses which translate to requirements on objects. Also, we
+property accesses which translate to requirements on objects. We
 have no generalization step to infer polymorphic types.
 
 Hummingbird \cite{DBLP:conf/pldi/RenF16} is a system for type checking
 Ruby programs at run time in the presence of
-metaprogramming. Metaprograms are extended to additionally generate
+metaprogramming. Metaprograms additionally generate
 type annotations for the generated code. Once a generated method is
 called, the method's body is statically checked against the actual
 argument types as well as the generated annotations. This system does
@@ -2127,11 +2128,11 @@ Ruby's type system is nominal. For JavaScript, this approach is much
 less effective as (run-time) typing is structural
 \cite{DBLP:conf/sfp/NausT16}.
 
-JSTrace \cite{saftoiu21:_jstrac} also performs dynamic type inference
-for JavaScript by gathering information at run time. It inspects the
+JSTrace \cite{saftoiu21:_jstrac} performs dynamic type inference
+for JavaScript by gathering information at run time. It inspects
 run-time types of arguments and return values of suitably wrapped
 functions. While the resulting information is treated similarly as in
-our work, we also gather interactions that result from property
+our work, we gather interactions from property
 accesses and method calls and derive further typing constraints from
 those. Moreover, JSTrace performs an (expensive) deep inspection of
 the types of objects and arrays whereas our inspection is shallow and
@@ -2211,9 +2212,9 @@ for inferring the types have room for improvement. A run-time based approach lik
 presented in our work will provide more accurate information, thus generating more precise
 declaration files.
 
-As TSInfer analyzes the objects and functions stored in the snapshot, it faces the problem
-of including internal methods and private properties in the declaration file. Run-time
-information would have informed that the developer has no intention of exposing these
+TSInfer faces the problem
+of including internal methods and private properties from the snapshot in the declaration file. Run-time
+information would have shown that the developer has no intention of exposing these
 methods. 
 
 Moreover, TSEvolve performs a differential analysis on the changes made to a JavaScript
@@ -2246,24 +2247,24 @@ resulting counterexamples to the example code and restart the generation process
 \section{Conclusions and Future Work}
 \label{sec:conclusion}
 We have presented \texttt{dts-generate}, a tool for generating a TypeScript declaration
-file for a specific JavaScript library. The tool downloads code examples written by the
-developers from the library's repository. It uses these examples to execute the library and
-gather data flow and type information. The tool finally generates a TypeScript declaration
+file for a specific JavaScript library. It downloads the developer's
+code examples from the library's repository. It uses these examples to
+execute the library and gather data flow and type information. The tool generates a TypeScript declaration
 file based on the information gathered at run time.
 
-We developed an architecture that supports the automatic generation of declaration files
-for specific JavaScript libraries without additional manual tasks. The architecture
-contemplates future incorporation of a symbolic execution engine that refines the
-initial code base enabling the exploration of new execution paths. Although it is not
-implemented 
-in this work, its incorporation would result in small incremental modifications to the
-presented architecture as it is considered to only expand the existing code base.
+% We developed an architecture that supports the automatic generation of declaration files
+% for specific JavaScript libraries without additional manual tasks. The architecture
+% contemplates future incorporation of a symbolic execution engine that refines the
+% initial code base enabling the exploration of new execution paths. Although it is not
+% implemented 
+% in this work, its incorporation would result in small incremental modifications to the
+% presented architecture as it is considered to only expand the existing code base.
 
 Building an end-to-end solution for the generation of TypeScript declaration files was
-prioritized over type inference accuracy. Consequently, types were taken over from the
+prioritized over type inference accuracy. Hence, types were taken over from the
 values at run time. Developers express their intent how a library should be used with
-example code in the documentation. Hence,
-obtaining the types from the code examples extracted from the repositories proved to be a
+example code in the documentation. 
+Obtaining the types from the code examples extracted from the repositories proved to be a
 pragmatic and effective approximation, enabling to work on specific aspects regarding the
 TypeScript declaration file generation itself.
 
