@@ -116,7 +116,10 @@ F: Added new images:
 > "Literal types vs string": If considering asking developers to mark
 > strings, instead why not ask them to directly use, e.g. the "Enums" or
 > "Discriminated Unions" (https://www.typescriptlang.org/docs/handbook)?
-> 
+
+Misconception! They write JavaScript, not TypeScript! Added a
+paragraph of clarification.
+
 > "Any": Ditto above; why not ask developers to choose the any type?
 > 
 > "Further types": Inferring indexed types, dependent types, etc. from
@@ -132,18 +135,26 @@ F: Added new images:
 > *** Minor Comments and Typos ***
 > 
 > Fig 1: Maybe I'm missing it, but I don't see Footnote 6 anywhere.j
-> 
+
+FIXED
+
 > p.5: "globToRegexp" ==> "GlobToRegexp" twice
-> 
+
+FIXED
+
 > p.8: I'm not sure why "syntax highlighting is done correctly" is
 > noteworthy here.
-> 
-> Fig 4: Is this referenced in the text?
-> 
-> p.15: "loose" ==> "lose"
-> 
 
-DONE.
+REMOVED
+
+> Fig 4: Is this referenced in the text?
+
+FIXED
+
+> p.15: "loose" ==> "lose"
+>
+
+FIXED
 
 > 
 > ----------------------- REVIEW 2 ---------------------
@@ -183,38 +194,93 @@ DONE.
 > 
 > ## Major comments
 > 
-> p. 1: I have the feeling that the abstract was not prepared in accordance to the specifications of the journal including the > keywords context, inquiry, approach, knowledge, grounding and importance.
-> It's not that I do not get an impression of the work presented by the paper, but it just feels like an "ordinary abstract" and > not one that explicitly tackles the key questions behing the keywords above.
+> p. 1: I have the feeling that the abstract was not prepared in
+> accordance to the specifications of the journal including the
+> keywords context, inquiry, approach, knowledge, grounding and importance.
+> It's not that I do not get an impression of the work presented by
+> the paper, but it just feels like an "ordinary abstract" and
+> not one that explicitly tackles the key questions behing the keywords above.
 > 
-> p. 4: "We examined all 6029 entries in the DefinitelyTyped repository and found 244 sufficiently well documented NPM > packages," - it's a shame that the final portion of repositories that can be tested is less than 5% of the starting value.
+> p. 4: "We examined all 6029 entries in the DefinitelyTyped
+> repository and found 244 sufficiently well documented NPM
+> packages," - it's a shame that the final portion of repositories that can be tested is less than 5% of the starting value.
 > 
-> p. 15: "In this step, we loose another 50% of modules! This loss is mainly explained because some developers do not wrap > their code in a block using the javascript or js tags. However, as we are still left with code examples for 2260 modules, we did > not further look into code extraction as this number was considered sufficient for evaluating the generation of declaration > files." - Given the low value for the final number of repositories, you should definitely reconsider adapting your extraction > mechanism to be more robust!
+> p. 15: "In this step, we loose another 50% of modules! This loss is
+> mainly explained because some developers do not wrap
+> their code in a block using the javascript or js tags. However, as
+> we are still left with code examples for 2260 modules, we did
+> not further look into code extraction as this number was considered
+> sufficient for evaluating the generation of declaration
+> files." - Given the low value for the final number of repositories,
+> you should definitely reconsider adapting your extraction
+> mechanism to be more robust!
 > 
-> p. 17: "We were unable to generate a declaration file based on the module-class template. All modules corresponding to this > template exhibited at least one of the unimplemented TypeScript features." - I was wondering if could make sense to adapt > the tooling machinery to leave out only the definitions that consist of unimplemented features, instead of leaving out a > whole module if one of its definition.
+> p. 17: "We were unable to generate a declaration file based on the
+> module-class template. All modules corresponding to this template
+> exhibited at least one of the unimplemented TypeScript features." -
+> I was wondering if could make sense to adapt
+> the tooling machinery to leave out only the definitions that consist
+> of unimplemented features, instead of leaving out a
+> whole module if one of its definition.
 > 
-> p. 18: "The remaining 174 files contained at least one of the unimplemented TypeScript features so that they could not be > considered." - This sentence sounds like you indeed generate as much as possible and filter out only layer --- how does this > statement relate my previous concern?
+> p. 18: "The remaining 174 files contained at least one of the
+> unimplemented TypeScript features so that they could not be
+> considered." - This sentence sounds like you indeed generate as much
+> as possible and filter out only layer --- how does this
+> statement relate my previous concern?
 > 
 > ## Minor comments
 > 
-> p. 5: "The choice of the template depends on the structure of the underlying JavaScript library:..." - here the following > listing/itemize environment seems to be missing, at least, I think that a itemize would be the better layout to use here.
-> 
-> p. 14: "dts-compare does not contemplate differences in function return types, because interface inference of function > return types is not covered in the current version of dts-generate." - Why is it that the inference for return types is that > different from parameters? You infer the parameters through example code, by running example code, you get concrete return > values that you can analyse in the same fashion. Furthermore, Figure 4 (for example) shows a generated file with functions > with return types. What am I missing here?
+> p. 5: "The choice of the template depends on the structure of the
+> underlying JavaScript library:..." - here the following
+> listing/itemize environment seems to be missing, at least, I think that a itemize would be the better layout to use here.
+
+DONE.
+
+> p. 14: "dts-compare does not contemplate differences in function
+> return types, because interface inference of function
+> return types is not covered in the current version of dts-generate."
+> - Why is it that the inference for return types is that
+> different from parameters? You infer the parameters through example
+> code, by running example code, you get concrete return
+> values that you can analyse in the same fashion. Furthermore, Figure
+> 4 (for example) shows a generated file with functions
+> with return types. What am I missing here?
+
+Some explanation provided.
+
 > ## Typos
 > 
 > all over the paper: runtime vs run time vs run-time!
+OK...
 > 
 > p. 1: "..., which is error prone and time consuming." - error-prone
 > p. 2: "..., which is time consuming and error prone." - error-prone
-> p. 8: "A TypeScript Declaration File" - declaration file (why title-case?)
+FIXED^2
+> p. 8: "A TypeScript Declaration File" - declaration file (why
+> title-case?)
+FIXED
 > p. 8: "... so that test cases were difficult to reap from the NPM packages:..." - read
+NOT FIXED
 > p. 9: "The Runtime Information block in Figure 3" - run-time information (why title-case?)
-> p. 9: "For example, Function f ... Property foo ... Parameter a ... - function ... property ... parameter (it seems weird to start > with upper-case letters for the itemization)
+FIXED
+> p. 9: "For example, Function f ... Property foo ... Parameter a
+> ... - function ... property ... parameter (it seems weird to start
+> with upper-case letters for the itemization)
 > p. 11: " and traverse the Abstract Syntax Tree of a TypeScript program" - abstract syntax tree
+OK
 > p. 12: "DefinitelyTyped Repository" - repository (why title-case?)
-> p. 12: "uses the TypeScript Compiler API" - TypeScript compiler API (why title-case?)
+OK
+> p. 12: "uses the TypeScript Compiler API" - TypeScript compiler API
+> (why title-case?)
+OK
 > p. 18: "Excerpt of JS implementation that throws an Error when in- put parameter is not a string" - error
-> p. 19: "Properties of interface Result were ignored for readability" - result
+OK
+> p. 19: "Properties of interface Result were ignored for readability"
+> - result
+NOT FIXED
 > p. 22: "future incorporation of a Symbolic Execution Engine that refines the" - symbolic execution engine (why title-case?)
+OK
 > 
 > ## Others
 > p. 1: "from the TypeScript IDE and thus to incorrect uses of" - and, thus,  to
@@ -223,7 +289,7 @@ DONE.
 > ...following repositories.
 > p. 6: "It infers the overall structure of the JavaScript library,..." - non-referential _it_, why not write "the block infers..."
 > p. 9: "...meaningful examples, thus avoiding possible cold start problems." - examples, thus, avoiding
-> 
+ALL FIXED
 > 
 > 
 > ----------------------- REVIEW 3 ---------------------
@@ -234,24 +300,51 @@ DONE.
 > ----------- Overall evaluation -----------
 > SCORE: -1 (major revision)
 > ----- TEXT:
-> The paper presents a tool that automatically generates TypeScript definition files for JavaScript projects. The tool uses > dynamic analysis. It runs the code samples found in the README file in the project repository, records information about > method invocations and argument values and uses those to generate type definitions. The paper evaluates the tool by > comparing generated definitions with hand-written definitions from the DefinitelyTyped repository - this is done for libraries > which have code samples in README, i.e. about ~270 out of ~6000.
+> The paper presents a tool that automatically generates TypeScript
+> definition files for JavaScript projects. The tool uses > dynamic
+> analysis. It runs the code samples found in the README file in the
+> project repository, records information about > method invocations
+> and argument values and uses those to generate type definitions. The
+> paper evaluates the tool by > comparing generated definitions with
+> hand-written definitions from the DefinitelyTyped repository - this
+> is done for libraries > which have code samples in README,
+> i.e. about ~270 out of ~6000. 
 > 
-> The paper presents a tool that is useful, although it has a fairly limited scope. The approach presented by the authors - to > run a code sample using a library and use runtime monitoring to deduce the structure of the library - is definitely a promising > one. The authors make a good first step towards building a practical tool. However, the current implementation of the tool is > quite basic in a number of ways. First, it relies on code samples in README, which is not exactly common (it will work only > for quite basic libraries). Second, it ignores many interesting types that a library could use - most prominently arrays, but > those are just one example.
+> The paper presents a tool that is useful, although it has a fairly
+> limited scope. The approach presented by the authors - to > run a
+> code sample using a library and use runtime monitoring to deduce the
+> structure of the library - is definitely a promising > one. The
+> authors make a good first step towards building a practical
+> tool. However, the current implementation of the tool is > quite
+> basic in a number of ways. First, it relies on code samples in
+> README, which is not exactly common (it will work only > for quite
+> basic libraries). Second, it ignores many interesting types that a
+> library could use - most prominently arrays, but > those are just
+> one example. 
 > 
 > I believe the work presented in the paper is still interesting and useful, but it would need to be much more complete to > justify writing an extensive report about it. Although the journal does not have a specific category of "Tool" papers, I imagine > that if the authors presented the work in a shorter paper and clearly acknowledged the limitations and contributions, then it > would be interesting enough for publication. (Following the idea that the length of the paper should be commensurable with > the contribution.) The current version spends a quite a lot of time discussing the high-level structure of the tool and some > practical details which I did not find particularly important.
 > 
 > DETAILED COMMENTS
 > 
 > * In the introduction, you say that manually writing definitions is error-prone, but your paper then uses manually written > definitions from DefinitelyTyped as ground truth. I find this a bit paradoxical - maybe you could instead say that this is a lot > of work and there are many libraries that are not covered by DefinitelyTyped?
+
+ADDED a SENTENCE
+
 > 
 > * I have to admit that I was a bit confused by the idea of "templates" that is used in the paper. Do the templates determine > just how you structure the definition, or are they somehow limiting what kind of constructs can be used in a given file? I think > this would benefit from some clarification in the paper.
-> 
+
+EXPLAINED in section 3
+
 > * There is very little detail in the paper about how you infer types from the sample values that are observed during the > runtime execution. I guess the mechanism here is quite basic, but it is still worth discussing. (You might be interested in the > related paper [1] which does this for more complex types, but also covers things like records with optional fields.)
-> 
+
+DONE in section 4
+
 > * I think your evaluation is somewhat limited by the fact that the libraries that have a complete documentation in the > README are the ones with very simple API. It would be interesting to evaluate how your approach works on larger libraries > (even if that meant copying some examples into a readme manually).
 > 
 > * I think the phrasing that "more advanced types are overblown" is a bit unfortunate, especially if the tool does not support > some quite basic types like arrays.
-> 
+
+TONED DOWN. We have arrays now.
+
 > * The paper should give a much more extensive overview of related work - for example, it should discuss what has been > done using static analyses, whether similar tools exist for other languages and there might also be other interesting related > approaches (perhaps some based on machine learning methods). The references in the submission are fairly minimal.
 > 
 > [1] T. Petricek, G. Guera, D. Syme. Types from data: making structured data first-class citizens in F#, PLDI 2016
