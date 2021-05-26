@@ -1431,7 +1431,9 @@ consequently will not appear in the generated declaration file.
 
 As a measure of the quality of a generated file we use its distance to
 the declaration file provided for the same module on
-DefinitelyTyped. In other words, we use DefinitelyTyped as our ground truth.
+DefinitelyTyped. In other words, we use DefinitelyTyped as our ground
+truth, because it is the only available reference against we can
+compare our results.
 To this end, we created \texttt{dts-compare}, a tool to compute the
 differences between two TypeScript declaration files.
 % \begin{itemize}
@@ -2087,8 +2089,8 @@ the \lstinline/any/ type for an argument position.
 
 \paragraph*{Further types}
 Similar approaches could be conceived for indexed types, polymorphic types, dependent
-types, etc. However, at present we believe incorporating these features in a tool to be
-overblown because they are not widely used in DefinitelyTyped (see
+types, etc. However, at present we believe incorporating these
+features in a tool to be of limited value because they are not widely used in DefinitelyTyped (see
 Table~\ref{tab:dts-parse-stats}). 
 
 \section{Related Work}
@@ -2139,6 +2141,17 @@ None of the works tackles the question how to obtain a sufficient
 sample of run-time information. One part of our contribution is to
 systematically uncover the README files as a driver for running the
 JavaScript code under inspection.
+
+\paragraph{Data Type Inference}
+Petricek and coworkers describe a mechanism to infer a datatype from
+an example input in JSON, XML, or CSV format
+\cite{DBLP:conf/pldi/PetricekGS16}. Their implementation relies on
+type providers, a metaprogramming facility of F\#. The type provider reads the
+example input at compile time and translates it into a static
+type. The approach is purely data-centric---the shape of the sample
+data determines what is legal in the program. Our approach
+analyzes the program's behavior on sample data and generalizes these
+observations to a type.
 
 \paragraph*{dts-gen}
 TypeScript comes with \texttt{dts-gen}, a tool that creates declaration files for
