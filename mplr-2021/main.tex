@@ -505,8 +505,10 @@ perform static checking and code completion, respectively. With
 declaration file for \texttt{glob-to-regexp}. Our tool downloads the \NPM{} 
 package, runs the examples extracted from its documentation, gathers
 run-time information, and generates a TypeScript declaration
-file. The result is 
-shown in \figref{fig:motivating-example-glob-to-regexp-vscode} and it is
+file. As the package is insufficiently documented, we provide one
+additional example to generate the result 
+shown in \figref{fig:motivating-example-glob-to-regexp-vscode} (see
+discussion in Section~\ref{sec:typescr-decl-file}). This declaration is
 ready for use in a TypeScript project:  Visual Studio's
 code completion runs properly with the generated file. If the
 \texttt{glob-to-regexp} package gets modified in the future, a new declaration
@@ -1356,31 +1358,37 @@ the following observed candidate types
 \begin{verbatim}
 globToRegExp : (glob: string, opts: undefined) -> RegExp
 globToRegExp : (glob: string, 
-                opts: { extended : bool,
-                        globstar?: any,
-                        flags?: any }) -> RegExp
+                opts: { extended: bool,
+                        globstar: undefined,
+                        flags: undefined }) -> RegExp
 \end{verbatim}
-After expanding manually the code base with one particular case, we obtain the following type
+These types are correct, but underapproximate the best possible type
+for the package. Our comparison tool (see Section~\ref{sec:dts-compare}) classifies the differences as
+solvable, hence we provide one more code example:
 \begin{verbatim}
 re = globToRegExp("*/www/{*.js,*.html}", {
   flags: "i",
   globstar: true,
 });
-
+\end{verbatim}
+From this additional example, we obtain the following type:
+\begin{verbatim}
 globToRegExp : (glob: string, 
-                opts: { extended? : any,
+                opts: { extended: undefined,
                         globstar: bool,
                         flags: string }) -> RegExp
 \end{verbatim}
 
-As the type for \lstinline{glob} and the return type
+As the type for the argument \lstinline{glob} and the return type
 \lstinline{RegExp} are the same, we collapse the type for
 \lstinline{opts} into a union type. The union with the
 \lstinline{undefined} type is special and converted into an optional
-argument so we arrive at a single collapsed candidate type
+argument. Moreover, the union of object types proceeds
+componentwise. Altogether, we arrive at a single collapsed candidate
+type.
 \begin{verbatim}
 globToRegExp : (glob: string, 
-                opts?: { extended? : bool,
+                opts?: { extended?: bool,
                          globstar?: bool,
                          flags?: string }) -> RegExp
 \end{verbatim}
@@ -1403,7 +1411,7 @@ g(boolean): boolean
 we can merge the first two types on the first argument (because all
 remaining arguments and the return types are equal) by collecting \lstinline{string} and
 \lstinline{number} into a union type. The resulting set of non-mergable types
-is thus
+has two elements.
 \begin{verbatim}
 g(string|number): string
 g(boolean): boolean
