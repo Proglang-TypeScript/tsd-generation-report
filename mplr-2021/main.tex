@@ -698,18 +698,25 @@ from the guide and
 used \texttt{dts-generate} to generate a corresponding declaration file, as shown in
 \figref{fig:typescript-templates-by-example}.
 
-Unlike \texttt{dts-gen}, a TypeScript package that generates a template for a declaration
-file which only analyzes the structure of the module, we determine the kind of declaration file by examining the usage
-of the module. If the
-imported entity is used solely as a function as in Figure~\ref{fig:example-module-function}, the
-generated declaration file follows the \textbf{module-function} template as shown in Figure~\ref{fig:template-module-function}.
+The Typescript project provides a package \texttt{dts-gen}, which
+generates a template for a declaration file by analyzing the structure
+of the module. The resulting file is intended as a starting point for further
+manual development of the declaration file. 
+Unlike \texttt{dts-gen} we determine the kind of declaration file by
+examining the \emph{usage} of the module. If the imported entity is
+used solely as a function as in
+Figure~\ref{fig:example-module-function}, the 
+generated declaration file follows the \textbf{module-function}
+template as shown in Figure~\ref{fig:template-module-function}. 
 If the example only accesses properties of the imported entity as in
-Figure~\ref{fig:example-module}, we generate according to the \textbf{module} template (Figure~\ref{fig:template-module}).
+Figure~\ref{fig:example-module}, we generate the declarations
+according to the \textbf{module} template
+(Figure~\ref{fig:template-module}). 
 If the imported entity is used with \lstinline/new/ to create new instances as in
 Figure~\ref{fig:example-class}, we generate a \textbf{module-class} template (Figure~\ref{fig:template-class}).
 While it is possible to create a library of undetermined category, our selection is driven
 by the examples in the documentation and 
-hence reflects the developers intent.
+hence reflects the developer's intent.
 % Run-time analysis proves useful in this case,
 % since it is not sufficient to statically analyze the exported module. 
 
