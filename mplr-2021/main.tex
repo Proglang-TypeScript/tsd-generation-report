@@ -1244,36 +1244,6 @@ template.
 %   \label{fig:dts-generate-choose-templates}
 % \end{figure}
 
-\begin{figure*}[tp]
-  \centering
-  \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-export function v1(str: string): boolean;
-export function v2(str: string): boolean;
-export function v3(str: string): boolean;
-export function v4(str: string): boolean;
-export function v5(str: string): boolean;
-    \end{lstlisting}
-    \caption{is-uuid/index.d.ts - Generated}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-export function v1(value: string): boolean;
-export function v2(value: string): boolean;
-export function v3(value: string): boolean;
-export function v4(value: string): boolean;
-export function v5(value: string): boolean;
-export function nil(value: string): boolean;
-export function anyNonNil(value: string): boolean;
-    \end{lstlisting}
-    \caption{is-uuid/index.d.ts - DefinitelyTyped}
-  \end{subfigure}
-
-  \caption{Results for \textbf{module} \texttt{is-uuid}}
-  \label{fig:experiments-results-module-is-uuid}
-\end{figure*}
-
 Our goal is to support the  most commonly used TypeScript
 features first in our implementation. To this end,
 the selection of typing features covered in the tool is driven by
@@ -1695,99 +1665,15 @@ for generating a declaration file.
 \subsection{Declaration Files Generation}
 \label{sec:experiments-declaration-files-generation}
 
-This section exhibits some examples of the \CountModulesGeneratedDeclarationFile{} generated
-declaration files. It shows some results for each of the implemented
-templates: \textbf{module}, \textbf{module-function}, and
-\textbf{module-class}. 
-
-\figref{fig:experiments-results-module-function} shows the generated
-declaration files for simple modules like \texttt{abs},
-\texttt{dirname-regex}, and \texttt{escape-html}. All of them were
-generated using the \textbf{module-function} template. The left side of the figure shows
-the generated declaration file with 
+This section exhibits an example of the \CountModulesGeneratedDeclarationFile{} generated
+declaration files. \figref{fig:experiments-results-module-steamid} exposes a simplified example for the
+\textbf{module-class} template where we highlight the most important features.
+We expose the results for the remaining templates \textbf{module} and \textbf{module-function} in
+\secref{sec:appendix-results-templates}.
+The left side of the figure shows
+the generated declaration file with x
 \lstinline{dts-generate}, the right side shows the corresponding file
 in the DefinitelyTyped repository. 
-There are no relevant differences between the files. 
-The different names in the export assignment by modules \texttt{dirname-regex} and
-\texttt{escape-html} do not matter because the module can be named arbitrarily when it is imported: in
-\lstinline[language=TypeScript]/import Abs = require('abs');/ the
-identifier \lstinline[language=TypeScript]/Abs/ can be chosen by the
-programmer. We generate the name in the export 
-assignment by transforming the module name into camel case form, following TypeScript
-guidelines.
-
-Functions are correctly detected; input and output types are
-accurately inferred. 
-We extract the parameter names from the variable names of the JavaScript
-code.
-A difference in the names of the function parameters does not affect the correctness of
-the declaration file.
-Furthermore, neither the order of declarations nor unused namespaces
-(as in module \texttt{escape-html}) matter.
-
- 
-\begin{figure*}[tp]
-    \centering
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
-export = Abs;
-
-declare function Abs(input: string): string;
-      \end{lstlisting}
-      \caption{abs/index.d.ts - Generated}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-      \begin{lstlisting}[language=TypeScript,numbers=none]
-declare function Abs(input: string): string;
-export = Abs;
-      \end{lstlisting}
-      \caption{abs/index.d.ts - DT}
-    \end{subfigure}
-
-
-    \begin{subfigure}[t]{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript,numbers=none]
-export = DirnameRegex;
-
-declare function DirnameRegex(): RegExp;
-        \end{lstlisting}
-        \caption{dirname-regex/index.d.ts - Generated}
-      \end{subfigure}
-      \hfill
-      \begin{subfigure}[t]{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript,numbers=none]
-export = dirnameRegex;
-
-declare function dirnameRegex(): RegExp;
-        \end{lstlisting}
-        \caption{dirname-regex/index.d.ts - DT}
-      \end{subfigure}
-
-
-      \begin{subfigure}[t]{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript,numbers=none]
-export = EscapeHtml;
-
-declare function EscapeHtml(string: string): string;
-
-        \end{lstlisting}
-        \caption{escape-html/index.d.ts - Generated}
-      \end{subfigure}
-      \hfill
-      \begin{subfigure}[t]{0.48\linewidth}
-        \begin{lstlisting}[language=TypeScript,numbers=none]
-declare function escapeHTML(text: string): string;
-declare namespace escapeHTML { }
-
-export = escapeHTML;
-        \end{lstlisting}
-        \caption{escape-html/index.d.ts - DT}
-      \end{subfigure}
-
-    \caption{Results for \textbf{module-function} template}
-    \label{fig:experiments-results-module-function}
-\end{figure*}
 
 \begin{figure*}[tp]
   \centering
@@ -1839,113 +1725,18 @@ export = SteamID;
   \label{fig:experiments-results-module-steamid}
 \end{figure*}
 
-\figref{fig:experiments-results-module-is-uuid} contains an example
-for the \textbf{module} template, the declaration for the \texttt{is-uuid} module.
-The generated file only contain methods that were executed by the extracted
-examples. All invoked functions are correctly detected; the additional
-functions declared on DefinitelyTyped are not used in the example
-code.
-It would be easy to generate a perfectly matching declaration file by
-adding two examples using functions \texttt{nil} and
-\texttt{anyNonNil}. 
-
-\figref{fig:experiments-results-module-steamid} exposes a simplified example for the
-\textbf{module-class} template where we highlight the most important features. Class methods are
-correctly generated. For the \texttt{getSteam2RenderedID} method we correctly generate a signature
-that matches the type alias chosen by the author of the library. Finally, the method \texttt{fromIndividualAccountID}
-is correctly located in the namespace section.
+There are no relevant differences between the files. 
+Class methods and functions are correctly detected; input and output types are
+accurately inferred. We extract the parameter names from the variable names of the JavaScript
+code. For the \texttt{getSteam2RenderedID} method we correctly generate a signature
+that matches the type alias chosen by the author of the library. Finally, the method \\
+\texttt{fromIndividualAccountID} is correctly located in the namespace section.
 
 It is worth mentioning that for some libraries the declaration file in DefinitelyTyped was
-not correct. For example, for the module \texttt{glob-base}, the parameter
-\texttt{basePath} is declared as optional in DefinitelyTyped. However, when invoking the
-function without the \texttt{basePath} parameter, an error is thrown at run time. The file generated by
-\texttt{dts-generate} does not mark this parameter as optional, as shown in
-\figref{fig:experiments-results-module-glob-base}. Function return type interfaces are
-not inferred by \texttt{dts-generate}.
-% The parameter name is \texttt{pattern}
-% instead of \texttt{basePath}, because the JavaScript implementation declares the parameter
-% as \texttt{pattern}, as shown in \figref{fig:subfloat-globbase-js-implementation}. 
-We also
-discovered errors in the selected template in DefinitelyTyped. The module
-\texttt{smart-truncate} in DefinitelyTyped uses the \textbf{module} template, but
-\texttt{dts-generate} generates a file using the \textbf{module-function}
-template. \coderef{code:experiments-results-module-smart-truncate} shows that the module is indeed
-exported as a function, as inferred by \texttt{dts-generate}.
-
-\begin{figure*}[tp]
-  \centering
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-'use strict';
-
-// ...
-
-module.exports = function globBase(pattern) {
-if (typeof pattern !== 'string') {
-  throw new TypeError('glob-base expects a string.');
-}
-
-// ...
-} 
-    \end{lstlisting}
-    \caption{glob-base/index.js - Excerpt of JS implementation
-      that throws an error when input parameter is not a string} 
-    \label{fig:subfloat-globbase-js-implementation}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-declare function globbase(basePath?: string): globbase.GlobBaseResult;
-
-declare namespace globbase {
-  interface GlobBaseResult {
-      base: string;
-      isGlob: boolean;
-      glob: string;
-  }
-}
-
-export = globbase;
-    \end{lstlisting}
-    \caption{glob-base/index.d.ts - DefinitelyTyped}
-  \end{subfigure}
-
-\begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=JavaScript,numbers=none]
-var globBase = require('glob-base');
-
-globBase();
-
-// Throws: TypeError: glob-base expects a string.
-    \end{lstlisting}
-    \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \begin{lstlisting}[language=TypeScript,numbers=none]
-export = GlobBase;
-
-declare function GlobBase(pattern: string): object;
-    \end{lstlisting}
-    \caption{glob-base/index.d.ts - Generated}
-  \end{subfigure}
-  
-  \caption{Incorrect optional parameter for module \texttt{glob-base}}
-  \label{fig:experiments-results-module-glob-base}
-\end{figure*}
-
-\begin{lstlisting}[
-caption={Code example for \texttt{smart-truncate} module exporting a function},
-label=code:experiments-results-module-smart-truncate,
-language=JavaScript,captionpos=b,float=tp,numbers=none
-]
-var smartTruncate = require('smart-truncate');
-
-var string = 'To iterate is human, to recurse divine.';
-
-// Append an ellipsis at the end of the truncated string.
-var truncated = smartTruncate(string, 15);
-\end{lstlisting}
+not correct. For module \texttt{glob-base} we detected that a parameter was
+incorrectly marked as optional. For module \texttt{smart-truncate} we discovered that the author
+incorrectly used the \textbf{module} template.
+We provide a more detailed explanation in \secref{sec:errors-definitely-typed}.
 
 \subsection{Evaluation}
 \label{sec:experiments-evaluation}
@@ -1955,81 +1746,15 @@ considered.
 % ? These features were identified by \texttt{dts-parse} as tags.
 
 
-As shown in \figref{fig:experiments-results-module-is-uuid}, the code examples have a
-direct influence on the quality of the generated declaration file. We introduced the
+The code examples have a direct influence on the quality of the generated declaration file. We introduced the
 concept of \texttt{solvable} and \texttt{unsolvable} differences in
 \secref{sec:dts-compare}. Modules containing only \texttt{solvable} differences were
-considered as positive results. All of the analyzed files contained only \texttt{solvable} differences. We manually completed the
+considered as positive results. All of the analyzed files contained only \texttt{solvable} differences.
+We manually completed the
 examples for 10 of those modules. Applying \texttt{dts-generate} with the completed
-examples generates declaration files, which are equivalent to the files from DefinitelyTyped, as
-shown in \figref{fig:experiments-results-manually-completed-examples}.
-
-\begin{figure*}[t]
-  \centering
-  \begin{subfigure}[t]{0.45\linewidth}
-    \begin{lstlisting}[language=TypeScript]
-declare namespace gh {
-  interface Options {
-      enterprise?: boolean;
-  }
-  interface Result {
-      ...
-  }
-}
-
-declare function gh(url: string | {url: string}, options?: gh.Options): gh.Result | null;
-
-export = gh;    
-    \end{lstlisting}
-    \caption{github-url-to-object/index.d.ts - DefinitelyTyped. Properties of interface \texttt{Result} were ignored for readability, since return types were not considered.}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.45\linewidth}
-    \begin{lstlisting}[language=TypeScript]
-export = GithubUrlToObject;
-
-declare function GithubUrlToObject(repoUrl: string | GithubUrlToObject.I__repoUrl, opts?: GithubUrlToObject.I__opts): object | null;
-declare namespace GithubUrlToObject {
-  export interface I__repoUrl {
-    'url'?: string;
-  }
-
-  export interface I__opts {
-    'enterprise'?: boolean;
-  }
-
-}
-    \end{lstlisting}
-    \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
-  \end{subfigure}
-
-  \begin{subfigure}{0.80\linewidth}
-    \begin{lstlisting}[language=JavaScript]
-var gh = require('github-url-to-object')
-
-gh('github:monkey/business');
-gh('https://github.com/monkey/business');
-gh('https://github.com/monkey/business/tree/master');
-gh('https://github.com/monkey/business/tree/master/nested/file.js');
-gh('https://github.com/monkey/business.git');
-gh('http://github.com/monkey/business');
-gh('git://github.com/monkey/business.git');
-
-// Manually added:
-gh('git+https://githuuub.com/monkey/business.git', {});
-gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
-gh({url: 'git://github.com/monkey/business.git'});
-gh('this is not a proper url');
-gh({url: 'this is not a proper url'});
-    \end{lstlisting}
-    \caption{Code example for module \texttt{github-url-to-object}.}
-    \end{subfigure}
-  \caption{Manually expanded code example for
-    \texttt{github-url-to-object} to match DefinitelyTyped declaration
-    file. The literal interface in DefinitelyTyped is replaced by a
-    declared interface. Return types are not considered.} 
-  \label{fig:experiments-results-manually-completed-examples}
-\end{figure*}
+examples generates declaration files which are equivalent to the files from DefinitelyTyped.
+\secref{sec:appendix-manually-completed-examples} exhibits the manually added code examples
+for module \texttt{github-url-to-object}.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -2293,6 +2018,300 @@ DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files p
 %% the bibliography file.
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{main}
+
+\appendix
+\section{Results}
+\subsection{Templates}
+\label{sec:appendix-results-templates}
+\subsubsection{module-function}
+\figref{fig:experiments-results-module-function} shows the generated
+declaration files for simple modules like \texttt{abs},
+\texttt{dirname-regex}, and \texttt{escape-html}. All of them were
+generated using the \textbf{module-function} template. 
+
+The different names in the export assignment by modules \\
+\texttt{dirname-regex} and
+\texttt{escape-html} do not matter because the module can be named arbitrarily when it is imported: in
+\lstinline[language=TypeScript]/import Abs = require('abs');/ the
+identifier \lstinline[language=TypeScript]/Abs/ can be chosen by the
+programmer. We generate the name in the export 
+assignment by transforming the module name into camel case form, following TypeScript
+guidelines.
+
+A difference in the names of the function parameters does not affect the correctness of
+the declaration file.
+Furthermore, neither the order of declarations nor unused namespaces
+(as in module \texttt{escape-html}) matter.
+
+\begin{figure*}[tp]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+export = Abs;
+
+declare function Abs(input: string): string;
+    \end{lstlisting}
+    \caption{abs/index.d.ts - Generated}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+declare function Abs(input: string): string;
+export = Abs;
+    \end{lstlisting}
+    \caption{abs/index.d.ts - DT}
+  \end{subfigure}
+
+
+  \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript,numbers=none]
+export = DirnameRegex;
+
+declare function DirnameRegex(): RegExp;
+      \end{lstlisting}
+      \caption{dirname-regex/index.d.ts - Generated}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript,numbers=none]
+export = dirnameRegex;
+
+declare function dirnameRegex(): RegExp;
+      \end{lstlisting}
+      \caption{dirname-regex/index.d.ts - DT}
+    \end{subfigure}
+
+
+    \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript,numbers=none]
+export = EscapeHtml;
+
+declare function EscapeHtml(string: string): string;
+
+      \end{lstlisting}
+      \caption{escape-html/index.d.ts - Generated}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+      \begin{lstlisting}[language=TypeScript,numbers=none]
+declare function escapeHTML(text: string): string;
+declare namespace escapeHTML { }
+
+export = escapeHTML;
+      \end{lstlisting}
+      \caption{escape-html/index.d.ts - DT}
+    \end{subfigure}
+
+  \caption{Results for \textbf{module-function} template}
+  \label{fig:experiments-results-module-function}
+\end{figure*}
+
+\subsubsection{module}
+\figref{fig:experiments-results-module-is-uuid} contains an example
+for the \textbf{module} template, the declaration for the \texttt{is-uuid} module.
+The generated file only contain methods that were executed by the extracted
+examples. All invoked functions are correctly detected; the additional
+functions declared on DefinitelyTyped are not used in the example
+code.
+It would be easy to generate a perfectly matching declaration file by
+adding two examples using functions \texttt{nil} and
+\texttt{anyNonNil}.
+
+\begin{figure*}[tp]
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+export function v1(str: string): boolean;
+export function v2(str: string): boolean;
+export function v3(str: string): boolean;
+export function v4(str: string): boolean;
+export function v5(str: string): boolean;
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - Generated}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+export function v1(value: string): boolean;
+export function v2(value: string): boolean;
+export function v3(value: string): boolean;
+export function v4(value: string): boolean;
+export function v5(value: string): boolean;
+export function nil(value: string): boolean;
+export function anyNonNil(value: string): boolean;
+    \end{lstlisting}
+    \caption{is-uuid/index.d.ts - DefinitelyTyped}
+  \end{subfigure}
+
+  \caption{Results for \textbf{module} \texttt{is-uuid}}
+  \label{fig:experiments-results-module-is-uuid}
+\end{figure*}
+
+\subsection{Manually completed examples}
+\label{sec:appendix-manually-completed-examples}
+\figref{fig:experiments-results-manually-completed-examples} exhibits the
+ manually expanded code examples for module \texttt{github-url-to-object}.
+
+\begin{figure*}[t]
+  \centering
+  \begin{subfigure}[t]{0.45\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+declare namespace gh {
+  interface Options {
+      enterprise?: boolean;
+  }
+  interface Result {
+      ...
+  }
+}
+
+declare function gh(url: string | {url: string}, options?: gh.Options): gh.Result | null;
+
+export = gh;    
+    \end{lstlisting}
+    \caption{github-url-to-object/index.d.ts - DefinitelyTyped. Properties of interface \texttt{Result} were ignored for readability, since return types were not considered.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\linewidth}
+    \begin{lstlisting}[language=TypeScript]
+export = GithubUrlToObject;
+
+declare function GithubUrlToObject(repoUrl: string | GithubUrlToObject.I__repoUrl, opts?: GithubUrlToObject.I__opts): object | null;
+declare namespace GithubUrlToObject {
+  export interface I__repoUrl {
+    'url'?: string;
+  }
+
+  export interface I__opts {
+    'enterprise'?: boolean;
+  }
+
+}
+    \end{lstlisting}
+    \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
+  \end{subfigure}
+
+  \begin{subfigure}{0.80\linewidth}
+    \begin{lstlisting}[language=JavaScript]
+var gh = require('github-url-to-object')
+
+gh('github:monkey/business');
+gh('https://github.com/monkey/business');
+gh('https://github.com/monkey/business/tree/master');
+gh('https://github.com/monkey/business/tree/master/nested/file.js');
+gh('https://github.com/monkey/business.git');
+gh('http://github.com/monkey/business');
+gh('git://github.com/monkey/business.git');
+
+// Manually added:
+gh('git+https://githuuub.com/monkey/business.git', {});
+gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
+gh({url: 'git://github.com/monkey/business.git'});
+gh('this is not a proper url');
+gh({url: 'this is not a proper url'});
+    \end{lstlisting}
+    \caption{Code example for module \texttt{github-url-to-object}.}
+    \end{subfigure}
+  \caption{Manually expanded code example for
+    \texttt{github-url-to-object} to match DefinitelyTyped declaration
+    file. The literal interface in DefinitelyTyped is replaced by a
+    declared interface. Return types are not considered.} 
+  \label{fig:experiments-results-manually-completed-examples}
+\end{figure*}
+
+\subsection{Errors in DefinitelyTyped}
+\label{sec:errors-definitely-typed}
+For module \texttt{glob-base} the parameter
+\texttt{basePath} is declared as optional in DefinitelyTyped. However, when invoking the
+function without the \texttt{basePath} parameter, an error is thrown at run time. The file generated by
+\texttt{dts-generate} does not mark this parameter as optional, as shown in
+\figref{fig:experiments-results-module-glob-base}. Function return type interfaces are
+not inferred by \texttt{dts-generate}.
+
+% The parameter name is \texttt{pattern}
+% instead of \texttt{basePath}, because the JavaScript implementation declares the parameter
+% as \texttt{pattern}, as shown in \figref{fig:subfloat-globbase-js-implementation}. 
+We also
+discovered errors in the selected template in DefinitelyTyped. The module
+\texttt{smart-truncate} in DefinitelyTyped uses the \textbf{module} template, but
+\texttt{dts-generate} generates a file using the \textbf{module-function}
+template. \coderef{code:experiments-results-module-smart-truncate} shows that the module is indeed
+exported as a function, as inferred by \texttt{dts-generate}.
+
+\begin{lstlisting}[
+  caption={Code example for \texttt{smart-truncate} module exporting a function},
+  label=code:experiments-results-module-smart-truncate,
+  language=JavaScript,captionpos=b,numbers=none
+  ]
+  var smartTruncate = require('smart-truncate');
+  
+  var string = 'To iterate is human, to recurse divine.';
+  
+  // Append an ellipsis at the end of the truncated string.
+  var truncated = smartTruncate(string, 15);
+\end{lstlisting}
+
+\begin{figure*}[tp]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+'use strict';
+
+// ...
+
+module.exports = function globBase(pattern) {
+if (typeof pattern !== 'string') {
+  throw new TypeError('glob-base expects a string.');
+}
+
+// ...
+} 
+    \end{lstlisting}
+    \caption{glob-base/index.js - Excerpt of JS implementation
+      that throws an error when input parameter is not a string} 
+    \label{fig:subfloat-globbase-js-implementation}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+declare function globbase(basePath?: string): globbase.GlobBaseResult;
+
+declare namespace globbase {
+  interface GlobBaseResult {
+      base: string;
+      isGlob: boolean;
+      glob: string;
+  }
+}
+
+export = globbase;
+    \end{lstlisting}
+    \caption{glob-base/index.d.ts - DefinitelyTyped}
+  \end{subfigure}
+
+\begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=JavaScript,numbers=none]
+var globBase = require('glob-base');
+
+globBase();
+
+// Throws: TypeError: glob-base expects a string.
+    \end{lstlisting}
+    \caption{Code example invoking the exported function without the first parameter, as specified in DefinitelyTyped}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \begin{lstlisting}[language=TypeScript,numbers=none]
+export = GlobBase;
+
+declare function GlobBase(pattern: string): object;
+    \end{lstlisting}
+    \caption{glob-base/index.d.ts - Generated}
+  \end{subfigure}
+  
+  \caption{Incorrect optional parameter for module \texttt{glob-base}}
+  \label{fig:experiments-results-module-glob-base}
+\end{figure*}
 
 \end{document}
 \endinput
