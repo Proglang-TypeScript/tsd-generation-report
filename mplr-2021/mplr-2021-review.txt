@@ -14,7 +14,7 @@ The paper presents an approach to automatically generating TypeScript declaratio
 
 The implementation presented is useful and solves a real problem. The paper’s explanation of the problem and the chosen approach to solving it is clear, convincing and easy to follow. The solution is novel and has not to my knowledge been attempted previously. Evidence is provided that this solution generates useful declaration files which match the manually-created versions in most cases, and highlights the absence of sufficiently illustrative code examples in others, both of which are positive results.
 
-A small typographical error is noted: “we rely on we rely on” (p2).
+A small typographical error is noted: “we rely on we rely on” (p2).  -> FIXED
 ----------- Reviewer's confidence -----------
 SCORE: 3 ((high))
 
