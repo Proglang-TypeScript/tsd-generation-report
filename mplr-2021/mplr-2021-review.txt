@@ -1,0 +1,86 @@
+SUBMISSION: 6
+TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+
+
+----------------------- REVIEW 1 ---------------------
+SUBMISSION: 6
+TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+AUTHORS: Fernando Cristiani and Peter Thiemann
+
+----------- Overall evaluation -----------
+SCORE: 2 (accept)
+----- TEXT:
+The paper presents an approach to automatically generating TypeScript declaration files for third-party (statically untyped) JavaScript libraries. The approach involves extracting code examples from the README.md files of NPM packages and generating typing information by running those examples using the Jalangi dynamic analysis framework. The typing information thus collected is used to generate a TypeScript declaration file. The results are evaluated by comparing them against manually-authored declaration files from DefinitelyTyped.
+
+The implementation presented is useful and solves a real problem. The paper’s explanation of the problem and the chosen approach to solving it is clear, convincing and easy to follow. The solution is novel and has not to my knowledge been attempted previously. Evidence is provided that this solution generates useful declaration files which match the manually-created versions in most cases, and highlights the absence of sufficiently illustrative code examples in others, both of which are positive results.
+
+A small typographical error is noted: “we rely on we rely on” (p2).
+----------- Reviewer's confidence -----------
+SCORE: 3 ((high))
+
+
+
+----------------------- REVIEW 2 ---------------------
+SUBMISSION: 6
+TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+AUTHORS: Fernando Cristiani and Peter Thiemann
+
+----------- Overall evaluation -----------
+SCORE: 2 (accept)
+----- TEXT:
+Javascript, as a dynamically typed language, has many pitfalls which ordinarily
+would be caught by a static type system, as motivated at the front of the
+paper. TypeScript extends Javascript with such a type system, but the types
+must be written out by hand in a description file. This is tedious and
+error-prone, relying on a human to correctly specify the type signature of
+every entity in the described Javascript library. This paper describes a
+technique for generating the TypeScript description file for an arbitrary
+Javascript library published via the NodeJS package repository. The context and
+scope of the problem, and the technique used to solve it are all clearly
+explained and illustrated with examples.
+
+The technique is well motivated and described, and while monomorphic type
+inference via execution trace inspection is not intrinsically novel, there is
+significant value in the automated application of this technique as described
+and constructed by the authors. The idea of extracting the code specimens to be
+traced from the developer-provided examples and documentation is very cute and
+it appears to work well in practice to boot, which is often not the case with
+cute ideas.
+
+This paper addresses a growing real-world problem (a glance at a graph of the
+number of NPM packages versus time will immediately illustrate the scope of the
+issue) with an interesting and demonstrably effective approach. Bravo!
+
+It would be an interesting, though quite involved, piece of future work to
+extend the approach to perform a full polymorphic type inference.
+----------- Reviewer's confidence -----------
+SCORE: 3 ((high))
+
+
+
+----------------------- REVIEW 3 ---------------------
+SUBMISSION: 6
+TITLE: Generation of TypeScript Declaration Files from JavaScript Code
+AUTHORS: Fernando Cristiani and Peter Thiemann
+
+----------- Overall evaluation -----------
+SCORE: 1 (weak accept)
+----- TEXT:
+The paper presents a tool for generating TypeScript declaration file for JavaScript libraries. The tool extracts examples from the documentation and monitors their execution, gathering information to create the declarationfile.
+
+The paper is well written and explained, and I believe it is interesting for MPLR. The authors developed several subtools and package studies that are interesting in themselves.
+
+Maybe the authors could use a motivating example that is slightly more complicated? One point that I missed the paper discussing is that even parameters of the same apparent type can make the library implementation code go though different conditional branches and in each of these paths invoke different callbacks on the parameter?
+
+I was also curious about the amount of information, in the README files, on the specific case of the return type. Intuitively it would seem that, in their examples, developers place more emphasis on how to invoke library operations, and less on how to use the returned values. Was that in any way observed?
+
+Section 6.1, in which authors describe the "filtering out" of examples from the NPM repository, is important material in itself (1/6 of packages do not have a repository entry and more than 1/5 of the remaining packages do not have a REAME file!) but point to potential problems in the use of the
+proposed approach, as regards the lack of sufficient documentation from which to extract information? This also applies to the labeling of examples with incomplete documentation as
+"solvable differences" (section 6.3). The motivation of the authors is that manual documentation is inappropriate. How can cases in which manually completing the documentation was necessary be regarded as ok?
+
+Authors report that run-time information could not be reported for 510 out of 946 modules, and that it was not possible to determine which modules were failing due to Jalangi's own limitations. I believe this should be further investigated and explained. If a large number of failures results from Jalangi's limitations, what does this mean for the proposed approach? Would there be alternative tools or could this be a serious limitation on the approach itself?
+
+Some dts-generate generated declaration files were more restrictive than the ones from DefinitelyTyped (see A.2). It would be quite interesting to identify cases in which the manual
+documentation had missed some necessary property. This left me wondering whether the proposed set of tools would not be a helpful tool when the developer wishes to make a package available? After writing the Readme file, the developer could use dts-gen and check whether the generated file is sufficiently complete, as an interactive tool for writing code examples in the Readme file?
+----------- Reviewer's confidence -----------
+SCORE: 2 ((medium))
