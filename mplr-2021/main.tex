@@ -53,6 +53,8 @@
 
 \usepackage[htt]{hyphenat}
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{microtype}
 
 \definecolor{backgroundgray}{rgb}{.94,.94,.94}
@@ -105,6 +107,14 @@
 \graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \settopmatter{printfolios=true}
+
+\copyrightyear{2021}
+\acmYear{2021}
+\setcopyright{acmlicensed}\acmConference[MPLR '21]{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes}{September 29--30, 2021}{Münster, Germany}
+\acmBooktitle{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes (MPLR '21), September 29--30, 2021, Münster, Germany}
+\acmPrice{15.00}
+\acmDOI{10.1145/3475738.3480941}
+\acmISBN{978-1-4503-8675-3/21/09}
 
 %% Rights management information.  This information is sent to you
 %% when you complete the rights form.  These commands have SAMPLE
@@ -169,7 +179,7 @@
 
 \author{Peter Thiemann}
 \affiliation{%
-  \institution{Albert-Ludwigs-Universit{\"a}t Freiburg}
+  \institution{Albert-Ludwigs-Universität Freiburg}
   \city{Freiburg}
   \country{Germany}
 }
@@ -684,7 +694,7 @@ declare namespace Greeter {
 \end{figure*}
 
 The TypeScript project provides a guide on how to write high-quality declaration
-files\footnote{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}. The guide
+files\footnote{\url{https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html}}. The guide
 explains the main concepts through examples. We selected one example for each template
 from the guide and
 used \texttt{dts-generate} to generate a corresponding declaration file, as shown in
@@ -1993,6 +2003,10 @@ module uploaded to DefinitelyTyped. We managed to generate declaration files for
 files uploaded to
 DefinitelyTyped by creating \texttt{dts-parse}, a TypeScript declaration files parser and
 \texttt{dts-compare}, a comparator.
+
+Return types could be defined more accurately by analyzing the interactions tracked on
+them. We consider that enhancing the run-time information by executing tests already
+present in the codebase is an approach worth following as future work.
 
 % \begin{changethis}
 %   We exposed the fundamental aspect of capturing the developer's intention when inferring

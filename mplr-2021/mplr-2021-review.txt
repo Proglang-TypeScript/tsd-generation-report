@@ -73,12 +73,15 @@ The paper is well written and explained, and I believe it is interesting for MPL
 Maybe the authors could use a motivating example that is slightly more complicated? One point that I missed the paper discussing is that even parameters of the same apparent type can make the library implementation code go though different conditional branches and in each of these paths invoke different callbacks on the parameter?
 
 I was also curious about the amount of information, in the README files, on the specific case of the return type. Intuitively it would seem that, in their examples, developers place more emphasis on how to invoke library operations, and less on how to use the returned values. Was that in any way observed?
+  -> Future work
 
 Section 6.1, in which authors describe the "filtering out" of examples from the NPM repository, is important material in itself (1/6 of packages do not have a repository entry and more than 1/5 of the remaining packages do not have a REAME file!) but point to potential problems in the use of the
 proposed approach, as regards the lack of sufficient documentation from which to extract information? This also applies to the labeling of examples with incomplete documentation as
 "solvable differences" (section 6.3). The motivation of the authors is that manual documentation is inappropriate. How can cases in which manually completing the documentation was necessary be regarded as ok?
+  -> Future work: Extract runtime info from tests
 
 Authors report that run-time information could not be reported for 510 out of 946 modules, and that it was not possible to determine which modules were failing due to Jalangi's own limitations. I believe this should be further investigated and explained. If a large number of failures results from Jalangi's limitations, what does this mean for the proposed approach? Would there be alternative tools or could this be a serious limitation on the approach itself?
+  -> 
 
 Some dts-generate generated declaration files were more restrictive than the ones from DefinitelyTyped (see A.2). It would be quite interesting to identify cases in which the manual
 documentation had missed some necessary property. This left me wondering whether the proposed set of tools would not be a helpful tool when the developer wishes to make a package available? After writing the Readme file, the developer could use dts-gen and check whether the generated file is sufficiently complete, as an interactive tool for writing code examples in the Readme file?
