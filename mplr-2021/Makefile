@@ -3,6 +3,8 @@ DOC=main
 LATEX=pdflatex
 BIBPROG=bibtex
 
+FILES= main.tex acmart.cls macros.tex graphics/motivating-example-glob-to-regexp-vscode.png graphics/funnel.png graphics/dts-generate-block-diagram.pdf graphics/evaluation-diagram.pdf main.bbl
+
 .SUFFIXES:
 .SUFFIXES: .bib .pdf .tex
 .PHONY: clean
@@ -18,3 +20,6 @@ $(DOC).bbl: $(DOC).aux $(DOC).bib
 
 clean:
 	rm -rf *.aux *.lof *.log *.lot *.toc *.bbl *.blg *.vtc *.out $(DOC).pdf
+
+final.zip: $(FILES)
+	zip final $(FILES)

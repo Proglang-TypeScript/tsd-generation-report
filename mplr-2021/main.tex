@@ -109,32 +109,19 @@
 
 \settopmatter{printfolios=true}
 
-\copyrightyear{2021}
-\acmYear{2021}
-\setcopyright{acmlicensed}\acmConference[MPLR '21]{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes}{September 29--30, 2021}{Münster, Germany}
-\acmBooktitle{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes (MPLR '21), September 29--30, 2021, Münster, Germany}
+%%% The following is specific to MPLR '21 and the paper
+%%% 'Generation of TypeScript Declaration Files from JavaScript Code'
+%%% by Fernando Cristiani and Peter Thiemann.
+%%%
+\setcopyright{acmlicensed}
 \acmPrice{15.00}
 \acmDOI{10.1145/3475738.3480941}
+\acmYear{2021}
+\copyrightyear{2021}
+\acmSubmissionID{mplr21main-id6-p}
 \acmISBN{978-1-4503-8675-3/21/09}
-
-%% Rights management information.  This information is sent to you
-%% when you complete the rights form.  These commands have SAMPLE
-%% values in them; it is your responsibility as an author to replace
-%% the commands and values with those provided to you when you
-%% complete the rights form.
-
-% \setcopyright{acmcopyright}
-% \copyrightyear{2018}
-% \acmYear{2018}
-% \acmDOI{10.1145/1122445.1122456}
-
-%% These commands are for a PROCEEDINGS abstract or paper.
-% \acmConference[Woodstock '18]{Woodstock '18: ACM Symposium on Neural
-%   Gaze Detection}{June 03--05, 2018}{Woodstock, NY}
-% \acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
-%   June 03--05, 2018, Woodstock, NY}
-% \acmPrice{15.00}
-% \acmISBN{978-1-4503-XXXX-X/18/06}
+\acmConference[MPLR '21]{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes}{September 29--30, 2021}{Münster, Germany}
+\acmBooktitle{Proceedings of the 18th ACM SIGPLAN International Conference on Managed Programming Languages and Runtimes (MPLR '21), September 29--30, 2021, Münster, Germany}
 
 %%
 %% Submission ID.
@@ -158,6 +145,7 @@
 %%
 %% end of the preamble, start of the body of the document source.
 \begin{document}
+\pagestyle{empty}
 
 %%
 %% The "title" command has an optional parameter,
@@ -947,7 +935,7 @@ intention. It provides an initial code base with meaningful
 examples.
 %? , thus avoiding possible cold start problems.
 
-\subsection{Run-time Information Gathering}
+\subsection{Run-Time Information Gathering}
 \label{sec:run-time-information}
 The run-time information block in
 \figref{fig:tsd_generation_method_block_diagram} gathers
@@ -1440,7 +1428,7 @@ then \texttt{dts-generate} is a viable alternative to hand-crafted definition fi
   \end{centering}
 \end{figure}
 
-\subsection{dts-parse}
+\subsection{Dts-Parse}
 \label{sec:dts-parse}
 
 We are not interested in a textual comparison of declaration files, but in a
@@ -1475,7 +1463,7 @@ that contain unimplemented features.
 % "GlobToRegexp"
 % \end{lstlisting} %$
 
-\subsection{dts-compare}
+\subsection{Dts-Compare}
 \label{sec:dts-compare}
 
 % The tool is written in TypeScript.
@@ -1680,7 +1668,7 @@ the generated declaration file with x
 \lstinline{dts-generate}, the right side shows the corresponding file
 in the DefinitelyTyped repository. 
 
-\begin{figure*}[tp]
+\begin{figure*}[t]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2024,35 +2012,12 @@ present in the codebase is an approach worth following as future work.
 
 \clearpage
 \appendix
-\section{Results}
-\subsection{Templates}
-\label{sec:appendix-results-templates}
-\subsubsection{module-function}
-\figref{fig:experiments-results-module-function} shows the generated
-declaration files for simple modules like \texttt{abs},
-\texttt{dirname-regex}, and \texttt{escape-html}. All of them were
-generated using the \textbf{module-function} template. 
-
-The different names in the export assignment by modules \\
-\texttt{dirname-regex} and
-\texttt{escape-html} do not matter because the module can be named arbitrarily when it is imported: in
-\lstinline[language=TypeScript]/import Abs = require('abs');/ the
-identifier \lstinline[language=TypeScript]/Abs/ can be chosen by the
-programmer. We generate the name in the export 
-assignment by transforming the module name into camel case form, following TypeScript
-guidelines.
-
-A difference in the names of the function parameters does not affect the correctness of
-the declaration file.
-Furthermore, neither the order of declarations nor unused namespaces
-(as in module \texttt{escape-html}) matter.
-
-\begin{figure*}[tp]
+\lstset{basicstyle=\scriptsize\ttfamily}
+\begin{figure*}[t]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
 export = Abs;
-
 declare function Abs(input: string): string;
     \end{lstlisting}
     \caption{abs/index.d.ts - Generated}
@@ -2070,7 +2035,6 @@ export = Abs;
   \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
 export = DirnameRegex;
-
 declare function DirnameRegex(): RegExp;
       \end{lstlisting}
       \caption{dirname-regex/index.d.ts - Generated}
@@ -2079,7 +2043,6 @@ declare function DirnameRegex(): RegExp;
     \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
 export = dirnameRegex;
-
 declare function dirnameRegex(): RegExp;
       \end{lstlisting}
       \caption{dirname-regex/index.d.ts - DT}
@@ -2089,7 +2052,6 @@ declare function dirnameRegex(): RegExp;
     \begin{subfigure}[t]{0.48\linewidth}
       \begin{lstlisting}[language=TypeScript,numbers=none]
 export = EscapeHtml;
-
 declare function EscapeHtml(string: string): string;
 
       \end{lstlisting}
@@ -2100,7 +2062,6 @@ declare function EscapeHtml(string: string): string;
       \begin{lstlisting}[language=TypeScript,numbers=none]
 declare function escapeHTML(text: string): string;
 declare namespace escapeHTML { }
-
 export = escapeHTML;
       \end{lstlisting}
       \caption{escape-html/index.d.ts - DT}
@@ -2109,19 +2070,7 @@ export = escapeHTML;
   \caption{Results for \textbf{module-function} template}
   \label{fig:experiments-results-module-function}
 \end{figure*}
-
-\subsubsection{module}
-\figref{fig:experiments-results-module-is-uuid} contains an example
-for the \textbf{module} template, the declaration for the \texttt{is-uuid} module.
-The generated file only contain methods that were executed by the extracted
-examples. All invoked functions are correctly detected; the additional
-functions declared on DefinitelyTyped are not used in the example
-code.
-It would be easy to generate a perfectly matching declaration file by
-adding two examples using functions \texttt{nil} and
-\texttt{anyNonNil}.
-
-\begin{figure*}[tp]
+\begin{figure*}[t]
   \centering
   \begin{subfigure}{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2151,7 +2100,43 @@ export function anyNonNil(value: string): boolean;
   \label{fig:experiments-results-module-is-uuid}
 \end{figure*}
 
-\subsection{Manually completed examples}
+\section{Results}
+\subsection{Templates}
+\label{sec:appendix-results-templates}
+\subsubsection{Module-Function}
+\figref{fig:experiments-results-module-function} shows the generated
+declaration files for simple modules like \texttt{abs},
+\texttt{dirname-regex}, and \texttt{escape-html}. All of them were
+generated using the \textbf{module-function} template. 
+
+The different names in the export assignment by modules \\
+\texttt{dirname-regex} and
+\texttt{escape-html} do not matter because the module can be named arbitrarily when it is imported: in
+\lstinline[language=TypeScript]/import Abs = require('abs');/ the
+identifier \lstinline[language=TypeScript]/Abs/ can be chosen by the
+programmer. We generate the name in the export 
+assignment by transforming the module name into camel case form, following TypeScript
+guidelines.
+
+A difference in the names of the function parameters does not affect the correctness of
+the declaration file.
+Furthermore, neither the order of declarations nor unused namespaces
+(as in module \texttt{escape-html}) matter.
+
+
+\subsubsection{Module}
+\figref{fig:experiments-results-module-is-uuid} contains an example
+for the \textbf{module} template, the declaration for the \texttt{is-uuid} module.
+The generated file only contain methods that were executed by the extracted
+examples. All invoked functions are correctly detected; the additional
+functions declared on DefinitelyTyped are not used in the example
+code.
+It would be easy to generate a perfectly matching declaration file by
+adding two examples using functions \texttt{nil} and
+\texttt{anyNonNil}.
+
+
+\subsection{Manually Completed Examples}
 \label{sec:appendix-manually-completed-examples}
 \figref{fig:experiments-results-manually-completed-examples} exhibits the
  manually expanded code examples for module \texttt{github-url-to-object}.
@@ -2168,7 +2153,6 @@ declare namespace gh {
       ...
   }
 }
-
 declare function gh(url: string | {url: string}, options?: gh.Options): gh.Result | null;
 
 export = gh;    
@@ -2179,17 +2163,14 @@ export = gh;
   \begin{subfigure}[t]{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
 export = GithubUrlToObject;
-
 declare function GithubUrlToObject(repoUrl: string | GithubUrlToObject.I__repoUrl, opts?: GithubUrlToObject.I__opts): object | null;
 declare namespace GithubUrlToObject {
   export interface I__repoUrl {
     'url'?: string;
   }
-
   export interface I__opts {
     'enterprise'?: boolean;
   }
-
 }
     \end{lstlisting}
     \caption{github-url-to-object/index.d.ts - Generated with manually expanded code example}
@@ -2198,7 +2179,6 @@ declare namespace GithubUrlToObject {
   \begin{subfigure}{0.80\linewidth}
     \begin{lstlisting}[language=JavaScript]
 var gh = require('github-url-to-object')
-
 gh('github:monkey/business');
 gh('https://github.com/monkey/business');
 gh('https://github.com/monkey/business/tree/master');
@@ -2206,7 +2186,6 @@ gh('https://github.com/monkey/business/tree/master/nested/file.js');
 gh('https://github.com/monkey/business.git');
 gh('http://github.com/monkey/business');
 gh('git://github.com/monkey/business.git');
-
 // Manually added:
 gh('git+https://githuuub.com/monkey/business.git', {});
 gh('git+https://githuuub.com/monkey/business.git', {enterprise: true});
@@ -2232,10 +2211,8 @@ gh({url: 'this is not a proper url'});
   language=JavaScript,captionpos=b,float,numbers=none
   ]
   var smartTruncate = require('smart-truncate');
-  
   var string = 'To iterate is human, to recurse divine.';
-  
-  // Append an ellipsis at the end of the truncated string.
+  // Append ellipsis at end of the truncated string.
   var truncated = smartTruncate(string, 15);
 \end{lstlisting}
 
@@ -2256,7 +2233,7 @@ discovered errors in the selected template in DefinitelyTyped. The module
 template. \coderef{code:experiments-results-module-smart-truncate} shows that the module is indeed
 exported as a function, as inferred by \texttt{dts-generate}.
 
-\begin{figure*}[tp]
+\begin{figure*}[t]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2318,8 +2295,8 @@ declare function GlobBase(pattern: string): object;
   \label{fig:experiments-results-module-glob-base}
 \end{figure*}
 
-\clearpage
-\balance
+%\clearpage
+%\balance
 %%
 %% The next two lines define the bibliography style to be used, and
 %% the bibliography file.
