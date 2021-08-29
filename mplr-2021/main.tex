@@ -38,6 +38,7 @@
 \newcommand{\coderef}[1]{Listing~\ref{#1}}
 
 
+\usepackage{float}
 \usepackage{listings}
 
 \usepackage{cleveref}
@@ -2012,7 +2013,7 @@ present in the codebase is an approach worth following as future work.
 
 \clearpage
 \lstset{basicstyle=\scriptsize\ttfamily}
-\begin{figure*}[t]
+\begin{figure*}[t!]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2069,7 +2070,7 @@ export = escapeHTML;
   \caption{Results for \textbf{module-function} template}
   \label{fig:experiments-results-module-function}
 \end{figure*}
-\begin{figure*}[t]
+\begin{figure*}[t!]
   \centering
   \begin{subfigure}{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2098,7 +2099,7 @@ export function anyNonNil(value: string): boolean;
   \caption{Results for \textbf{module} \texttt{is-uuid}}
   \label{fig:experiments-results-module-is-uuid}
 \end{figure*}
-\begin{figure*}[t]
+\begin{figure*}[t!]
   \centering
   \begin{subfigure}[t]{0.45\linewidth}
     \begin{lstlisting}[language=TypeScript]
@@ -2158,7 +2159,7 @@ gh({url: 'this is not a proper url'});
     declared interface. Return types are not considered.} 
   \label{fig:experiments-results-manually-completed-examples}
 \end{figure*}
-\begin{figure*}[t]
+\begin{figure*}[t!]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \begin{lstlisting}[language=TypeScript,numbers=none]
@@ -2270,7 +2271,7 @@ adding two examples using functions \texttt{nil} and
 \begin{lstlisting}[
   caption={Code example for \texttt{smart-truncate} module exporting a function},
   label=code:experiments-results-module-smart-truncate,
-  language=JavaScript,captionpos=b,float,numbers=none
+  language=JavaScript,captionpos=b,float=t,numbers=none
   ]
   var smartTruncate = require('smart-truncate');
   var string = 'To iterate is human, to recurse divine.';
